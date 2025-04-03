@@ -4,6 +4,7 @@ namespace App\Http\Controllers\publication;
 
 use App\Http\Controllers\Controller;
 use App\Models\Publication;
+use App\Models\PublicationComment;
 use App\Models\UserPublicationLike;
 use App\Models\UserPublicationRepost;
 use Illuminate\Http\Request;
@@ -183,5 +184,22 @@ class PublicationController extends Controller
                 'error' => $e->getMessage() // Only in development
             ], 500);
         }
+    }
+
+    /**
+     * Method for commenting a publication.
+     */
+
+    public function storeComment(Request $request)
+    {
+        $data = [
+            'publication_id' => $request->input('publication_id'),
+            'user_id' => auth()->user()->id,
+            'comment' => $request->input('comment')
+        ];
+
+        PublicationComment::create($data);
+
+        return back();
     }
 }
