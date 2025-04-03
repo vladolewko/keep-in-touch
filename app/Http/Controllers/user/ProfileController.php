@@ -1,0 +1,151 @@
+<?php
+
+namespace App\Http\Controllers\user;
+
+use App\Http\Controllers\Controller;
+use App\Http\Requests\ProfileUpdateRequest;
+use App\Models\Publication;
+use App\Models\User;
+use App\Models\UserPublicationLike;
+use App\Models\UserPublicationRepost;
+use App\Models\UserSubscription;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\View\View;
+
+class ProfileController extends Controller
+{
+
+    /**
+     * Display the user's profile page.
+     */
+    public function profile(): View
+    {
+        $user = auth()->user();
+        $publications = Publication::where('user_id', $user->id)->get();
+        foreach ($publications as $publication) {
+            $publication->is_liked = UserPublicationLike::where('user_id', $user->id)->where('publication_id', $publication->id)->exists();
+            $publication->is_reposted = UserPublicationRepost::where('user_id', auth()->user()->id)
+                ->where('publication_id', $publication->id)
+                ->exists();
+        }
+
+        $repostsId = UserPublicationRepost::where('user_id', $user->id)->pluck('publication_id');
+        $reposts = Publication::whereIn('id', $repostsId)->get();
+        foreach ($reposts as $repost) {
+            $repost->is_liked = UserPublicationLike::where('user_id', $user->id)->where('publication_id', $repost->id)->exists();
+            $repost->is_reposted = UserPublicationRepost::where('user_id', auth()->user()->id)
+                ->where('publication_id', $repost->id)
+                ->exists();
+        }
+
+        return view('profile/profile', compact('user', 'publications', 'reposts'));
+    }
+
+    /**
+     * Display the user's followers page.
+     */
+    public function followers(): View
+    {
+        $reqestsIds = UserSubscription::where('subscribed_to_id', auth()->user()->id)->where('is_accepted', 0)->pluck('user_id');
+        $requests = User::whereIn('id', $reqestsIds)->get();
+
+        $followersIds = UserSubscription::where('subscribed_to_id', auth()->user()->id)->where('is_accepted', 1)->pluck('subscribed_to_id');
+        $followers = User::whereIn('id', $followersIds)->get();
+        return view('profile/followers', compact('requests', 'followers'));
+    }
+
+    public function manageSubscribitors(Request $request)
+    {
+        $subscriber_id = $request->input('subscriber_id');
+        $action = $request->input('action');
+        UserSubscription::manageSubscribitors($subscriber_id, $action);
+
+        return back();
+    }
+
+    /**
+     * Display the user's subscriptions page.
+     */
+    public function subscriptions(): View
+    {
+        $subscriptionsIds = UserSubscription::where('user_id', auth()->user()->id)->pluck('subscribed_to_id');
+        $subscriptions = User::whereIn('id', $subscriptionsIds)->get();
+        foreach ($subscriptions as $user) {
+            $user->subscription_status = UserSubscription::checkSubscriptionStatus(auth()->user()->id, $user->id);
+
+        }
+
+        return view('profile/subscriptions', compact('subscriptions'));
+    }
+
+    /**
+     * Display the user's profile settings page.
+     */
+    public function settings(): View
+    {
+        return view('profile/profileSettings');
+    }
+
+    /**
+     * Display the user's profile edit form.
+     */
+    public function edit(Request $request): View
+    {
+        return view('profile.edit', [
+            'user' => $request->user(),
+        ]);
+    }
+
+    /**
+     * Update the user's profile information.
+     */
+    public function update(ProfileUpdateRequest $request): RedirectResponse
+    {
+        $request->user()->fill($request->validated());
+
+        if ($request->user()->isDirty('email')) {
+            $request->user()->email_verified_at = null;
+        }
+
+        $request->user()->save();
+
+        return Redirect::route('profile.edit')->with('status', 'profile-updated');
+    }
+
+
+    /**
+     * Change access to account
+     */
+    public function changeAccess(Request $request)
+    {
+        User::where('id', auth()->user()->id)->update(['is_private' => $request->input('access')]);
+
+        return back();
+    }
+
+    /**
+     * Delete the user's account.
+     */
+    public function destroy(Request $request): RedirectResponse
+    {
+        $request->validateWithBag('userDeletion', [
+            'password' => ['required', 'current_password'],
+        ]);
+
+        $user = $request->user();
+
+        Auth::logout();
+
+        $user->delete();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return Redirect::to('/');
+    }
+
+
+}
