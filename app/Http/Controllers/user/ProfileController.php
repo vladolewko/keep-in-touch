@@ -5,6 +5,7 @@ namespace App\Http\Controllers\user;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProfileUpdateRequest;
 use App\Models\Publication;
+use App\Models\PublicationComment;
 use App\Models\User;
 use App\Models\UserPublicationLike;
 use App\Models\UserPublicationRepost;
@@ -30,6 +31,8 @@ class ProfileController extends Controller
             $publication->is_reposted = UserPublicationRepost::where('user_id', auth()->user()->id)
                 ->where('publication_id', $publication->id)
                 ->exists();
+            $publication->commentsCount = PublicationComment::where('publication_id', $publication->id)->count();
+
         }
 
         $repostsId = UserPublicationRepost::where('user_id', $user->id)->pluck('publication_id');
@@ -52,7 +55,7 @@ class ProfileController extends Controller
         $reqestsIds = UserSubscription::where('subscribed_to_id', auth()->user()->id)->where('is_accepted', 0)->pluck('user_id');
         $requests = User::whereIn('id', $reqestsIds)->get();
 
-        $followersIds = UserSubscription::where('subscribed_to_id', auth()->user()->id)->where('is_accepted', 1)->pluck('subscribed_to_id');
+        $followersIds = UserSubscription::where('subscribed_to_id', auth()->user()->id)->where('is_accepted', 1)->pluck('user_id');
         $followers = User::whereIn('id', $followersIds)->get();
         return view('profile/followers', compact('requests', 'followers'));
     }

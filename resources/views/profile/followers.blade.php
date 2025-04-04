@@ -138,11 +138,11 @@
 
                                 </div>
                                 <p><a href="{{ route('users.profile', ['id' => $user->id]) }}">go to page</a></p>
+
                                 <form action="{{ route('user.manageSubscribitors', ['subscriber_id' => $user->id]) }}" method="post">
                                     @csrf
                                     @method('patch')
-
-                                    <x-danger-button name="action" value="decline">
+                                    <x-danger-button type="submit" name="action" value="decline">
                                         Remove
                                     </x-danger-button>
 

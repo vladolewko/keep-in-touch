@@ -59,6 +59,7 @@ class UserSubscription extends Model
             UserSubscription::where('user_id', $user_id)
                 ->where('subscribed_to_id', auth()->user()->id)
                 ->delete();
+
         } elseif ($action == 'accept') {
             UserSubscription::where('user_id', $user_id)
                 ->where('subscribed_to_id', auth()->user()->id)

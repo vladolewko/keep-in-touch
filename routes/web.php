@@ -30,6 +30,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/publication/like', [PublicationController::class, 'like'])->name('publication.like');
     Route::post('/publication/repost', [PublicationController::class, 'repost'])->name('publication.repost');
     Route::put('/publication/comment', [PublicationController::class, 'storeComment'])->name('publication.comment');
+    Route::get('/publication/edit{id}', [PublicationController::class, 'edit'])->name('publication.edit');
+    Route::patch('/publication/update', [PublicationController::class, 'update'])->name('publication.update');
     Route::post('/user/changeSubscription', [UserController::class, 'changeSubscription'])->name('user.changeSubscription');
 
     Route::get('/users', [UserController::class, 'users'])->name('users');

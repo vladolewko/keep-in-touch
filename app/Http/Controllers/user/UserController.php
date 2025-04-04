@@ -4,6 +4,7 @@ namespace App\Http\Controllers\user;
 
 use App\Http\Controllers\Controller;
 use App\Models\Publication;
+use App\Models\PublicationComment;
 use App\Models\User;
 use App\Models\UserPublicationLike;
 use App\Models\UserPublicationRepost;
@@ -41,6 +42,8 @@ class UserController extends Controller
             $publication->is_reposted = UserPublicationRepost::where('user_id', $user->id)
                 ->where('publication_id', $publication->id)
                 ->exists();
+            $publication->commentsCount = PublicationComment::where('publication_id', $publication->id)->count();
+
         }
 
         $repostsId = UserPublicationRepost::where('user_id', $user->id)->pluck('publication_id');

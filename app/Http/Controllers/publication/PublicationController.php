@@ -5,6 +5,7 @@ namespace App\Http\Controllers\publication;
 use App\Http\Controllers\Controller;
 use App\Models\Publication;
 use App\Models\PublicationComment;
+use App\Models\User;
 use App\Models\UserPublicationLike;
 use App\Models\UserPublicationRepost;
 use Illuminate\Http\Request;
@@ -27,7 +28,15 @@ class PublicationController extends Controller
             $publication->is_reposted = UserPublicationRepost::where('user_id', auth()->user()->id)
                 ->where('publication_id', $publication->id)
                 ->exists();
+            $publication->commentsCount = PublicationComment::where('publication_id', $publication->id)->count();
+            $publication->comments = PublicationComment::where('publication_id', $publication->id)
+                ->orderBy('updated_at', 'desc')->get();
+            foreach ($publication->comments as $comment) {
+                $comment->nickname = User::where('id', $comment->user_id)->value('nickname');
+            }
         }
+
+
         return view('publications/publicationsList', compact('publications'));
     }
 
@@ -53,6 +62,36 @@ class PublicationController extends Controller
 
         return back();
     }
+
+    /**
+     * Method for editing new publication.
+     */
+    public function edit($id)
+    {
+        $publication = Publication::findOrFail($id);
+        return view('publications/edit', compact('publication'));
+    }
+
+    /**
+     * Method for updating publication.
+     */
+    public function update(Request $request)
+    {
+        $publication_id = $request->input('publication_id');
+        $data = [
+            'title' => $request->input('title'),
+            'description' => $request->input('description'),
+        ];
+
+        if (!Publication::where('id', $publication_id)->update($data) || $data['title'] == null) {
+
+            return back()->with('error', 'Publication not found or update failed.');
+        }
+
+
+        return redirect('profile/myProfile');
+    }
+
 
     /**
      * Method for liking/unliking a publication.

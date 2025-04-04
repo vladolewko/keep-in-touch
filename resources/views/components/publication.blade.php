@@ -15,12 +15,46 @@
                         </p>
                     </div>
                 </div>
+                @if($publication->user_id == auth()->user()->id)
+                <div class="hidden sm:flex sm:items-center sm:ms-6">
+                    <x-dropdown align="right" width="48">
+                        <x-slot name="trigger">
+                            <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150">
+                                <div>Options</div>
 
-                <button class="text-gray-400">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                        <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
-                    </svg>
-                </button>
+                                <div class="ms-1">
+                                    <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                            </button>
+                        </x-slot>
+
+                        <x-slot name="content">
+                            <x-dropdown-link href="{{ route('publication.edit', ['id' => $publication->id]) }}">
+                                {{ __('Edit') }}
+                            </x-dropdown-link>
+
+                            <x-dropdown-link :href="route('profile.settings')">
+                                {{ __('Hide') }}
+                            </x-dropdown-link>
+
+                            <!-- Authentication -->
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+
+                                <x-dropdown-link :href="route('logout')"
+                                                 onclick="event.preventDefault();
+                                                this.closest('form').submit();">
+                                    {{ __('Delete') }}
+                                </x-dropdown-link>
+                            </form>
+                        </x-slot>
+                    </x-dropdown>
+                </div>
+                @endif
+
+
             </div>
 
             <!-- Post image -->
@@ -92,7 +126,7 @@
                 <!-- Comments section preview -->
                 <div class="mt-2">
                     <!-- Replace your existing "View all comments" with this -->
-                    <p class="text-gray-400 text-xs cursor-pointer comments-trigger">View all comments</p>
+                    <p class="text-gray-400 text-xs cursor-pointer comments-trigger">View all comments ({{$publication->commentsCount}})</p>
 
                     <!-- Add this modal HTML at the end of your blade template, outside the foreach loop -->
                     <div id="comments-popup" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
@@ -124,7 +158,11 @@
                             <div class="max-h-96 overflow-y-auto p-4">
                                 <!-- Comments content -->
                                 <div id="comments-content" class="space-y-4">
-                                    <p class="text-gray-300">Comments will appear here.</p>
+                                    @if(!empty($publication->comments))
+                                        @foreach($publication->comments as $comment)
+                                            <p class="text-gray-300">{{ $comment->nickname }}: {{ $comment->comment }}</p>
+                                        @endforeach
+                                    @endif
                                 </div>
 
                                 <!-- Likes content (hidden by default) -->
@@ -135,16 +173,14 @@
 
                             <!-- Add comment section (only shown in comments tab) -->
                             <div id="comment-input-section" class="border-t border-gray-700 p-3">
-                                <div class="relative">
-                                    <input
-                                        type="text"
-                                        placeholder="Add a comment..."
-                                        class="w-full bg-gray-700 rounded-full px-4 py-2 text-gray-300 text-sm focus:outline-none focus:ring-1 focus:ring-yellow-400 pr-16"
-                                    >
-                                    <button class="absolute right-2 top-1/2 transform -translate-y-1/2 text-yellow-400 text-sm font-semibold">
-                                        Post
-                                    </button>
-                                </div>
+                                <form action="{{ route('publication.comment') }}" method="post" class="relative">
+                                    @csrf
+                                    @method('put')
+                                    <input type="hidden" name="publication_id" value="{{ $publication->id }}">
+                                    <input type="text" name="comment" placeholder="Add a comment..." class="w-full bg-transparent border-none text-gray-300 text-sm focus:outline-none focus:ring-0 pl-0 pr-16">
+                                    <button type="submit" class="absolute right-0 top-0 text-yellow-400 text-sm font-semibold">Post</button>
+
+                                </form>
                             </div>
                         </div>
                     </div>
