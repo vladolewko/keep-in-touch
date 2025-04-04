@@ -21,21 +21,17 @@ class PublicationController extends Controller
     public function publications(): View
     {
         $publications = Publication::where('user_id', '!=', auth()->user()->id)->get();
+
         foreach ($publications as $publication) {
-            $publication->is_liked = UserPublicationLike::where('user_id', auth()->user()->id)
-                ->where('publication_id', $publication->id)
-                ->exists();
-            $publication->is_reposted = UserPublicationRepost::where('user_id', auth()->user()->id)
-                ->where('publication_id', $publication->id)
-                ->exists();
+            $publication->is_liked = UserPublicationLike::where('user_id', auth()->user()->id)->where('publication_id', $publication->id)->exists();
+            $publication->is_reposted = UserPublicationRepost::where('user_id', auth()->user()->id)->where('publication_id', $publication->id)->exists();
             $publication->commentsCount = PublicationComment::where('publication_id', $publication->id)->count();
-            $publication->comments = PublicationComment::where('publication_id', $publication->id)
-                ->orderBy('updated_at', 'desc')->get();
+            $publication->comments = PublicationComment::where('publication_id', $publication->id)->orderBy('updated_at', 'desc')->get();
+
             foreach ($publication->comments as $comment) {
                 $comment->nickname = User::where('id', $comment->user_id)->value('nickname');
             }
         }
-
 
         return view('publications/publicationsList', compact('publications'));
     }
@@ -58,6 +54,11 @@ class PublicationController extends Controller
             'title' => $request->input('title'),
             'description' => $request->input('description'),
         ];
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string|max:255'
+        ]);
+
         Publication::create($data);
 
         return back();
@@ -82,6 +83,11 @@ class PublicationController extends Controller
             'title' => $request->input('title'),
             'description' => $request->input('description'),
         ];
+        $request->validate([
+            'publication_id' => 'required|exists:publications,id',
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string|max:255'
+        ]);
 
         if (!Publication::where('id', $publication_id)->update($data) || $data['title'] == null) {
 
@@ -102,61 +108,9 @@ class PublicationController extends Controller
         $request->validate([
             'publication_id' => 'required|exists:publications,id'
         ]);
-
-        // Ensure user is authenticated
-        if (!auth()->check()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'You must be logged in to like a publication.'
-            ], 401);
-        }
-
-        $user_id = auth()->user()->id;
         $publication_id = $request->input('publication_id');
 
-        DB::beginTransaction();
-        try {
-            // Check if the user has already liked the publication
-            $existingLike = UserPublicationLike::where('user_id', $user_id)
-                ->where('publication_id', $publication_id)
-                ->first();
-
-            $publication = Publication::findOrFail($publication_id);
-
-            if ($existingLike) {
-                // Unlike the publication
-                $existingLike->delete();
-                $publication->decrement('likes');
-                $isLiked = false;
-            } else {
-                // Like the publication
-                UserPublicationLike::create([
-                    'user_id' => $user_id,
-                    'publication_id' => $publication_id
-                ]);
-                $publication->increment('likes');
-                $isLiked = true;
-            }
-
-            DB::commit();
-
-            return response()->json([
-                'success' => true,
-                'liked' => $isLiked,
-                'likes_count' => $publication->likes
-            ]);
-        } catch (\Exception $e) {
-            DB::rollBack();
-
-            // Log the actual error for debugging
-            Log::error('Like Error: ' . $e->getMessage());
-
-            return response()->json([
-                'success' => false,
-                'message' => 'An error occurred while processing your request.',
-                'error' => $e->getMessage() // Only in development
-            ], 500);
-        }
+        return UserPublicationLike::likePublication($publication_id);
     }
 
     /**
@@ -168,61 +122,9 @@ class PublicationController extends Controller
         $request->validate([
             'publication_id' => 'required|exists:publications,id'
         ]);
-
-        // Ensure user is authenticated
-        if (!auth()->check()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'You must be logged in to like a publication.'
-            ], 401);
-        }
-
-
         $publication_id = $request->input('publication_id');
 
-        DB::beginTransaction();
-        try {
-            // Check if the user has already liked the publication
-            $existingRepost = UserPublicationRepost::where('user_id', auth()->user()->id)
-                ->where('publication_id', $publication_id)
-                ->first();
-
-            $publication = Publication::findOrFail($publication_id);
-
-            if ($existingRepost) {
-                // Unlike the publication
-                $existingRepost->delete();
-                $publication->decrement('reposts');
-                $isReposted = false;
-            } else {
-                // Like the publication
-                UserPublicationRepost::create([
-                    'user_id' => auth()->user()->id,
-                    'publication_id' => $publication_id
-                ]);
-                $publication->increment('reposts');
-                $isReposted = true;
-            }
-
-            DB::commit();
-
-            return response()->json([
-                'success' => true,
-                'reposted' => $isReposted,
-                'reposts_count' => $publication->reposts
-            ]);
-        } catch (\Exception $e) {
-            DB::rollBack();
-
-            // Log the actual error for debugging
-            Log::error('Repost Error: ' . $e->getMessage());
-
-            return response()->json([
-                'success' => false,
-                'message' => 'An error occurred while processing your request.',
-                'error' => $e->getMessage() // Only in development
-            ], 500);
-        }
+        return UserPublicationRepost::repostPublication($publication_id);
     }
 
     /**
@@ -236,6 +138,11 @@ class PublicationController extends Controller
             'user_id' => auth()->user()->id,
             'comment' => $request->input('comment')
         ];
+
+        $request->validate([
+            'publication_id' => 'required|exists:publications,id',
+            'comment' => 'required|string|max:255'
+        ]);
 
         PublicationComment::create($data);
 

@@ -58,6 +58,10 @@ class User extends Authenticatable
         ];
     }
 
+
+    /**
+     * method for making account private or public
+     */
     public static function changeAccess($access)
     {
         if ($access == 'private') {
@@ -70,6 +74,9 @@ class User extends Authenticatable
 
     }
 
+    /**
+     * method for checking if user has access to account
+     */
     public static function checkIfHaveAccess($user_id)
     {
        $user = User::find($user_id);

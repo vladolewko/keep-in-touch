@@ -3,9 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Publication extends Model
 {
+    /** @use HasFactory<\Database\Factories\PublicationFactory> */
+    use HasFactory;
     protected $table = 'publications';
     protected $primaryKey = 'id';
     protected $fillable = [

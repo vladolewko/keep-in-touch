@@ -8,7 +8,7 @@
                         <span class="text-white font-semibold">{{ strtoupper(substr($publication->id, 0, 1)) }}</span>
                     </div>
                     <div>
-                        <p class="text-white font-semibold text-sm">{{ $publication->id }}</p>
+                        <p class="text-white font-semibold text-sm"><a href="{{ route('users.profile', ['id' => $publication->user_id]) }}">{{ $publication->user_id }}</a></p>
                         <p class="text-gray-400 text-xs">
                             {{ \Carbon\Carbon::parse($publication->updated_at)->diffForHumans() }}
 

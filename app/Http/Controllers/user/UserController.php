@@ -39,9 +39,7 @@ class UserController extends Controller
         $publications = Publication::where('user_id', $user->id)->get();
         foreach ($publications as $publication) {
             $publication->is_liked = UserPublicationLike::where('user_id', $user->id)->where('publication_id', $publication->id)->exists();
-            $publication->is_reposted = UserPublicationRepost::where('user_id', $user->id)
-                ->where('publication_id', $publication->id)
-                ->exists();
+            $publication->is_reposted = UserPublicationRepost::where('user_id', $user->id)->where('publication_id', $publication->id)->exists();
             $publication->commentsCount = PublicationComment::where('publication_id', $publication->id)->count();
 
         }
@@ -50,9 +48,7 @@ class UserController extends Controller
         $reposts = Publication::whereIn('id', $repostsId)->get();
         foreach ($reposts as $repost) {
             $repost->is_liked = UserPublicationLike::where('user_id', $user->id)->where('publication_id', $repost->id)->exists();
-            $repost->is_reposted = UserPublicationRepost::where('user_id', auth()->user()->id)
-                ->where('publication_id', $repost->id)
-                ->exists();
+            $repost->is_reposted = UserPublicationRepost::where('user_id', auth()->user()->id)->where('publication_id', $repost->id)->exists();
         }
 
         return view('users/userProfile', compact('user', 'publications', 'reposts'));
@@ -72,8 +68,5 @@ class UserController extends Controller
 
         return back();
     }
-
-
-
 
 }

@@ -19,6 +19,10 @@ class UserSubscription extends Model
         'deleted_at'
     ];
 
+
+    /**
+     * method for checking status of subscription to another user
+     */
     public static function checkSubscriptionStatus($userId, $subscribedToId)
     {
         $subscription = UserSubscription::where('user_id', $userId)
@@ -35,6 +39,10 @@ class UserSubscription extends Model
         }
     }
 
+
+    /**
+     * method for subscribing or unsubscribing to another user
+     */
     public static function changeSubscription($user_id, $subscribed_to_id)
     {
         $userAccess = User::where('id', $subscribed_to_id)->value('is_private');
@@ -53,6 +61,10 @@ class UserSubscription extends Model
         }
     }
 
+
+    /**
+     * method for subscribing/unsubscribing followers
+     */
     public static function manageSubscribitors($user_id, $action)
     {
         if ($action == 'decline') {
