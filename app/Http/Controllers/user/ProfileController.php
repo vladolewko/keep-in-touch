@@ -25,7 +25,7 @@ class ProfileController extends Controller
     public function profile(): View
     {
         $user = auth()->user();
-        $publications = Publication::where('user_id', $user->id)->get();
+        $publications = Publication::withTrashed()->where('user_id', $user->id)->get();
         foreach ($publications as $publication) {
             $publication->is_liked = UserPublicationLike::where('user_id', $user->id)->where('publication_id', $publication->id)->exists();
             $publication->is_reposted = UserPublicationRepost::where('user_id', auth()->user()->id)

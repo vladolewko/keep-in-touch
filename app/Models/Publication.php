@@ -3,10 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Publication extends Model
 {
+    use SoftDeletes;
     /** @use HasFactory<\Database\Factories\PublicationFactory> */
     use HasFactory;
     protected $table = 'publications';
@@ -23,8 +25,16 @@ class Publication extends Model
         'deleted_at'
     ];
 
-//    public static function create($data)
-//    {
-//        Publication::create($data);
-//    }
+    public static function hidePublication($publication_id)
+    {
+        $publication = Publication::withTrashed()->find($publication_id);
+
+        if ($publication->trashed()) {
+
+            Publication::where('id', $publication_id)->restore();
+
+        } else {
+            Publication::where('id', $publication_id)->delete();
+        }
+    }
 }

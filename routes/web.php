@@ -29,6 +29,7 @@ Route::middleware('auth')->group(function () {
     Route::put('/publications/create', [PublicationController::class, 'create'])->name('publications.create');
     Route::post('/publication/like', [PublicationController::class, 'like'])->name('publication.like');
     Route::post('/publication/repost', [PublicationController::class, 'repost'])->name('publication.repost');
+    Route::patch('/publication/hide', [PublicationController::class, 'hide'])->name('publication.hide');
     Route::put('/publication/comment', [PublicationController::class, 'storeComment'])->name('publication.comment');
     Route::get('/publication/edit{id}', [PublicationController::class, 'edit'])->name('publication.edit');
     Route::patch('/publication/update', [PublicationController::class, 'update'])->name('publication.update');

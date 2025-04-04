@@ -2,7 +2,7 @@
     @foreach($publications as $publication)
         <div class="bg-gray-800 rounded-lg overflow-hidden border border-gray-700">
             <!-- Post header -->
-            <div class="flex items-center justify-between p-3">
+            <div class="flex items-center justify-between p-3 {{ $publication->deleted_at ? 'bg-gray-300' : '' }}">
                 <div class="flex items-center">
                     <div class="w-10 h-10 rounded-full bg-gray-600 mr-3 flex items-center justify-center">
                         <span class="text-white font-semibold">{{ strtoupper(substr($publication->id, 0, 1)) }}</span>
@@ -35,8 +35,12 @@
                                 {{ __('Edit') }}
                             </x-dropdown-link>
 
-                            <x-dropdown-link :href="route('profile.settings')">
-                                {{ __('Hide') }}
+                            <x-dropdown-link>
+                                    <form action="{{ route('publication.hide', ['publication_id' => $publication->id]) }}" method="post">
+                                        @csrf
+                                        @method('patch')
+                                        <button type="submit">{{ is_null($publication->deleted_at) ? 'Hide' : 'Unhide' }}</button>
+                                    </form>
                             </x-dropdown-link>
 
                             <!-- Authentication -->

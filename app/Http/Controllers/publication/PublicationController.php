@@ -128,6 +128,22 @@ class PublicationController extends Controller
     }
 
     /**
+     * Method for hiding/unhiding a publication.
+     */
+    public function hide(Request $request)
+    {
+        // Validate the request
+        $request->validate([
+            'publication_id' => 'required|exists:publications,id'
+        ]);
+        $publication_id = $request->input('publication_id');
+
+        Publication::hidePublication($publication_id);
+
+        return back();
+    }
+
+    /**
      * Method for commenting a publication.
      */
 
