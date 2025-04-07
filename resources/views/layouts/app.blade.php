@@ -18,6 +18,7 @@
      'resources/js/like-publication.js',
      'resources/js/repost-publication.js',
      'resources/js/comment-menu.js',
+     'resources/js/like-comment.js',
 
      ])
     </head>

@@ -7,6 +7,7 @@ use App\Http\Requests\ProfileUpdateRequest;
 use App\Models\Publication;
 use App\Models\PublicationComment;
 use App\Models\User;
+use App\Models\UserCommentLike;
 use App\Models\UserPublicationLike;
 use App\Models\UserPublicationRepost;
 use App\Models\UserSubscription;
@@ -18,7 +19,6 @@ use Illuminate\View\View;
 
 class ProfileController extends Controller
 {
-
     /**
      * Display the user's profile page.
      */
@@ -28,11 +28,15 @@ class ProfileController extends Controller
         $publications = Publication::withTrashed()->where('user_id', $user->id)->get();
         foreach ($publications as $publication) {
             $publication->is_liked = UserPublicationLike::where('user_id', $user->id)->where('publication_id', $publication->id)->exists();
-            $publication->is_reposted = UserPublicationRepost::where('user_id', auth()->user()->id)
-                ->where('publication_id', $publication->id)
-                ->exists();
+            $publication->is_reposted = UserPublicationRepost::where('user_id', auth()->user()->id)->where('publication_id', $publication->id)->exists();
             $publication->commentsCount = PublicationComment::where('publication_id', $publication->id)->count();
 
+            $publication->comments = PublicationComment::where('publication_id', $publication->id)->orderBy('updated_at', 'desc')->get();
+
+            foreach ($publication->comments as $comment) {
+                $comment->nickname = User::where('id', $comment->user_id)->value('nickname');
+                $comment->is_liked = UserCommentLike::where('user_id', auth()->user()->id)->where('comment_id', $comment->id)->exists();
+            }
         }
 
         $repostsId = UserPublicationRepost::where('user_id', $user->id)->pluck('publication_id');
@@ -60,6 +64,9 @@ class ProfileController extends Controller
         return view('profile/followers', compact('requests', 'followers'));
     }
 
+    /**
+     * manage subscribitors
+     */
     public function manageSubscribitors(Request $request)
     {
         $subscriber_id = $request->input('subscriber_id');
@@ -69,6 +76,7 @@ class ProfileController extends Controller
         return back();
     }
 
+
     /**
      * Display the user's subscriptions page.
      */
@@ -76,9 +84,9 @@ class ProfileController extends Controller
     {
         $subscriptionsIds = UserSubscription::where('user_id', auth()->user()->id)->pluck('subscribed_to_id');
         $subscriptions = User::whereIn('id', $subscriptionsIds)->get();
+
         foreach ($subscriptions as $user) {
             $user->subscription_status = UserSubscription::checkSubscriptionStatus(auth()->user()->id, $user->id);
-
         }
 
         return view('profile/subscriptions', compact('subscriptions'));

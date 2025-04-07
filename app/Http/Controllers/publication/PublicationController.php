@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Publication;
 use App\Models\PublicationComment;
 use App\Models\User;
+use App\Models\UserCommentLike;
 use App\Models\UserPublicationLike;
 use App\Models\UserPublicationRepost;
 use Illuminate\Http\Request;
@@ -23,6 +24,7 @@ class PublicationController extends Controller
         $publications = Publication::where('user_id', '!=', auth()->user()->id)->get();
 
         foreach ($publications as $publication) {
+            $publication->nickname = User::where('id', $publication->user_id)->value('nickname');
             $publication->is_liked = UserPublicationLike::where('user_id', auth()->user()->id)->where('publication_id', $publication->id)->exists();
             $publication->is_reposted = UserPublicationRepost::where('user_id', auth()->user()->id)->where('publication_id', $publication->id)->exists();
             $publication->commentsCount = PublicationComment::where('publication_id', $publication->id)->count();
@@ -30,6 +32,7 @@ class PublicationController extends Controller
 
             foreach ($publication->comments as $comment) {
                 $comment->nickname = User::where('id', $comment->user_id)->value('nickname');
+                $comment->is_liked = UserCommentLike::where('user_id', auth()->user()->id)->where('comment_id', $comment->id)->exists();
             }
         }
 

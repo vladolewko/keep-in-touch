@@ -15,7 +15,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
 
-//        User::factory(25)->create();
+        User::factory(35)->create();
         Publication::factory(50)->create(['user_id' => fn() => User::all()->random()->id,]);
     }
 }

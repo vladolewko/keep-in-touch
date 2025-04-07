@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Log;
 
 class UserPublicationRepost extends Model
 {
-    protected $table = 'users_publications_reposts';
+    protected $table = 'user_publication_reposts';
     protected $primaryKey = 'id';
     protected $fillable = [
         'user_id',

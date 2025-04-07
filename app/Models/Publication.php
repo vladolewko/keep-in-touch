@@ -31,10 +31,10 @@ class Publication extends Model
 
         if ($publication->trashed()) {
 
-            Publication::where('id', $publication_id)->restore();
+            $publication->restore();
 
         } else {
-            Publication::where('id', $publication_id)->delete();
+            $publication->delete();
         }
     }
 }

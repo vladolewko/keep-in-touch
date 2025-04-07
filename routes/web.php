@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\publication\PublicationCommentController;
 use App\Http\Controllers\publication\PublicationController;
 use App\Http\Controllers\user\ProfileController;
 use App\Http\Controllers\user\UserController;
@@ -34,6 +35,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/publication/edit{id}', [PublicationController::class, 'edit'])->name('publication.edit');
     Route::patch('/publication/update', [PublicationController::class, 'update'])->name('publication.update');
     Route::post('/user/changeSubscription', [UserController::class, 'changeSubscription'])->name('user.changeSubscription');
+
+    Route::post('/comment/like', [PublicationCommentController::class, 'like'])->name('comment.like');
+
 
     Route::get('/users', [UserController::class, 'users'])->name('users');
     Route::get('/users/profile{id}', [UserController::class, 'profile'])->name('users.profile');

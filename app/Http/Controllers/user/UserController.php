@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Publication;
 use App\Models\PublicationComment;
 use App\Models\User;
+use App\Models\UserCommentLike;
 use App\Models\UserPublicationLike;
 use App\Models\UserPublicationRepost;
 use App\Models\UserSubscription;
@@ -42,6 +43,12 @@ class UserController extends Controller
             $publication->is_reposted = UserPublicationRepost::where('user_id', $user->id)->where('publication_id', $publication->id)->exists();
             $publication->commentsCount = PublicationComment::where('publication_id', $publication->id)->count();
 
+            $publication->comments = PublicationComment::where('publication_id', $publication->id)->orderBy('updated_at', 'desc')->get();
+
+            foreach ($publication->comments as $comment) {
+                $comment->nickname = User::where('id', $comment->user_id)->value('nickname');
+                $comment->is_liked = UserCommentLike::where('user_id', auth()->user()->id)->where('comment_id', $comment->id)->exists();
+            }
         }
 
         $repostsId = UserPublicationRepost::where('user_id', $user->id)->pluck('publication_id');

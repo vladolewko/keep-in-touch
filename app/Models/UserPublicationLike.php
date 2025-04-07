@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Log;
 
 class UserPublicationLike extends Model
 {
-    protected $table = 'users_publications_likes';
+    protected $table = 'user_publication_likes';
     protected $primaryKey = 'id';
     protected $fillable = [
         'user_id',
