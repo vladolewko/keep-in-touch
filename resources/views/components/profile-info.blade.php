@@ -1,4 +1,4 @@
-<div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+
     <div class="mx-auto py-12">
         <div class="bg-gray-800 rounded-lg overflow-hidden border border-gray-700 p-6">
             <!-- Profile header -->
@@ -79,4 +79,3 @@
             </form>
         </div>
     </div>
-</div>

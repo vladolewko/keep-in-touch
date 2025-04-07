@@ -203,7 +203,6 @@
                                     <input type="hidden" name="publication_id" value="{{ $publication->id }}">
                                     <input type="text" name="comment" placeholder="Add a comment..." class="w-full bg-transparent border-none text-gray-300 text-sm focus:outline-none focus:ring-0 pl-0 pr-16">
                                     <button type="submit" class="absolute right-0 top-0 text-yellow-400 text-sm font-semibold">Post</button>
-
                                 </form>
                             </div>
                         </div>

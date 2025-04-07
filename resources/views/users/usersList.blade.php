@@ -7,10 +7,10 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     @foreach($users as $user)
-                        <div class="mx-auto py-12">
+                        <div class="mx-auto mb-5">
                             <div class="bg-gray-800 rounded-lg overflow-hidden border border-gray-700 p-6">
                                 <!-- Profile header -->
                                 <div class="flex items-center justify-between mb-6 border-b border-gray-700 pb-4">
@@ -65,7 +65,7 @@
                         </div>
                     @endforeach
                 </div>
-            </div>
+
         </div>
     </div>
 </x-app-layout>
