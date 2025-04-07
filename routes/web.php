@@ -26,17 +26,19 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile/subscriptions', [ProfileController::class, 'subscriptions'])->name('profile.subscriptions');
 
     Route::get('/publications', [PublicationController::class, 'publications'])->name('publications');
+    Route::get('/publications/sort', [PublicationController::class, 'publications'])->name('publications.sort');
+
     Route::get('/publications/subscriptions', [PublicationController::class, 'subscriptions'])->name('publications.subscriptions');
     Route::put('/publications/create', [PublicationController::class, 'create'])->name('publications.create');
     Route::post('/publication/like', [PublicationController::class, 'like'])->name('publication.like');
     Route::post('/publication/repost', [PublicationController::class, 'repost'])->name('publication.repost');
     Route::patch('/publication/hide', [PublicationController::class, 'hide'])->name('publication.hide');
-    Route::put('/publication/comment', [PublicationController::class, 'storeComment'])->name('publication.comment');
     Route::get('/publication/edit{id}', [PublicationController::class, 'edit'])->name('publication.edit');
     Route::patch('/publication/update', [PublicationController::class, 'update'])->name('publication.update');
     Route::post('/user/changeSubscription', [UserController::class, 'changeSubscription'])->name('user.changeSubscription');
 
     Route::post('/comment/like', [PublicationCommentController::class, 'like'])->name('comment.like');
+    Route::put('/comment/create', [PublicationCommentController::class, 'storeComment'])->name('comment.create');
 
 
     Route::get('/users', [UserController::class, 'users'])->name('users');

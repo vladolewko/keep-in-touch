@@ -19,9 +19,11 @@ class PublicationController extends Controller
     /**
      * Display publications list page.
      */
-    public function publications(): View
+    public function publications(Request $request): View
     {
-        $publications = Publication::where('user_id', '!=', auth()->user()->id)->get();
+        $parameter = $request->get('parameter') ?? null;
+        $filter = $request->get('filter') ?? null;
+        $publications = Publication::sortPublication($parameter, $filter);
 
         foreach ($publications as $publication) {
             $publication->nickname = User::where('id', $publication->user_id)->value('nickname');
@@ -52,15 +54,16 @@ class PublicationController extends Controller
      */
     public function create(Request $request)
     {
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string|max:255'
+        ]);
+
         $data = [
             'user_id' => auth()->user()->id,
             'title' => $request->input('title'),
             'description' => $request->input('description'),
         ];
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string|max:255'
-        ]);
 
         Publication::create($data);
 
@@ -146,25 +149,4 @@ class PublicationController extends Controller
         return back();
     }
 
-    /**
-     * Method for commenting a publication.
-     */
-
-    public function storeComment(Request $request)
-    {
-        $data = [
-            'publication_id' => $request->input('publication_id'),
-            'user_id' => auth()->user()->id,
-            'comment' => $request->input('comment')
-        ];
-
-        $request->validate([
-            'publication_id' => 'required|exists:publications,id',
-            'comment' => 'required|string|max:255'
-        ]);
-
-        PublicationComment::create($data);
-
-        return back();
-    }
 }

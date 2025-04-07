@@ -197,7 +197,7 @@
 
                             <!-- Add comment section (only shown in comments tab) -->
                             <div id="comment-input-section" class="border-t border-gray-700 p-3">
-                                <form action="{{ route('publication.comment') }}" method="post" class="relative">
+                                <form action="{{ route('comment.create') }}" method="post" class="relative">
                                     @csrf
                                     @method('put')
                                     <input type="hidden" name="publication_id" value="{{ $publication->id }}">
@@ -208,7 +208,7 @@
                             </div>
                         </div>
                     </div>
-                    <form action="{{ route('publication.comment') }}" method="post" class="mt-3 relative">
+                    <form action="{{ route('comment.create') }}" method="post" class="mt-3 relative">
                         @csrf
                         @method('put')
                         <input type="hidden" name="publication_id" value="{{ $publication->id }}">

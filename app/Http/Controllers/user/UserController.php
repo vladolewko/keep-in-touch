@@ -44,7 +44,6 @@ class UserController extends Controller
             $publication->commentsCount = PublicationComment::where('publication_id', $publication->id)->count();
 
             $publication->comments = PublicationComment::where('publication_id', $publication->id)->orderBy('updated_at', 'desc')->get();
-
             foreach ($publication->comments as $comment) {
                 $comment->nickname = User::where('id', $comment->user_id)->value('nickname');
                 $comment->is_liked = UserCommentLike::where('user_id', auth()->user()->id)->where('comment_id', $comment->id)->exists();
