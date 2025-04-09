@@ -71,10 +71,10 @@ class UserController extends Controller
      */
     public function changeSubscription(Request $request)
     {
-        $user_id = auth()->user()->id;
-        $subscribe_to_id = $request->input('user_id');
-
-        UserSubscription::changeSubscription($user_id, $subscribe_to_id);
+        $user_id = $request->validate([
+            'user_id' => 'required|integer|exists:users,id',
+        ]);
+        UserSubscription::changeSubscription($user_id);
 
         return back();
     }

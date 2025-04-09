@@ -21,13 +21,10 @@ class Publication extends Model
         'title',
         'description',
         'likes',
-        'reposts',
-        'created_at',
-        'updated_at',
-        'deleted_at'
+        'reposts'
     ];
 
-    public static function hidePublication($publication_id)
+    public static function togglePublication($publication_id)
     {
         $publication = Publication::withTrashed()->find($publication_id);
 

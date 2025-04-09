@@ -86,18 +86,15 @@ class PublicationController extends Controller
      */
     public function update(Request $request)
     {
-        $publication_id = $request->input('publication_id');
-        $data = [
-            'title' => $request->input('title'),
-            'description' => $request->input('description'),
-        ];
-        $request->validate([
+
+        $data = $request->validate([
             'publication_id' => 'required|exists:publications,id',
             'title' => 'required|string|max:255',
             'description' => 'nullable|string|max:255'
         ]);
 
-        if (!Publication::where('id', $publication_id)->update($data) || $data['title'] == null) {
+
+        if (!Publication::where('id', $data['publication_id'])->update($data) || $data['title'] == null) {
 
             return back()->with('error', 'Publication not found or update failed.');
         }
@@ -113,10 +110,9 @@ class PublicationController extends Controller
     public function like(Request $request)
     {
         // Validate the request
-        $request->validate([
+        $publication_id = $request->validate([
             'publication_id' => 'required|exists:publications,id'
-        ]);
-        $publication_id = $request->input('publication_id');
+        ])['publication_id'];
 
         return UserPublicationLike::likePublication($publication_id);
     }
@@ -127,10 +123,10 @@ class PublicationController extends Controller
     public function repost(Request $request)
     {
         // Validate the request
-        $request->validate([
+        $publication_id = $request->validate([
             'publication_id' => 'required|exists:publications,id'
-        ]);
-        $publication_id = $request->input('publication_id');
+        ])['publication_id'];
+
 
         return UserPublicationRepost::repostPublication($publication_id);
     }
@@ -140,13 +136,11 @@ class PublicationController extends Controller
      */
     public function hide(Request $request)
     {
-        // Validate the request
-        $request->validate([
+        $publication_id = $request->validate([
             'publication_id' => 'required|exists:publications,id'
-        ]);
-        $publication_id = $request->input('publication_id');
+        ])['publication_id'];
 
-        Publication::hidePublication($publication_id);
+        Publication::togglePublication($publication_id);
 
         return back();
     }

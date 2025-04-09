@@ -13,10 +13,7 @@ class UserSubscription extends Model
     protected $fillable = [
         'user_id',
         'subscribed_to_id',
-        'is_accepted',
-        'created_at',
-        'updated_at',
-        'deleted_at'
+        'is_accepted'
     ];
 
 
@@ -43,8 +40,9 @@ class UserSubscription extends Model
     /**
      * method for subscribing or unsubscribing to another user
      */
-    public static function changeSubscription($user_id, $subscribed_to_id)
+    public static function changeSubscription($subscribed_to_id)
     {
+        $user_id = auth()->user()->id;
         $userAccess = User::where('id', $subscribed_to_id)->value('is_private');
         $subscription = self::checkSubscriptionStatus($user_id, $subscribed_to_id);
 

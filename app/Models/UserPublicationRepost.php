@@ -13,10 +13,7 @@ class UserPublicationRepost extends Model
     protected $fillable = [
         'user_id',
         'publication_id',
-        'repost_comment',
-        'created_at',
-        'updated_at',
-        'deleted_at'
+        'repost_comment'
     ];
 
 

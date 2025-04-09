@@ -29,10 +29,7 @@ class User extends Authenticatable
         'address',
         'is_private',
         'role',
-        'password',
-        'created_at',
-        'updated_at',
-        'deleted_at'
+        'password'
     ];
 
     /**

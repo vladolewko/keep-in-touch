@@ -16,6 +16,7 @@ Route::get('/dashboard', function () {
 
 
 Route::middleware('auth')->group(function () {
+    //auth routes
     Route::get('/profile/settings', [ProfileController::class, 'settings'])->name('profile.settings');
     Route::get('/profile/myProfile', [ProfileController::class, 'profile'])->name('profile');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -25,28 +26,27 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile/followers', [ProfileController::class, 'followers'])->name('profile.followers');
     Route::get('/profile/subscriptions', [ProfileController::class, 'subscriptions'])->name('profile.subscriptions');
 
+    //publications routes
     Route::get('/publications', [PublicationController::class, 'publications'])->name('publications');
     Route::get('/publications/sort', [PublicationController::class, 'publications'])->name('publications.sort');
-//    Route::get('/publications/search', [PublicationController::class, 'publications'])->name('publications.search');
-
     Route::get('/publications/subscriptions', [PublicationController::class, 'subscriptions'])->name('publications.subscriptions');
     Route::put('/publications/create', [PublicationController::class, 'create'])->name('publications.create');
     Route::post('/publication/like', [PublicationController::class, 'like'])->name('publication.like');
     Route::post('/publication/repost', [PublicationController::class, 'repost'])->name('publication.repost');
     Route::patch('/publication/hide', [PublicationController::class, 'hide'])->name('publication.hide');
-    Route::get('/publication/edit{id}', [PublicationController::class, 'edit'])->name('publication.edit');
+    Route::get('/publication/edit{id}', [PublicationController::class, 'edit'])->name('publication.edit')->whereNumber('id');
     Route::patch('/publication/update', [PublicationController::class, 'update'])->name('publication.update');
-    Route::post('/user/changeSubscription', [UserController::class, 'changeSubscription'])->name('user.changeSubscription');
 
+    // publications comments routes
     Route::post('/comment/like', [PublicationCommentController::class, 'like'])->name('comment.like');
     Route::put('/comment/create', [PublicationCommentController::class, 'storeComment'])->name('comment.create');
 
-
+    //users routes
     Route::get('/users', [UserController::class, 'users'])->name('users');
+    Route::post('/user/changeSubscription', [UserController::class, 'changeSubscription'])->name('user.changeSubscription');
     Route::get('/users/sort', [UserController::class, 'users'])->name('users.sort');
-    Route::get('/users/profile{id}', [UserController::class, 'profile'])->name('users.profile');
+    Route::get('/users/profile{id}', [UserController::class, 'profile'])->name('users.profile')->whereNumber('id');
     Route::patch('/users/manageSubscribitors', [ProfileController::class, 'manageSubscribitors'])->name('user.manageSubscribitors');
-
 
 });
 

@@ -12,9 +12,6 @@ class Community extends Model
         'creator_id',
         'title',
         'description',
-        'is_private',
-        'created_at',
-        'updated_at',
-        'deleted_at'
+        'is_private'
     ];
 }

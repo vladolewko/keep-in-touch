@@ -12,10 +12,7 @@ class UserPublicationLike extends Model
     protected $primaryKey = 'id';
     protected $fillable = [
         'user_id',
-        'publication_id',
-        'created_at',
-        'updated_at',
-        'deleted_at'
+        'publication_id'
     ];
 
     /**

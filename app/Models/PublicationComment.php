@@ -15,9 +15,6 @@ class PublicationComment extends Model
         'user_id',
         'comment',
         'likes',
-        'created_at',
-        'updated_at',
-        'deleted_at'
     ];
 
 
