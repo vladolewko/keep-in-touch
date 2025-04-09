@@ -40,14 +40,21 @@ class Publication extends Model
         }
     }
 
-    public static function sortPublication($parameter = null, $filter = null)
+    public static function sortPublication($parameter = null, $filter = null, $search = null)
     {
         $query = Publication::query();
 
-        // Assuming publications have a user_id field to identify who created them
         if (auth()->check()) {
             $query->where('user_id', '!=', auth()->user()->id);
         }
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%");
+            });
+        }
+
         if ($filter === 'subscriptions') {
             $subscriptions = UserSubscription::where('user_id', auth()->user()->id)
                 ->pluck('subscribed_to_id');
@@ -64,9 +71,9 @@ class Publication extends Model
         } elseif ($parameter === 'reposts DESC') {
             $query->orderBy('reposts', 'desc');
         } elseif ($parameter === 'newest') {
-            $query->orderBy('updated_at', 'desc'); // Most recent first
+            $query->orderBy('updated_at', 'desc');
         } elseif ($parameter === 'oldest') {
-            $query->orderBy('updated_at', 'asc');  // Oldest first
+            $query->orderBy('updated_at', 'asc');
         }
 
         return $query->get();

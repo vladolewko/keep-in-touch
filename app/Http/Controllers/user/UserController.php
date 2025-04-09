@@ -18,9 +18,13 @@ class UserController extends Controller
     /**
      * Display the users list page.
      */
-    public function users(): View
+    public function users(Request $request): View
     {
-        $users = User::where('id', '!=', auth()->user()->id)->get();
+        $parameter = $request->get('parameter') ?? null;
+        $search = $request->get('search') ?? null;
+
+        $users = User::sortUsers($parameter, $search);
+
         foreach ($users as $user) {
             $user->subscription_status = UserSubscription::checkSubscriptionStatus(auth()->user()->id, $user->id);
 

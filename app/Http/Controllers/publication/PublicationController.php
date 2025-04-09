@@ -23,7 +23,9 @@ class PublicationController extends Controller
     {
         $parameter = $request->get('parameter') ?? null;
         $filter = $request->get('filter') ?? null;
-        $publications = Publication::sortPublication($parameter, $filter);
+        $search = $request->get('search') ?? null;
+
+        $publications = Publication::sortPublication($parameter, $filter, $search);
 
         foreach ($publications as $publication) {
             $publication->nickname = User::where('id', $publication->user_id)->value('nickname');

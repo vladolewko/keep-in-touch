@@ -59,6 +59,41 @@ class User extends Authenticatable
     }
 
 
+    public static function sortUsers($parameter = null, $search = null)
+    {
+        $query = User::query();
+
+        if (auth()->check()) {
+            $query->where('id', '!=', auth()->user()->id)->orderBy('updated_at', 'asc');
+        }
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('surname', 'like', "%{$search}%")
+                    ->orWhere('nickname', 'like', "%{$search}%");
+            });
+        }
+
+
+        if ($parameter === 'newest') {
+            $query->orderBy('updated_at', 'desc');
+        } elseif ($parameter === 'oldest') {
+            $query->orderBy('updated_at', 'asc');
+        } elseif ($parameter === 'nickname ASC') {
+            $query->orderBy('nickname', 'asc');
+        } elseif ($parameter === 'nickname DESC') {
+            $query->orderBy('nickname', 'desc');
+        } elseif ($parameter === 'name ASC') {
+            $query->orderBy('name', 'asc');
+        } elseif ($parameter === 'name DESC') {
+            $query->orderBy('name', 'desc');
+        }
+
+        return $query->get();
+    }
+
+
     /**
      * method for making account private or public
      */

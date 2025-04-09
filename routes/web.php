@@ -27,6 +27,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/publications', [PublicationController::class, 'publications'])->name('publications');
     Route::get('/publications/sort', [PublicationController::class, 'publications'])->name('publications.sort');
+//    Route::get('/publications/search', [PublicationController::class, 'publications'])->name('publications.search');
 
     Route::get('/publications/subscriptions', [PublicationController::class, 'subscriptions'])->name('publications.subscriptions');
     Route::put('/publications/create', [PublicationController::class, 'create'])->name('publications.create');
@@ -42,6 +43,7 @@ Route::middleware('auth')->group(function () {
 
 
     Route::get('/users', [UserController::class, 'users'])->name('users');
+    Route::get('/users/sort', [UserController::class, 'users'])->name('users.sort');
     Route::get('/users/profile{id}', [UserController::class, 'profile'])->name('users.profile');
     Route::patch('/users/manageSubscribitors', [ProfileController::class, 'manageSubscribitors'])->name('user.manageSubscribitors');
 
