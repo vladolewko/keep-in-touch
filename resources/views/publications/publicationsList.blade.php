@@ -88,7 +88,7 @@
                         @csrf
                         @method('get')
                         <input type="hidden" name="filter" value="{{ request()->get('filter') ?? ''}}">
-                        <input type="hidden" name="parameter" value="{{ request()->get('parameter') ?? ''}}">
+                         <input type="hidden" name="parameter" value="{{ request()->get('parameter') ?? ''}}">
                         <input type="text"
                                name="search"
                                value="{{ request()->get('search') ?? ''}}"

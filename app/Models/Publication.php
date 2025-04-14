@@ -116,8 +116,11 @@ class Publication extends Model
             $query->orderBy('updated_at', 'desc');
         } elseif ($parameter === 'oldest') {
             $query->orderBy('updated_at', 'asc');
+        } elseif ($parameter === 'id ASC') {
+            $query->orderBy('id', 'asc');
+        } elseif ($parameter === 'id DESC') {
+            $query->orderBy('id', 'desc');
         }
-
         return $query->get();
     }
 }

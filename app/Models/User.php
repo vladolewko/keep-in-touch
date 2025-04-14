@@ -148,7 +148,7 @@ class User extends Authenticatable
         $query = User::query();
 
         if (auth()->check()) {
-            $query->where('id', '!=', auth()->user()->id)->orderBy('updated_at', 'asc');
+            $query->where('id', '!=', auth()->user()->id)->where('role', '!=', 'admin')->orderBy('updated_at', 'asc');
         }
 
         if ($search) {
@@ -158,7 +158,6 @@ class User extends Authenticatable
                     ->orWhere('nickname', 'like', "%{$search}%");
             });
         }
-
 
         if ($parameter === 'newest') {
             $query->orderBy('updated_at', 'desc');
@@ -172,6 +171,10 @@ class User extends Authenticatable
             $query->orderBy('name', 'asc');
         } elseif ($parameter === 'name DESC') {
             $query->orderBy('name', 'desc');
+        } elseif ($parameter === 'id ASC') {
+            $query->orderBy('id', 'asc');
+        } elseif ($parameter === 'id DESC') {
+            $query->orderBy('id', 'desc');
         }
 
         return $query->get();

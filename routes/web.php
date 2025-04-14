@@ -57,6 +57,10 @@ Route::middleware('auth')->group(function () {
 
 Route::middleware(AdminMiddleware::class)->group(function () {
     Route::get('/admin', [ AdminController::class, 'index'])->name('admin.dashboard');
+    Route::get('/admin/users', [ AdminController::class, 'users'])->name('admin.users');
+    Route::get('/admin/publications', [ AdminController::class, 'publications'])->name('admin.publications');
+    Route::get('/admin/users/sort', [AdminController::class, 'users'])->name('users.sort');
+
 
 });
 
