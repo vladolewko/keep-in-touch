@@ -16,6 +16,15 @@ class UserPublicationRepost extends Model
         'repost_comment'
     ];
 
+    // UserPublicationRepost.php
+    public function user() {
+        return $this->belongsTo(User::class);
+    }
+
+    public function publication() {
+        return $this->belongsTo(Publication::class);
+    }
+
 
     /**
      * method for reposting or unreposting a publication

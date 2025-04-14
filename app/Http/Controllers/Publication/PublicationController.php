@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\publication;
+namespace App\Http\Controllers\Publication;
 
 use App\Http\Controllers\Controller;
 use App\Models\Publication;
@@ -25,20 +25,7 @@ class PublicationController extends Controller
         $filter = $request->get('filter') ?? null;
         $search = $request->get('search') ?? null;
 
-        $publications = Publication::sortPublication($parameter, $filter, $search);
-
-        foreach ($publications as $publication) {
-            $publication->nickname = User::where('id', $publication->user_id)->value('nickname');
-            $publication->is_liked = UserPublicationLike::where('user_id', auth()->user()->id)->where('publication_id', $publication->id)->exists();
-            $publication->is_reposted = UserPublicationRepost::where('user_id', auth()->user()->id)->where('publication_id', $publication->id)->exists();
-            $publication->commentsCount = PublicationComment::where('publication_id', $publication->id)->count();
-            $publication->comments = PublicationComment::where('publication_id', $publication->id)->orderBy('updated_at', 'desc')->get();
-
-            foreach ($publication->comments as $comment) {
-                $comment->nickname = User::where('id', $comment->user_id)->value('nickname');
-                $comment->is_liked = UserCommentLike::where('user_id', auth()->user()->id)->where('comment_id', $comment->id)->exists();
-            }
-        }
+        $publications = Publication::getPublicationsList($parameter, $filter, $search);
 
         return view('publications/publicationsList', compact('publications'));
     }
@@ -141,6 +128,14 @@ class PublicationController extends Controller
         ])['publication_id'];
 
         Publication::togglePublication($publication_id);
+
+        return back();
+    }
+
+
+    public function destroy($publication_id)
+    {
+        Publication::withTrashed()->findOrFail($publication_id)->forceDelete();
 
         return back();
     }

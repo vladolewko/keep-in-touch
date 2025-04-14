@@ -1,9 +1,11 @@
 <?php
 
-use App\Http\Controllers\publication\PublicationCommentController;
-use App\Http\Controllers\publication\PublicationController;
-use App\Http\Controllers\user\ProfileController;
-use App\Http\Controllers\user\UserController;
+use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Publication\PublicationCommentController;
+use App\Http\Controllers\Publication\PublicationController;
+use App\Http\Controllers\User\ProfileController;
+use App\Http\Controllers\User\UserController;
+use App\Http\Middleware\AdminMiddleware;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -36,6 +38,8 @@ Route::middleware('auth')->group(function () {
     Route::patch('/publication/hide', [PublicationController::class, 'hide'])->name('publication.hide');
     Route::get('/publication/edit{id}', [PublicationController::class, 'edit'])->name('publication.edit')->whereNumber('id');
     Route::patch('/publication/update', [PublicationController::class, 'update'])->name('publication.update');
+    Route::delete('/publication/destroy{id}', [PublicationController::class, 'destroy'])->name('publication.destroy')->whereNumber('id');
+
 
     // publications comments routes
     Route::post('/comment/like', [PublicationCommentController::class, 'like'])->name('comment.like');
@@ -47,6 +51,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/users/sort', [UserController::class, 'users'])->name('users.sort');
     Route::get('/users/profile{id}', [UserController::class, 'profile'])->name('users.profile')->whereNumber('id');
     Route::patch('/users/manageSubscribitors', [ProfileController::class, 'manageSubscribitors'])->name('user.manageSubscribitors');
+
+});
+
+
+Route::middleware(AdminMiddleware::class)->group(function () {
+    Route::get('/admin', [ AdminController::class, 'index'])->name('admin.dashboard');
 
 });
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\user;
+namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use App\Models\Publication;
@@ -41,25 +41,9 @@ class UserController extends Controller
         $user->haveAccess = User::checkIfHaveAccess($user->id);
         $user->subscription_status = UserSubscription::checkSubscriptionStatus(auth()->user()->id, $user->id);
 
-        $publications = Publication::where('user_id', $user->id)->get();
-        foreach ($publications as $publication) {
-            $publication->is_liked = UserPublicationLike::where('user_id', $user->id)->where('publication_id', $publication->id)->exists();
-            $publication->is_reposted = UserPublicationRepost::where('user_id', $user->id)->where('publication_id', $publication->id)->exists();
-            $publication->commentsCount = PublicationComment::where('publication_id', $publication->id)->count();
+        $publications = User::getPublications($user);
 
-            $publication->comments = PublicationComment::where('publication_id', $publication->id)->orderBy('updated_at', 'desc')->get();
-            foreach ($publication->comments as $comment) {
-                $comment->nickname = User::where('id', $comment->user_id)->value('nickname');
-                $comment->is_liked = UserCommentLike::where('user_id', auth()->user()->id)->where('comment_id', $comment->id)->exists();
-            }
-        }
-
-        $repostsId = UserPublicationRepost::where('user_id', $user->id)->pluck('publication_id');
-        $reposts = Publication::whereIn('id', $repostsId)->get();
-        foreach ($reposts as $repost) {
-            $repost->is_liked = UserPublicationLike::where('user_id', $user->id)->where('publication_id', $repost->id)->exists();
-            $repost->is_reposted = UserPublicationRepost::where('user_id', auth()->user()->id)->where('publication_id', $repost->id)->exists();
-        }
+        $reposts = User::getReposts($user);
 
         return view('users/userProfile', compact('user', 'publications', 'reposts'));
     }
@@ -73,7 +57,8 @@ class UserController extends Controller
     {
         $user_id = $request->validate([
             'user_id' => 'required|integer|exists:users,id',
-        ]);
+        ])['user_id'];
+
         UserSubscription::changeSubscription($user_id);
 
         return back();

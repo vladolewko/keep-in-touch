@@ -15,6 +15,20 @@ class UserPublicationLike extends Model
         'publication_id'
     ];
 
+
+    // UserPublicationLike.php
+    public function user() {
+        return $this->belongsTo(User::class);
+    }
+
+    public function publication() {
+        return $this->belongsTo(Publication::class);
+    }
+
+    public function likes() {
+        return $this->hasMany(UserPublicationLike::class, 'publication_id');
+    }
+
     /**
      * method for likeing or unliking a publication
      */

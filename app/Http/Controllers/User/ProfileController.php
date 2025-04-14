@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\user;
+namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProfileUpdateRequest;
@@ -25,28 +25,10 @@ class ProfileController extends Controller
     public function profile(): View
     {
         $user = auth()->user();
-        $publications = Publication::withTrashed()->where('user_id', $user->id)->get();
-        foreach ($publications as $publication) {
-            $publication->is_liked = UserPublicationLike::where('user_id', $user->id)->where('publication_id', $publication->id)->exists();
-            $publication->is_reposted = UserPublicationRepost::where('user_id', auth()->user()->id)->where('publication_id', $publication->id)->exists();
-            $publication->commentsCount = PublicationComment::where('publication_id', $publication->id)->count();
 
-            $publication->comments = PublicationComment::where('publication_id', $publication->id)->orderBy('updated_at', 'desc')->get();
+        $publications = User::getPublications($user);
 
-            foreach ($publication->comments as $comment) {
-                $comment->nickname = User::where('id', $comment->user_id)->value('nickname');
-                $comment->is_liked = UserCommentLike::where('user_id', auth()->user()->id)->where('comment_id', $comment->id)->exists();
-            }
-        }
-
-        $repostsId = UserPublicationRepost::where('user_id', $user->id)->pluck('publication_id');
-        $reposts = Publication::whereIn('id', $repostsId)->get();
-        foreach ($reposts as $repost) {
-            $repost->is_liked = UserPublicationLike::where('user_id', $user->id)->where('publication_id', $repost->id)->exists();
-            $repost->is_reposted = UserPublicationRepost::where('user_id', auth()->user()->id)
-                ->where('publication_id', $repost->id)
-                ->exists();
-        }
+        $reposts = User::getReposts($user);
 
         return view('profile/profile', compact('user', 'publications', 'reposts'));
     }
@@ -56,8 +38,8 @@ class ProfileController extends Controller
      */
     public function followers(): View
     {
-        $reqestsIds = UserSubscription::where('subscribed_to_id', auth()->user()->id)->where('is_accepted', 0)->pluck('user_id');
-        $requests = User::whereIn('id', $reqestsIds)->get();
+
+        $requests = User::getRequests();
 
         $followersIds = UserSubscription::where('subscribed_to_id', auth()->user()->id)->where('is_accepted', 1)->pluck('user_id');
         $followers = User::whereIn('id', $followersIds)->get();

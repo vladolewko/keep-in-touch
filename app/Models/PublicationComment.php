@@ -17,6 +17,18 @@ class PublicationComment extends Model
         'likes',
     ];
 
+    // PublicationComment.php
+    public function user() {
+        return $this->belongsTo(User::class);
+    }
+
+    public function likes() {
+        return $this->hasMany(UserCommentLike::class, 'comment_id');
+    }
+
+    public function publication() {
+        return $this->belongsTo(Publication::class);
+    }
 
     public static function likeComment($publication_id)
     {

@@ -43,16 +43,15 @@
                                     </form>
                             </x-dropdown-link>
 
-                            <!-- Authentication -->
-                            <form method="POST" action="{{ route('logout') }}">
-                                @csrf
+                            <x-dropdown-link>
+                                <form action="{{ route('publication.destroy', $publication->id) }}" method="post">
+                                    @csrf
+                                    @method('delete')
+                                    <button type="submit">Delete</button>
+                                </form>
+                            </x-dropdown-link>
 
-                                <x-dropdown-link :href="route('logout')"
-                                                 onclick="event.preventDefault();
-                                                this.closest('form').submit();">
-                                    {{ __('Delete') }}
-                                </x-dropdown-link>
-                            </form>
+
                         </x-slot>
                     </x-dropdown>
                 </div>

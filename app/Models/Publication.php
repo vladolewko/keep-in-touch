@@ -3,15 +3,16 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Publication extends Model
 {
-    use SoftDeletes;
 
     /** @use HasFactory<\Database\Factories\PublicationFactory> */
-    use HasFactory;
+    use HasFactory,SoftDeletes;
 
     protected $table = 'publications';
     protected $primaryKey = 'id';
@@ -23,6 +24,42 @@ class Publication extends Model
         'likes',
         'reposts'
     ];
+
+    // Publication.php
+    public function likes() {
+        return $this->hasMany(UserPublicationLike::class);
+    }
+
+    public function reposts() {
+        return $this->hasMany(UserPublicationRepost::class);
+    }
+
+    public function comments() {
+        return $this->hasMany(PublicationComment::class);
+    }
+
+    public function user() {
+        return $this->belongsTo(User::class);
+    }
+
+    public static function getPublicationsList($parameter, $filter, $search)
+    {
+        $publications = Publication::sortPublication($parameter, $filter, $search);
+
+        foreach ($publications as $publication) {
+            $publication->nickname = $publication->user->nickname;
+            $publication->is_liked = $publication->likes()->where('user_id', auth()->user()->id)->where('publication_id', $publication->id)->exists();
+            $publication->is_reposted = $publication->reposts()->where('user_id', auth()->user()->id)->where('publication_id', $publication->id)->exists();
+            $publication->commentsCount = $publication->comments->count();
+
+            foreach ($publication->comments as $comment) {
+                $comment->nickname = $comment->user->nickname;
+                $comment->is_liked = $comment->likes()->where('user_id', auth()->user()->id)->exists();
+            }
+        }
+        return $publications;
+    }
+
 
     public static function togglePublication($publication_id)
     {
@@ -36,6 +73,14 @@ class Publication extends Model
             $publication->delete();
         }
     }
+//
+//    public static function destroy($publication_id)
+//    {
+//        $publication = Publication::withTrashed()->findOrFail($publication_id);
+//
+//        $publication->forceDelete();
+//    }
+
 
     public static function sortPublication($parameter = null, $filter = null, $search = null)
     {
