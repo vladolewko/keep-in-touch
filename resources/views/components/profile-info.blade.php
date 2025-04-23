@@ -4,7 +4,15 @@
             <!-- Profile header -->
             <div class="flex items-center mb-6 border-b border-gray-700 pb-4">
                 <div class="w-16 h-16 rounded-full bg-gray-600 mr-4 flex items-center justify-center">
-                    <span class="text-white text-xl font-semibold">{{ strtoupper(substr($user->name, 0, 1)) }}</span>
+
+                    @if($user->getMedia('profile_images')->isNotEmpty())
+
+                    <img class="w-16 h-16 rounded-full bg-cover" src="{{ $user->getFirstMediaUrl('profile_images') }}" alt="Publication Image" class="object-cover w-full h-full">
+                    @else
+
+                    <span class="text-white text-xl font-semibold">{{ strtoupper(substr($user->nickname, 0, 1)) }}</span>
+                    @endif
+
                 </div>
                 <div>
                     <h2 class="text-white text-xl font-bold">{{ $user->name }} {{ $user->surname ?? '' }}</h2>
@@ -15,37 +23,37 @@
             <!-- Profile details -->
             <div class="space-y-4">
                 <div class="flex">
-                    <div class="w-28 text-gray-400 font-semibold text-sm">Name:</div>
+                    <div class="w-28 text-gray-400 font-semibold text-sm">{{ __('profile-info.name') }}:</div>
                     <div class="text-white text-sm flex-1">{{ $user->name }}</div>
                 </div>
 
                 <div class="flex">
-                    <div class="w-28 text-gray-400 font-semibold text-sm">Surname:</div>
+                    <div class="w-28 text-gray-400 font-semibold text-sm">{{ __('profile-info.surname') }}:</div>
                     <div class="text-white text-sm flex-1">{{ $user->surname ?? '-' }}</div>
                 </div>
 
                 <div class="flex">
-                    <div class="w-28 text-gray-400 font-semibold text-sm">Nickname:</div>
+                    <div class="w-28 text-gray-400 font-semibold text-sm">{{ __('profile-info.nickname') }}:</div>
                     <div class="text-white text-sm flex-1">{{ $user->nickname }}</div>
                 </div>
 
                 <div class="flex">
-                    <div class="w-28 text-gray-400 font-semibold text-sm">Email:</div>
+                    <div class="w-28 text-gray-400 font-semibold text-sm">{{ __('profile-info.email') }}:</div>
                     <div class="text-white text-sm flex-1">{{ $user->email }}</div>
                 </div>
 
                 <div class="flex">
-                    <div class="w-28 text-gray-400 font-semibold text-sm">Phone:</div>
+                    <div class="w-28 text-gray-400 font-semibold text-sm">{{ __('profile-info.phone') }}:</div>
                     <div class="text-white text-sm flex-1">{{ $user->phone }}</div>
                 </div>
 
                 <div class="flex">
-                    <div class="w-28 text-gray-400 font-semibold text-sm">Bio:</div>
+                    <div class="w-28 text-gray-400 font-semibold text-sm">{{ __('profile-info.bio') }}:</div>
                     <div class="text-white text-sm flex-1">{{ $user->bio ?? '-' }}</div>
                 </div>
 
                 <div class="flex">
-                    <div class="w-28 text-gray-400 font-semibold text-sm">Address:</div>
+                    <div class="w-28 text-gray-400 font-semibold text-sm">{{ __('profile-info.address') }}:</div>
                     <div class="text-white text-sm flex-1">{{ $user->address ?? '-' }}</div>
                 </div>
             </div>

@@ -12,25 +12,32 @@
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                        {{ __('Dashboard') }}
-                    </x-nav-link>
 
                     <x-nav-link :href="route('publications')" :active="request()->routeIs('publications')">
-                        {{ __('Publications') }}
+                        {{ __('navigation.publications') }}
                     </x-nav-link>
 
                     <x-nav-link :href="route('users')" :active="request()->routeIs('users')">
-                        {{ __('Users') }}
+                        {{ __('navigation.users') }}
                     </x-nav-link>
 
                     <x-nav-link :href="route('profile.followers')" :active="request()->routeIs('profile.followers')">
-                        {{ __('Followers') }}
+                        {{ __('navigation.followers') }}
                     </x-nav-link>
 
                     <x-nav-link :href="route('profile.subscriptions')" :active="request()->routeIs('profile.subscriptions')">
-                        {{ __('Subscriptions') }}
+                        {{ __('navigation.subscriptions') }}
                     </x-nav-link>
+
+                    <form class="my-3" action="{{ route(\Illuminate\Support\Facades\Route::currentRouteName(), ['id' => request()->route()->parameter('id')]) }}" method="get">
+                        <select class="mr-1 bg-transparent text-gray-400 border-none" name="lang">
+                            @foreach(config('app.available_locales') as $locale)
+                                <option value="{{ $locale }}" {{ app()->getLocale() == $locale ? 'selected' : '' }}>{{ strtoupper($locale) }}</option>
+                            @endforeach
+
+                        </select>
+                        <button class="dark:text-gray-800 bg-green-300 p-2">{{ __('navigation.changeLang') }}</button>
+                    </form>
                 </div>
             </div>
 
@@ -39,25 +46,25 @@
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
                         <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150">
-{{--                            <div>{{ Auth::user()->name }}</div>--}}
-                            <span class=" w-12 h-12 text-white text-xl font-semibold bg-cyan-300 p-2.5 rounded-full">{{ strtoupper(substr(Auth::user()->name, 0, 1)) }}</span>
+                            @if(auth()->user()->getMedia('profile_images')->isNotEmpty())
 
+                                <img class="w-12 h-12 rounded-full bg-cover" src="{{ auth()->user()->getFirstMediaUrl('profile_images') }}" alt="Publication Image" class="object-cover w-full h-full">
+                            @else
 
-{{--                            <div class="ms-1">--}}
-{{--                                <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">--}}
-{{--                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />--}}
-{{--                                </svg>--}}
-{{--                            </div>--}}
+                                <span class=" w-12 h-12 text-white text-xl font-semibold bg-cyan-300 p-2.5 rounded-full">{{ strtoupper(substr(Auth::user()->name, 0, 1)) }}</span>
+                            @endif
+
                         </button>
                     </x-slot>
 
                     <x-slot name="content">
+
                         <x-dropdown-link href="{{ route('profile') }}">
-                            {{ __('Profile') }}
+                            {{ __('navigation.profile') }}
                         </x-dropdown-link>
 
                         <x-dropdown-link :href="route('profile.settings')">
-                            {{ __('Settings') }}
+                            {{ __('navigation.settings') }}
                         </x-dropdown-link>
 
                         <!-- Authentication -->
@@ -67,7 +74,7 @@
                             <x-dropdown-link :href="route('logout')"
                                     onclick="event.preventDefault();
                                                 this.closest('form').submit();">
-                                {{ __('Log Out') }}
+                                {{ __('navigation.logout') }}
                             </x-dropdown-link>
                         </form>
                     </x-slot>

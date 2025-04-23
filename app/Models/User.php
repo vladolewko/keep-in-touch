@@ -6,13 +6,20 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class User extends Authenticatable
+
+class User extends Authenticatable implements HasMedia
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory,
+        Notifiable,
+        InteractsWithMedia,
+        softDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -91,10 +98,10 @@ class User extends Authenticatable
 
         $reposts = Publication::whereIn('id', $reposts_id)
             ->withCount([
-                'likes as has_likes' => function($query) use ($user) {
+                'likes as has_likes' => function ($query) use ($user) {
                     $query->where('user_id', $user->id);
                 },
-                'reposts as has_reposts' => function($query) {
+                'reposts as has_reposts' => function ($query) {
                     $query->where('user_id', auth()->user()->id);
                 }
             ])
@@ -124,7 +131,7 @@ class User extends Authenticatable
     {
         $publications = Publication::withTrashed()
             ->where('user_id', $user->id)
-            ->with(['comments' => function($query) {
+            ->with(['comments' => function ($query) {
                 $query->orderBy('updated_at', 'desc')->with('user:id,nickname');
             }])
             ->get();
@@ -143,14 +150,17 @@ class User extends Authenticatable
     }
 
 
-    public static function sortUsers($parameter = null, $search = null)
+    public static function sortUsers($parameter = null, $search = null, $filter = null)
     {
         $query = User::query();
 
+        // Apply authentication-based filters (only once)
         if (auth()->check()) {
-            $query->where('id', '!=', auth()->user()->id)->where('role', '!=', 'admin')->orderBy('updated_at', 'asc');
+            $query->where('id', '!=', auth()->user()->id)
+                ->where('role', '!=', 'admin');
         }
 
+        // Apply search if provided
         if ($search) {
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
@@ -159,27 +169,101 @@ class User extends Authenticatable
             });
         }
 
-        if ($parameter === 'newest') {
-            $query->orderBy('updated_at', 'desc');
-        } elseif ($parameter === 'oldest') {
-            $query->orderBy('updated_at', 'asc');
-        } elseif ($parameter === 'nickname ASC') {
-            $query->orderBy('nickname', 'asc');
-        } elseif ($parameter === 'nickname DESC') {
-            $query->orderBy('nickname', 'desc');
-        } elseif ($parameter === 'name ASC') {
-            $query->orderBy('name', 'asc');
-        } elseif ($parameter === 'name DESC') {
-            $query->orderBy('name', 'desc');
-        } elseif ($parameter === 'id ASC') {
-            $query->orderBy('id', 'asc');
-        } elseif ($parameter === 'id DESC') {
-            $query->orderBy('id', 'desc');
+        // Apply sorting based on parameter
+        switch ($parameter) {
+            case 'newest':
+                $query->orderBy('updated_at', 'desc');
+                break;
+            case 'oldest':
+                $query->orderBy('updated_at', 'asc');
+                break;
+            case 'nickname ASC':
+                $query->orderBy('nickname', 'asc');
+                break;
+            case 'nickname DESC':
+                $query->orderBy('nickname', 'desc');
+                break;
+            case 'name ASC':
+                $query->orderBy('name', 'asc');
+                break;
+            case 'name DESC':
+                $query->orderBy('name', 'desc');
+                break;
+            case 'id ASC':
+                $query->orderBy('id', 'asc');
+                break;
+            case 'id DESC':
+                $query->orderBy('id', 'desc');
+                break;
+            default:
+                $query->orderBy('updated_at', 'asc');
         }
 
-        return $query->get();
+        return $query->paginate(10);
     }
 
+
+
+    public static function adminSortUsers($parameter = null, $search = null, $filter = null)
+    {
+        $query = User::query();
+
+        // Handle soft-deleted records based on filter and user role
+        if ($filter == 'blocked') {
+            $query = User::onlyTrashed();
+        } elseif ($filter == 'unblocked') {
+            $query = User::where('role', '!=', 'admin');
+        }  else {
+            $query = User::withTrashed();
+        }
+
+        // Apply authentication-based filters
+        if (auth()->check()) {
+            $query->where('id', '!=', auth()->user()->id)
+                ->where('role', '!=', 'admin');
+        }
+
+        // Apply search if provided
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('surname', 'like', "%{$search}%")
+                    ->orWhere('nickname', 'like', "%{$search}%");
+            });
+        }
+
+        // Apply sorting based on parameter
+        switch ($parameter) {
+            case 'newest':
+                $query->orderBy('updated_at', 'desc');
+                break;
+            case 'oldest':
+                $query->orderBy('updated_at', 'asc');
+                break;
+            case 'nickname ASC':
+                $query->orderBy('nickname', 'asc');
+                break;
+            case 'nickname DESC':
+                $query->orderBy('nickname', 'desc');
+                break;
+            case 'name ASC':
+                $query->orderBy('name', 'asc');
+                break;
+            case 'name DESC':
+                $query->orderBy('name', 'desc');
+                break;
+            case 'id ASC':
+                $query->orderBy('id', 'asc');
+                break;
+            case 'id DESC':
+                $query->orderBy('id', 'desc');
+                break;
+            default:
+                $query->orderBy('updated_at', 'asc');
+        }
+
+        return $query->paginate(10);
+    }
 
     /**
      * method for making account private or public
@@ -192,7 +276,7 @@ class User extends Authenticatable
             $access = 0;
         }
 
-      return User::where('id', auth()->user()->id)->update(['is_private' => $access]);
+        return User::where('id', auth()->user()->id)->update(['is_private' => $access]);
 
     }
 
@@ -201,8 +285,8 @@ class User extends Authenticatable
      */
     public static function checkIfHaveAccess($user_id)
     {
-       $user = User::find($user_id);
-       $subscription = UserSubscription::checkSubscriptionStatus(auth()->user()->id, $user_id);
+        $user = User::find($user_id);
+        $subscription = UserSubscription::checkSubscriptionStatus(auth()->user()->id, $user_id);
         if ($user->is_private == 1) {
             if ($subscription === true) {
                 return true;
@@ -212,8 +296,19 @@ class User extends Authenticatable
             }
 
         } else {
-                return true;
+            return true;
         }
 
+    }
+
+
+    public static function blockUser($user_id)
+    {
+        $user = User::find($user_id);
+        if ($user) {
+            $user->delete();
+            return true;
+        }
+        return false;
     }
 }

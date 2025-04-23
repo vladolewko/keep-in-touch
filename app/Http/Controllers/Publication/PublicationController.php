@@ -24,6 +24,11 @@ class PublicationController extends Controller
         $parameter = $request->get('parameter') ?? null;
         $filter = $request->get('filter') ?? null;
         $search = $request->get('search') ?? null;
+//        app()->setLocale('uk');
+//        session()->put('locale', 'uk');
+//        dd(app()->getLocale());
+//
+//        dd(session()->get('locale'));
 
         $publications = Publication::getPublicationsList($parameter, $filter, $search);
 
@@ -43,19 +48,18 @@ class PublicationController extends Controller
      */
     public function create(Request $request)
     {
-        $request->validate([
+
+        $data = $request->validate([
             'title' => 'required|string|max:255',
-            'description' => 'nullable|string|max:255'
+            'description' => 'nullable|string|max:255',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
+        $data['user_id'] = auth()->user()->id;
 
-        $data = [
-            'user_id' => auth()->user()->id,
-            'title' => $request->input('title'),
-            'description' => $request->input('description'),
-        ];
+        $publication = Publication::create($data);
 
-        Publication::create($data);
-
+        $publication->addMedia($data['image'])
+            ->toMediaCollection('publication_images');
         return back();
     }
 
@@ -135,7 +139,7 @@ class PublicationController extends Controller
 
     public function destroy($publication_id)
     {
-        Publication::withTrashed()->findOrFail($publication_id)->forceDelete();
+        Publication::destroy($publication_id);
 
         return back();
     }

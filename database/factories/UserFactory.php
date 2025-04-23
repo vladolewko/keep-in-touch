@@ -30,7 +30,7 @@ class UserFactory extends Factory
             'phone' => fake()->phoneNumber(),
             'bio' => fake()->text(100),
             'address' => fake()->address(),
-            'is_private' => fake()->boolean(),
+            'is_private' => 0,
             'role' => fake()->randomElement(['user', 'admin']),
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),

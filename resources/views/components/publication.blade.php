@@ -5,7 +5,13 @@
             <div class="flex items-center justify-between p-3 {{ $publication->deleted_at ? 'bg-gray-300' : '' }}">
                 <div class="flex items-center">
                     <div class="w-10 h-10 rounded-full bg-gray-600 mr-3 flex items-center justify-center">
-                        <span class="text-white font-semibold">{{ strtoupper(substr($publication->id, 0, 1)) }}</span>
+                        @if($publication->user->getMedia('profile_images')->isNotEmpty())
+
+                            <img class="w-12 h-12 rounded-full bg-cover" src="{{ $publication->user->getFirstMediaUrl('profile_images') }}" alt="Publication Image">
+                        @else
+
+                            <span class="text-white font-semibold">{{ strtoupper(substr($publication->user->nickname, 0, 1)) }}</span>
+                        @endif
                     </div>
                     <div>
                         <p class="text-white font-semibold text-sm"><a href="{{ route('users.profile', ['id' => $publication->user_id]) }}">{{ $publication->nickname }}</a></p>
@@ -68,6 +74,9 @@
                         <p class="text-gray-300">{{ $publication->description }}</p>
                     @endif
                 </div>
+                @if($publication->getMedia('publication_images')->isNotEmpty())
+                    <img src="{{ $publication->getFirstMediaUrl('publication_images') }}" alt="Publication Image" class="object-cover w-full h-full">
+                @endif
             </div>
 
             <!-- Action buttons -->
@@ -129,7 +138,7 @@
                 <!-- Comments section preview -->
                 <div class="mt-2">
                     <!-- Replace your existing "View all comments" with this -->
-                    <p class="text-gray-400 text-xs cursor-pointer comments-trigger">View all comments ({{$publication->commentsCount}})</p>
+                    <p class="text-gray-400 text-xs cursor-pointer comments-trigger">{{ __('publication.viewComments') }} ({{$publication->commentsCount}})</p>
 
                     <!-- Add this modal HTML at the end of your blade template, outside the foreach loop -->
                     <div id="comments-popup" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
@@ -140,14 +149,14 @@
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                                     </svg>
-                                    <span>All Comments</span>
+                                    <span>{{ __('publication.allComments') }}</span>
                                 </button>
 
                                 <button id="likes-tab" class="flex items-center justify-center gap-2 py-3 px-4 flex-1 text-gray-400 hover:text-gray-300">
                                     <svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="currentColor">
                                         <path d="m480-120-58-52q-101-91-167-157T150-447.5Q111-500 95.5-544T80-634q0-94 63-157t157-63q52 0 99 22t81 62q34-40 81-62t99-22q94 0 157 63t63 157q0 46-15.5 90T810-447.5Q771-395 705-329T538-172l-58 52Z"/>
                                     </svg>
-                                    <span>Users that Liked</span>
+                                    <span>{{ __('publication.usersLike') }}</span>
                                 </button>
 
                                 <button id="close-popup" class="text-gray-400 hover:text-white p-3">
@@ -190,7 +199,7 @@
 
                                 <!-- Likes content (hidden by default) -->
                                 <div id="likes-content" class="space-y-4 hidden">
-                                    <p class="text-gray-300">Users who liked will appear here.</p>
+                                    <p class="text-gray-300">{{ __('publication.noLikes') }}</p>
                                 </div>
                             </div>
 
@@ -200,8 +209,8 @@
                                     @csrf
                                     @method('put')
                                     <input type="hidden" name="publication_id" value="{{ $publication->id }}">
-                                    <input type="text" name="comment" placeholder="Add a comment..." class="w-full bg-transparent border-none text-gray-300 text-sm focus:outline-none focus:ring-0 pl-0 pr-16">
-                                    <button type="submit" class="absolute right-0 top-0 text-yellow-400 text-sm font-semibold">Post</button>
+                                    <input type="text" name="comment" placeholder="{{ __('publication.addComment') }}" class="w-full bg-transparent border-none text-gray-300 text-sm focus:outline-none focus:ring-0 pl-0 pr-16">
+                                    <button type="submit" class="absolute right-0 top-0 text-yellow-400 text-sm font-semibold">{{ __('publication.post') }}</button>
                                 </form>
                             </div>
                         </div>
@@ -210,8 +219,8 @@
                         @csrf
                         @method('put')
                         <input type="hidden" name="publication_id" value="{{ $publication->id }}">
-                        <input type="text" name="comment" placeholder="Add a comment..." class="w-full bg-transparent border-none text-gray-300 text-sm focus:outline-none focus:ring-0 pl-0 pr-16">
-                        <button type="submit" class="absolute right-0 top-0 text-yellow-400 text-sm font-semibold">Post</button>
+                        <input type="text" name="comment" placeholder="{{ __('publication.addComment') }}" class="w-full bg-transparent border-none text-gray-300 text-sm focus:outline-none focus:ring-0 pl-0 pr-16">
+                        <button type="submit" class="absolute right-0 top-0 text-yellow-400 text-sm font-semibold">{{ __('publication.post') }}</button>
                     </form>
                 </div>
             </div>

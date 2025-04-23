@@ -1,23 +1,32 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Controller;
 use App\Http\Controllers\Publication\PublicationCommentController;
 use App\Http\Controllers\Publication\PublicationController;
+use App\Http\Controllers\SiteController;
 use App\Http\Controllers\User\ProfileController;
 use App\Http\Controllers\User\UserController;
 use App\Http\Middleware\AdminMiddleware;
+use App\Http\Middleware\LanguageMiddleware;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+//Route::get('/dashboard', function () {
+//    return view('dashboard');
+//})->middleware(['auth', 'verified'])->name('dashboard');
 
+//Route::get('/lang/change{lang}', [SiteController::class, 'changeLang'])->middleware(['auth', 'verified'])->name('lang.change');
 
-Route::middleware('auth')->group(function () {
+//Route::get('/lang/change{lang}', function () {
+//    return back();
+//})->middleware(LanguageMiddleware::class)->name('lang.change');
+
+//Route::middleware('auth')->group(function () {
+Route::middleware(['auth', LanguageMiddleware::class])->group(function () {
     //auth routes
     Route::get('/profile/settings', [ProfileController::class, 'settings'])->name('profile.settings');
     Route::get('/profile/myProfile', [ProfileController::class, 'profile'])->name('profile');
@@ -59,7 +68,17 @@ Route::middleware(AdminMiddleware::class)->group(function () {
     Route::get('/admin', [ AdminController::class, 'index'])->name('admin.dashboard');
     Route::get('/admin/users', [ AdminController::class, 'users'])->name('admin.users');
     Route::get('/admin/publications', [ AdminController::class, 'publications'])->name('admin.publications');
-    Route::get('/admin/users/sort', [AdminController::class, 'users'])->name('users.sort');
+    Route::get('/admin/publications/sort', [ AdminController::class, 'publications'])->name('admin.publications.sort');
+    Route::get('/admin/publication/edit{id}', [AdminController::class, 'editPublication'])->name('admin.publication.edit')->whereNumber('id');
+    Route::patch('/admin/publication/update', [AdminController::class, 'updatePublication'])->name('admin.publication.update');
+    Route::delete('/admin/publication/destroy{id}', [AdminController::class, 'destroyPublication'])->name('admin.publication.destroy')->whereNumber('id');
+
+
+    Route::get('/admin/users/sort', [AdminController::class, 'users'])->name('admin.users.sort');
+    Route::delete('/admin/user/block{id}', [AdminController::class, 'blockUser'])->name('admin.user.block');
+    Route::get('/admin/user/message{id}', [AdminController::class, 'writeMessage'])->name('admin.user.message');
+    Route::put('/admin/user/send{sended_to_id}', [AdminController::class, 'sendMessage'])->name('admin.send');
+
 
 
 });

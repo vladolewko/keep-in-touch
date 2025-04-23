@@ -29,6 +29,7 @@ class UserController extends Controller
             $user->subscription_status = UserSubscription::checkSubscriptionStatus(auth()->user()->id, $user->id);
 
         }
+
         return view('users/usersList', compact('users'));
     }
 

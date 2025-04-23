@@ -3,16 +3,19 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class Publication extends Model
+
+class Publication extends Model implements HasMedia
 {
 
     /** @use HasFactory<\Database\Factories\PublicationFactory> */
-    use HasFactory,SoftDeletes;
+    use HasFactory,
+        SoftDeletes,
+        InteractsWithMedia;
 
     protected $table = 'publications';
     protected $primaryKey = 'id';
@@ -44,7 +47,8 @@ class Publication extends Model
 
     public static function getPublicationsList($parameter, $filter, $search)
     {
-        $publications = Publication::sortPublication($parameter, $filter, $search);
+
+        $publications = Publication::sortPublications($parameter, $filter, $search);
 
         foreach ($publications as $publication) {
             $publication->nickname = $publication->user->nickname;
@@ -56,6 +60,18 @@ class Publication extends Model
                 $comment->nickname = $comment->user->nickname;
                 $comment->is_liked = $comment->likes()->where('user_id', auth()->user()->id)->exists();
             }
+        }
+        return $publications;
+    }
+
+    public static function AdminGetPublications($parameter, $filter, $search)
+    {
+
+//        $publications = Publication::sortPublication($parameter, $filter, $search);
+        $publications = Publication::withTrashed()->paginate();
+
+        foreach ($publications as $publication) {
+            $publication->nickname = User::withTrashed()->where('id', $publication->user_id)->value('nickname');
         }
         return $publications;
     }
@@ -73,19 +89,19 @@ class Publication extends Model
             $publication->delete();
         }
     }
-//
-//    public static function destroy($publication_id)
-//    {
-//        $publication = Publication::withTrashed()->findOrFail($publication_id);
-//
-//        $publication->forceDelete();
-//    }
+
+    public static function destroy($publication_id)
+    {
+        $publication = Publication::withTrashed()->findOrFail($publication_id);
+        $publication->clearMediaCollection();
+        $publication->forceDelete();
+    }
 
 
     public static function sortPublication($parameter = null, $filter = null, $search = null)
     {
         $query = Publication::query();
-
+        $query->with('user');
         if (auth()->check()) {
             $query->where('user_id', '!=', auth()->user()->id);
         }
@@ -120,7 +136,54 @@ class Publication extends Model
             $query->orderBy('id', 'asc');
         } elseif ($parameter === 'id DESC') {
             $query->orderBy('id', 'desc');
+        } else {
+            $query->orderBy('updated_at', 'desc');
         }
-        return $query->get();
+        return $query->paginate(10);
+    }
+
+
+    public static function sortPublications($parameter = null, $filter = null, $search = null)
+    {
+        $query = Publication::query();
+        $query->with('user');
+        if (auth()->check()) {
+            $query->where('user_id', '!=', auth()->user()->id);
+        }
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                    ->orWhere('description', 'like', "%{$search}%");
+            });
+        }
+
+        if ($filter === 'subscriptions') {
+            $subscriptions = UserSubscription::where('user_id', auth()->user()->id)
+                ->pluck('subscribed_to_id');
+
+            $query->whereIn('user_id', $subscriptions);
+        }
+
+        if ($parameter === 'likes ASC') {
+            $query->orderBy('likes', 'asc');
+        } elseif ($parameter === 'likes DESC') {
+            $query->orderBy('likes', 'desc');
+        } elseif ($parameter === 'reposts ASC') {
+            $query->orderBy('reposts', 'asc');
+        } elseif ($parameter === 'reposts DESC') {
+            $query->orderBy('reposts', 'desc');
+        } elseif ($parameter === 'newest') {
+            $query->orderBy('updated_at', 'desc');
+        } elseif ($parameter === 'oldest') {
+            $query->orderBy('updated_at', 'asc');
+        } elseif ($parameter === 'id ASC') {
+            $query->orderBy('id', 'asc');
+        } elseif ($parameter === 'id DESC') {
+            $query->orderBy('id', 'desc');
+        } else {
+            $query->orderBy('updated_at', 'desc');
+        }
+        return $query->paginate(10);
     }
 }
