@@ -10,7 +10,7 @@ return new class extends Migration {
      */
     public function up(): void
     {
-//        Schema::dropIfExists('user_notifications');
+        Schema::dropIfExists('user_notifications');
         Schema::create('user_notifications', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onUpdate('cascade')->onDelete('cascade');
@@ -19,6 +19,7 @@ return new class extends Migration {
             $table->text('message');
             $table->boolean('is_read')->default(false);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

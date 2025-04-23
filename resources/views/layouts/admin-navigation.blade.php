@@ -20,6 +20,10 @@
                         {{ __('Moderate Users') }}
                     </x-nav-link>
 
+                    <x-nav-link :href="route('admin.comments')" :active="request()->routeIs('admin.comments')">
+                        {{ __('Moderate Comments') }}
+                    </x-nav-link>
+
                 </div>
             </div>
 

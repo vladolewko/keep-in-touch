@@ -48,7 +48,7 @@ class Publication extends Model implements HasMedia
     public static function getPublicationsList($parameter, $filter, $search)
     {
 
-        $publications = Publication::sortPublications($parameter, $filter, $search);
+        $publications = Publication::sortPublication($parameter, $filter, $search);
 
         foreach ($publications as $publication) {
             $publication->nickname = $publication->user->nickname;
@@ -67,11 +67,11 @@ class Publication extends Model implements HasMedia
     public static function AdminGetPublications($parameter, $filter, $search)
     {
 
-//        $publications = Publication::sortPublication($parameter, $filter, $search);
-        $publications = Publication::withTrashed()->paginate();
+        $publications = Publication::sortPublication($parameter, $filter, $search);
 
         foreach ($publications as $publication) {
             $publication->nickname = User::withTrashed()->where('id', $publication->user_id)->value('nickname');
+//            $publication->comments = PublicationComment::where('publication_id', $publication->id)->with('user:id,nickname')->get();
         }
         return $publications;
     }
@@ -102,6 +102,7 @@ class Publication extends Model implements HasMedia
     {
         $query = Publication::query();
         $query->with('user');
+
         if (auth()->check()) {
             $query->where('user_id', '!=', auth()->user()->id);
         }
@@ -136,54 +137,10 @@ class Publication extends Model implements HasMedia
             $query->orderBy('id', 'asc');
         } elseif ($parameter === 'id DESC') {
             $query->orderBy('id', 'desc');
-        } else {
+        }else {
             $query->orderBy('updated_at', 'desc');
         }
         return $query->paginate(10);
     }
 
-
-    public static function sortPublications($parameter = null, $filter = null, $search = null)
-    {
-        $query = Publication::query();
-        $query->with('user');
-        if (auth()->check()) {
-            $query->where('user_id', '!=', auth()->user()->id);
-        }
-
-        if ($search) {
-            $query->where(function ($q) use ($search) {
-                $q->where('title', 'like', "%{$search}%")
-                    ->orWhere('description', 'like', "%{$search}%");
-            });
-        }
-
-        if ($filter === 'subscriptions') {
-            $subscriptions = UserSubscription::where('user_id', auth()->user()->id)
-                ->pluck('subscribed_to_id');
-
-            $query->whereIn('user_id', $subscriptions);
-        }
-
-        if ($parameter === 'likes ASC') {
-            $query->orderBy('likes', 'asc');
-        } elseif ($parameter === 'likes DESC') {
-            $query->orderBy('likes', 'desc');
-        } elseif ($parameter === 'reposts ASC') {
-            $query->orderBy('reposts', 'asc');
-        } elseif ($parameter === 'reposts DESC') {
-            $query->orderBy('reposts', 'desc');
-        } elseif ($parameter === 'newest') {
-            $query->orderBy('updated_at', 'desc');
-        } elseif ($parameter === 'oldest') {
-            $query->orderBy('updated_at', 'asc');
-        } elseif ($parameter === 'id ASC') {
-            $query->orderBy('id', 'asc');
-        } elseif ($parameter === 'id DESC') {
-            $query->orderBy('id', 'desc');
-        } else {
-            $query->orderBy('updated_at', 'desc');
-        }
-        return $query->paginate(10);
-    }
 }

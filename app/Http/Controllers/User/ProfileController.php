@@ -8,6 +8,7 @@ use App\Models\Publication;
 use App\Models\PublicationComment;
 use App\Models\User;
 use App\Models\UserCommentLike;
+use App\Models\UserNotification;
 use App\Models\UserPublicationLike;
 use App\Models\UserPublicationRepost;
 use App\Models\UserSubscription;
@@ -80,6 +81,19 @@ class ProfileController extends Controller
     public function settings(): View
     {
         return view('profile/profileSettings');
+    }
+
+    public function notifications(): View
+    {
+        $notifications = UserNotification::where('sended_to_id', auth()->user()->id)->get();
+
+        return view('profile/notifications', compact('notifications'));
+    }
+
+    public function readNotification($id)
+    {
+        UserNotification::where('id', $id)->update(['is_read' => 1]);
+        return back();
     }
 
     /**

@@ -130,55 +130,56 @@
             <table>
                 <thead>
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">ID</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">User</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Title</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Description</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Likes</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Reposts</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Comments</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
+                        <th>ID</th>
+                        <th>User</th>
+                        <th>Title</th>
+                        <th>Description</th>
+                        <th>Likes</th>
+                        <th>Reposts</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
                     @foreach($publications as $publication)
                         <tr>
-                            <td class="px-6 py-4 whitespace-nowrap">
+                            <td>
                                 <div class="text-sm text-gray-900 dark:text-white">
                                     {{ $publication->id }}
                                 </div>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
+                            <td>
                                 <div class="text-sm text-gray-900 dark:text-white">
                                     {{ $publication->user->name }}
                                 </div>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
+                            <td>
                                 <div class="text-sm text-gray-900 dark:text-white">
                                     {{ $publication->title }}
                                 </div>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
+                            <td>
                                 <div class="text-sm text-gray-900 dark:text-white">
                                     {{ $publication->description }}
                                 </div>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
+                            <td>
                                 <div class="text-sm text-gray-900 dark:text-white">
                                     {{ $publication->likes }}
                                 </div>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
+                            <td>
                                 <div class="text-sm text-gray-900 dark:text-white">
                                     {{ $publication->reposts }}
                                 </div>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
+                            <td>
                                 <div class="text-sm text-gray-900 dark:text-white">
-                                    {{ $publication->comments }}
+                                    <form action="{{ route('admin.publication.destroy', ['id' => $publication->id]) }}" method="POST" class="inline">
+                                        @csrf
+                                        @method('delete')
+                                        <button type="submit" class="text-red-600 hover:text-red-800">Delete</button>
+                                    </form>
                                 </div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
 {{--                                <div class="text-sm text-gray-900 dark:text-white">--}}
 {{--                                    <a href="{{ route('admin.publication.show', ['id' => $publication->id]) }}">Show</a>--}}
 {{--                                </div>--}}

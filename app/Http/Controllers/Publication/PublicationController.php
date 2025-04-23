@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Publication;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Publication\CreatePublicationRequest;
 use App\Models\Publication;
 use App\Models\PublicationComment;
 use App\Models\User;
@@ -46,20 +47,17 @@ class PublicationController extends Controller
     /**
      * Method for creating new publication.
      */
-    public function create(Request $request)
+    public function create(CreatePublicationRequest $request)
     {
 
-        $data = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string|max:255',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
+        $data = $request->validated();
         $data['user_id'] = auth()->user()->id;
 
         $publication = Publication::create($data);
 
         $publication->addMedia($data['image'])
             ->toMediaCollection('publication_images');
+
         return back();
     }
 

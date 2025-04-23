@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Publication;
+use App\Models\PublicationComment;
 use App\Models\User;
 use App\Models\UserNotification;
 use Illuminate\Http\Request;
@@ -34,6 +35,45 @@ class AdminController extends Controller
         $publications = Publication::adminGetPublications($parameter, $filter, $search);
 
         return view('admin.publications', compact('publications'));
+    }
+
+    public function comments(Request $request): View
+    {
+        $parameter = $request->get('parameter') ?? null;
+        $search = $request->get('search') ?? null;
+
+        $comments = PublicationComment::adminGetComments($parameter, $search);
+//        $comments = PublicationComment::paginate(10);
+
+        return view('admin.comments', compact('comments'));
+    }
+
+    public function publicationComments($id): View
+    {
+
+        $comments = PublicationComment::where('publication_id', $id)->get();
+//
+//        if ($comments) {
+//            foreach ($comments as $comment) {
+//                $comment->nickname = $comment->user->nickname;
+//            }
+//        }
+
+        return view('admin.publication-comments', compact('comments'));
+    }
+
+    public function destroyComment($id)
+    {
+        $comment = PublicationComment::findOrFail($id);
+        $comment->delete();
+        return redirect()->back()->with('success', 'Comment deleted successfully.');
+    }
+
+    public function destroyPublication($id)
+    {
+        $comment = Publication::findOrFail($id);
+        $comment->delete();
+        return redirect()->back()->with('success', 'Comment deleted successfully.');
     }
 
 
@@ -67,7 +107,6 @@ class AdminController extends Controller
         $data['user_id'] = auth()->user()->id;
 
         UserNotification::create($data);
-        return redirect()->route('admin.users')->with('success', 'Message sent successfully.');
+        return back()->with('message', 'Message sent successfully.');
     }
-
 }

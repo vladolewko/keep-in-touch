@@ -8,8 +8,8 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900 dark:text-gray-100">
                     @if($requests->isNotEmpty()))
+                <div class="p-6 text-gray-900 dark:text-gray-100">
                     <h3>Requests to follow you</h3>
 
                 @foreach($requests as $user)
@@ -80,10 +80,10 @@
                             </div>
                         </div>
                     @endforeach
-                    @endif
                 </div>
+                    @endif
 
-
+        @if($followers->isNotEmpty())
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     <h3>Followers</h3>
                     @foreach($followers as $user)
@@ -151,6 +151,11 @@
                         </div>
                     @endforeach
                 </div>
+                @else
+                    <div class="p-6 text-gray-900 dark:text-gray-100">
+                        <h3>No followers</h3>
+                    </div>
+                @endif
             </div>
         </div>
     </div>

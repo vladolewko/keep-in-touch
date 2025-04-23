@@ -30,6 +30,15 @@
                                           placeholder="Enter publication title"/>
 
                         </div>
+                        <div class="mb-4">
+                            <label for="image" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                Image
+                            </label>
+                            @if($publication->getMedia('publication_images')->isNotEmpty())
+                                <img src="{{ $publication->getFirstMediaUrl('publication_images') }}" alt="Publication Image" class="object-cover w-full h-full">
+                            @endif
+
+                        </div>
 
                         <div class="mb-6">
                             <label for="description" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">

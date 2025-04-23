@@ -86,4 +86,48 @@ class PublicationComment extends Model
             ], 500);
         }
     }
+
+    public static function AdminGetComments($parameter, $search)
+    {
+        $query = PublicationComment::query();
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('comment', 'like', "%{$search}%")
+                    ->orWhereHas('user', function ($q) use ($search) {
+                        $q->where('nickname', 'like', "%{$search}%");
+                    });
+            });
+        }
+
+        if ($parameter === 'newest') {
+            $query->orderBy('created_at', 'desc');
+        } elseif ($parameter === 'oldest') {
+            $query->orderBy('created_at', 'asc');
+        } elseif ($parameter === 'id ASC') {
+            $query->orderBy('id', 'asc');
+        } elseif ($parameter === 'id DESC') {
+            $query->orderBy('id', 'desc');
+        } elseif ($parameter === 'nickname ASC') {
+
+            $query->join('users', 'publication_comments.user_id', '=', 'users.id')
+                ->orderBy('users.nickname', 'asc')
+                ->select('publication_comments.*');
+        } elseif ($parameter === 'nickname DESC') {
+
+            $query->join('users', 'publication_comments.user_id', '=', 'users.id')
+                ->orderBy('users.nickname', 'desc')
+                ->select('publication_comments.*');
+        } else {
+            $query->orderBy('created_at', 'desc');
+        }
+
+        $comments = $query->paginate(10);
+
+        foreach ($comments as $comment) {
+            $comment->nickname = User::where('id', $comment->user_id)->value('nickname');
+        }
+
+        return $comments;
+    }
 }

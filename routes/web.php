@@ -29,6 +29,8 @@ Route::get('/', function () {
 Route::middleware(['auth', LanguageMiddleware::class])->group(function () {
     //auth routes
     Route::get('/profile/settings', [ProfileController::class, 'settings'])->name('profile.settings');
+    Route::get('/profile/notifications', [ProfileController::class, 'notifications'])->name('profile.notifications');
+    Route::patch('/profile/notification/read{id}', [ProfileController::class, 'readNotification'])->name('profile.notification.read');
     Route::get('/profile/myProfile', [ProfileController::class, 'profile'])->name('profile');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
@@ -68,6 +70,12 @@ Route::middleware(AdminMiddleware::class)->group(function () {
     Route::get('/admin', [ AdminController::class, 'index'])->name('admin.dashboard');
     Route::get('/admin/users', [ AdminController::class, 'users'])->name('admin.users');
     Route::get('/admin/publications', [ AdminController::class, 'publications'])->name('admin.publications');
+    Route::get('/admin/comments', [ AdminController::class, 'comments'])->name('admin.comments');
+    Route::get('/admin/comments/sort', [AdminController::class, 'comments'])->name('admin.comments.sort');
+
+    Route::get('/admin/publication/comments{id}', [ AdminController::class, 'publicationComments'])->name('admin.publication.comments');
+    Route::delete('/admin/comment/destroy{id}', [ AdminController::class, 'destroyComment'])->name('admin.comment.destroy')->whereNumber('id');
+    Route::delete('/admin/publication/destroy{id}', [ AdminController::class, 'destroyPublication'])->name('admin.publication.destroy')->whereNumber('id');
     Route::get('/admin/publications/sort', [ AdminController::class, 'publications'])->name('admin.publications.sort');
     Route::get('/admin/publication/edit{id}', [AdminController::class, 'editPublication'])->name('admin.publication.edit')->whereNumber('id');
     Route::patch('/admin/publication/update', [AdminController::class, 'updatePublication'])->name('admin.publication.update');

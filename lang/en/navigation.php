@@ -10,6 +10,7 @@ return [
     'changeLang' => 'Change',
     'profile' => 'Profile',
     'settings' => 'Settings',
+    'notifications' => 'Notifications',
     'logout' => 'Logout',
 
 ];
