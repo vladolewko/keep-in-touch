@@ -104,80 +104,64 @@
                     </form>
                 </div>
 
-{{--                <div class="mb-6">--}}
-{{--                    <h3 class="text-lg font-medium text-gray-700 dark:text-gray-300 mb-3">Filter by:</h3>--}}
-{{--                    <div class="flex flex-wrap justify-between gap-2">--}}
-{{--                        <a href="{{ route('admin.comments.sort', ['filter' => 'subscriptions', 'parameter' => request()->get('parameter'), 'search' => request()->get('search')]) }}"--}}
-{{--                           class="px-4 py-2 {{ request()->get('filter') ? 'bg-blue-500 text-white' : 'bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600' }} rounded-md text-sm font-medium transition-colors duration-150 flex items-center">--}}
-{{--                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">--}}
-{{--                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />--}}
-{{--                            </svg>--}}
-{{--                            --}}
-{{--                        </a>--}}
-
-{{--                        <a href="{{ route('publications.sort', ['filter' => null, 'parameter' => null, 'search' => null]) }}"--}}
-{{--                           class="px-4 py-2 'bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600' rounded-md text-sm font-medium transition-colors duration-150 flex items-center">--}}
-{{--                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">--}}
-{{--                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />--}}
-{{--                            </svg>--}}
-{{--                            Reset All--}}
-{{--                        </a>--}}
-{{--                    </div>--}}
-{{--                </div>--}}
-
-{{--            </div>--}}
-            <table>
-                <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>User</th>
-                    <th>Comment</th>
-                    <th>Likes</th>
-                    <th>Actions</th>
-                </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
-                @foreach($comments as $comment)
-                    <tr>
-                        <td>
-                            <div class="text-sm text-gray-900 dark:text-white">
-                                {{ $comment->id }}
-                            </div>
-                        </td>
-                        <td>
-                            <div class="text-sm text-gray-900 dark:text-white">
-                                {{ $comment->user->nickname }}
-                            </div>
-                        </td>
-                        <td>
-                            <div class="text-sm text-gray-900 dark:text-white">
-                                {{ $comment->comment }}
-                            </div>
-                        </td>
-                        <td>
-                            <div class="text-sm text-gray-900 dark:text-white">
-                                {{ $comment->likes }}
-                            </div>
-                        </td>
-                        <td>
-                            <div class="text-sm text-gray-900 dark:text-white">
-                                <form action="{{ route('admin.comment.destroy', ['id' => $comment->id]) }}" method="POST" class="inline">
-                                    @csrf
-                                    @method('delete')
-                                    <button type="submit" class="text-red-600 hover:text-red-800">Delete</button>
-                                </form>
-                            </div>
-                            {{--                                <div class="text-sm text-gray-900 dark:text-white">--}}
-                            {{--                                    <a href="{{ route('admin.publication.show', ['id' => $publication->id]) }}">Show</a>--}}
-                            {{--                                </div>--}}
-                        </td>
-                        <td class="border p-2">
-                            <a href="{{ route('admin.user.message', ['id' => $comment->user->id]) }}">send message</a>
-                        </td>
-                    </tr>
-                @endforeach
-                </tbody>
-            </table>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                        <thead class="bg-gray-50 dark:bg-gray-700">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">ID</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">User</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Comment</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Likes</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                        @foreach($comments as $comment)
+                            <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150">
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900 dark:text-white">
+                                        {{ $comment->id }}
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900 dark:text-white">
+                                        {{ $comment->user->nickname }}
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="text-sm text-gray-900 dark:text-white line-clamp-2">
+                                        {{ $comment->comment }}
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900 dark:text-white">
+                                        {{ $comment->likes }}
+                                    </div>
+                                </td>
+                                <td class="px-1 py-4 whitespace-nowrap text-sm font-medium">
+                                    <div class="flex space-x-1">
+                                        <form action="{{ route('admin.comment.destroy', ['id' => $comment->id]) }}" method="post" class="inline">
+                                            @csrf
+                                            @method('delete')
+                                            <button type="submit" class="w-24 bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded-md text-sm font-medium transition-colors duration-150 flex items-center">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $comment->deleted_at ? 'M13 10V3L4 14h7v7l9-11h-7z' : 'M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636' }}" />
+                                                </svg>
+                                                Delete
+                                            </button>
+                                        </form>
+                                        <a href="{{ route('admin.user.message', ['id' => $comment->user->id, 'comment' => $comment->comment]) }}" class="bg-blue-500 hover:bg-blue-600 text-white py-1 px-3 rounded-md text-sm font-medium transition-colors duration-150 flex items-center">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                                            </svg>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforeach
+                        </tbody>
+                    </table>
+                </div>
 
             <div class="mt-3.5">
                 {{ $comments->withQueryString()->links('vendor.pagination.tailwind') }}

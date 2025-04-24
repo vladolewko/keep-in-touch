@@ -75,19 +75,31 @@ class PublicationController extends Controller
      */
     public function update(Request $request)
     {
-
         $data = $request->validate([
             'publication_id' => 'required|exists:publications,id',
             'title' => 'required|string|max:255',
-            'description' => 'nullable|string|max:255'
+            'description' => 'nullable|string|max:255',
+            'image' => 'nullable|file|image'  // Add validation for image
         ]);
 
+        // Find publication first, as we need it in both branches
+        $publication = Publication::findOrFail($data['publication_id']);
 
-        if (!Publication::where('id', $data['publication_id'])->update($data) || $data['title'] == null) {
+        if ($request->has('remove_image')) {
+            // Just remove the image, don't update other fields
+            $publication->clearMediaCollection('publication_images');
+        } else {
+            // Update publication data
+            $publication->title = $data['title'];
+            $publication->description = $data['description'] ?? $publication->description;
+            $publication->save();
 
-            return back()->with('error', 'Publication not found or update failed.');
+            // Add new image if provided
+            if ($request->hasFile('image')) {
+                $publication->addMedia($request->file('image'))
+                    ->toMediaCollection('publication_images');
+            }
         }
-
 
         return redirect('profile/myProfile');
     }

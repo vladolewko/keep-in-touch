@@ -53,9 +53,18 @@
             <x-text-input id="address" name="address" type="text" class="mt-1 block w-full" :value="old('address', $user->address)" autofocus autocomplete="address" />
             <x-input-error class="mt-2" :messages="$errors->get('address')" />
         </div>
-        <div>
-            <input type="file" name="profile_image">
+        <div class="mb-4">
+            <label for="image" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Image
+            </label>
+            @if($user->getMedia('profile_images')->isNotEmpty())
+                <img src="{{ $user->getFirstMediaUrl('profile_images') }}" alt="Profile Image" class="object-cover w-full h-full">
+                <button type="submit" name="remove_image" value="1" class="text-red-500 text-sm font-semibold">Remove Image</button>
+            @endif
+            <input type="file" name="profile_image" accept="image/*" class="mt-1 block w-full">
+
         </div>
+
 
         <div>
             <x-input-label for="email" :value="__('Email')" />

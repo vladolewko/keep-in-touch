@@ -18,14 +18,14 @@
                         @csrf
                         @method ('put')
                         <div class="mb-4">
-                            <select name="topic" id="">
+                            <select class="text-gray-800" name="topic" id="">
                                 <option value="warning">Warning</option>
                                 <option value="block">Block</option>
                                 <option value="notification">Notification</option>
                                 <option value="other">Other</option>
                             </select>
                             <label for="message" class="block text-gray-700 dark:text-gray-300 font-bold mb-2">Message:</label>
-                            <textarea id="message" name="message" rows="4" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 leading-tight focus:outline-none focus:shadow-outline"></textarea>
+                            <textarea id="message" name="message" rows="4" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-800  leading-tight focus:outline-none focus:shadow-outline">'{{ $comment }}'</textarea>
                             <button type="submit">send</button>
                         </div>
                     </form>

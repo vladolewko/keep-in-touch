@@ -91,10 +91,10 @@ class AdminController extends Controller
         return redirect()->back()->with('success', 'User status updated successfully.');
     }
 
-    public function writeMessage($id)
+    public function writeMessage($id, $comment)
     {
         $user = User::findOrFail($id);
-        return view('admin.send-message', compact('user'));
+        return view('admin.send-message', compact('user',  'comment'));
     }
 
     public function sendMessage(Request $request, $sended_to_id)

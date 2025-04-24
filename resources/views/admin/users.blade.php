@@ -141,41 +141,68 @@
                 </a>
             </div>
 
-            <div class="p-6 text-gray-900 dark:text-gray-100">
-                <table class="border-collapse w-full border">
-                    <tr class="border">
-                        <th class="border p-2">id</th>
-                        <th class="border p-2">name</th>
-                        <th class="border p-2">surname</th>
-                        <th class="border p-2">nickname</th>
-                        <th class="border p-2">email</th>
-                        <th class="border p-2">phone</th>
-                        <th class="border p-2">Block</th>
-                        <th class="border p-2">Send message</th>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                    <thead class="bg-gray-50 dark:bg-gray-700">
+                    <tr>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">ID</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Name</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Surname</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Nickname</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Email</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Phone</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
                     </tr>
+                    </thead>
+                    <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                     @foreach($users as $user)
-                        <tr class="border">
-                            <td class="border p-2">{{ $user->id }}</td>
-                            <td class="border p-2">{{ $user->name }}</td>
-                            <td class="border p-2">{{ $user->surname }}</td>
-                            <td class="border p-2">{{ $user->nickname }}</td>
-                            <td class="border p-2">{{ $user->email }}</td>
-                            <td class="border p-2">{{ $user->phone }}</td>
-                            <td class="border p-2">
-                                <form action=" {{ route('admin.user.block', ['id' => $user->id]) }} " method="post">
-                                    @csrf
-                                    @method('delete')
-                                    <x-primary-button type="submit">
-                                        {{ $user->deleted_at ? 'Unblock' : 'Block' }}
-                                    </x-primary-button>
-
-                                </form>
+                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900 dark:text-white">{{ $user->id }}</div>
                             </td>
-                            <td class="border p-2">
-                                <a href="{{ route('admin.user.message', ['id' => $user->id]) }}">send message</a>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900 dark:text-white">{{ $user->name }}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900 dark:text-white">{{ $user->surname }}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900 dark:text-white">{{ $user->nickname }}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900 dark:text-white">{{ $user->email }}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900 dark:text-white">{{ $user->phone }}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="w-20 px-2 flex justify-center text-xs leading-5 font-semibold rounded-full {{ $user->deleted_at ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200' : 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' }}">
+                                {{ $user->deleted_at ? 'Blocked' : 'Active' }}
+                            </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                <div class="flex space-x-1">
+                                    <form action="{{ route('admin.user.block', ['id' => $user->id]) }}" method="post" class="inline">
+                                        @csrf
+                                        @method('delete')
+                                        <button type="submit" class="w-24 {{ $user->deleted_at ? 'bg-green-500 hover:bg-green-600' : 'bg-red-500 hover:bg-red-600' }} text-white py-1 px-3 rounded-md text-sm font-medium transition-colors duration-150 flex items-center">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $user->deleted_at ? 'M13 10V3L4 14h7v7l9-11h-7z' : 'M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636' }}" />
+                                            </svg>
+                                            {{ $user->deleted_at ? 'Restore' : 'Block' }}
+                                        </button>
+                                    </form>
+                                    <a href="{{ route('admin.user.message', ['id' => $user->id, 'comment' => null]) }}" class="bg-blue-500 hover:bg-blue-600 text-white py-1 px-3 rounded-md text-sm font-medium transition-colors duration-150 flex items-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                                        </svg>
+                                    </a>
+                                </div>
                             </td>
                         </tr>
                     @endforeach
+                    </tbody>
                 </table>
             </div>
             <div class="mt-3.5">

@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class UserSubscription extends Model
 {
-    use SoftDeletes;
+    /** @use HasFactory<\Database\Factories\UserSubscriptionFactory> */
+
+    use SoftDeletes, HasFactory;
     protected $table = 'user_subscriptions';
     protected $primaryKey = 'id';
     protected $fillable = [

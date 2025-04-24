@@ -114,7 +114,7 @@
                             Subscriptions
                         </a>
 
-                        <a href="{{ route('publications.sort', ['filter' => null, 'parameter' => null, 'search' => null]) }}"
+                        <a href="{{ route('admin.publications.sort', ['filter' => null, 'parameter' => null, 'search' => null]) }}"
                            class="px-4 py-2 'bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600' rounded-md text-sm font-medium transition-colors duration-150 flex items-center">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
@@ -125,71 +125,77 @@
                 </div>
 
             </div>
-{{--            @include('components.publication')--}}
+            {{--            @include('components.publication')--}}
 
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>User</th>
-                        <th>Title</th>
-                        <th>Description</th>
-                        <th>Likes</th>
-                        <th>Reposts</th>
-                        <th>Actions</th>
-                    </tr>
+            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                <thead class="bg-gray-50 dark:bg-gray-700">
+                <tr>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">ID</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">User</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Title</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Description</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Likes</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Reposts</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
+                </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
-                    @foreach($publications as $publication)
-                        <tr>
-                            <td>
-                                <div class="text-sm text-gray-900 dark:text-white">
-                                    {{ $publication->id }}
-                                </div>
-                            </td>
-                            <td>
-                                <div class="text-sm text-gray-900 dark:text-white">
-                                    {{ $publication->user->name }}
-                                </div>
-                            </td>
-                            <td>
-                                <div class="text-sm text-gray-900 dark:text-white">
-                                    {{ $publication->title }}
-                                </div>
-                            </td>
-                            <td>
-                                <div class="text-sm text-gray-900 dark:text-white">
-                                    {{ $publication->description }}
-                                </div>
-                            </td>
-                            <td>
-                                <div class="text-sm text-gray-900 dark:text-white">
-                                    {{ $publication->likes }}
-                                </div>
-                            </td>
-                            <td>
-                                <div class="text-sm text-gray-900 dark:text-white">
-                                    {{ $publication->reposts }}
-                                </div>
-                            </td>
-                            <td>
-                                <div class="text-sm text-gray-900 dark:text-white">
-                                    <form action="{{ route('admin.publication.destroy', ['id' => $publication->id]) }}" method="POST" class="inline">
-                                        @csrf
-                                        @method('delete')
-                                        <button type="submit" class="text-red-600 hover:text-red-800">Delete</button>
-                                    </form>
-                                </div>
-{{--                                <div class="text-sm text-gray-900 dark:text-white">--}}
-{{--                                    <a href="{{ route('admin.publication.show', ['id' => $publication->id]) }}">Show</a>--}}
-{{--                                </div>--}}
-                            </td>
-                        </tr>
-                    @endforeach
+                <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                @foreach($publications as $publication)
+                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900 dark:text-white">
+                                {{ $publication->id }}
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900 dark:text-white">
+                                {{ $publication->user->name }}
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900 dark:text-white">
+                                {{ $publication->title }}
+                            </div>
+                        </td>
+                        <td class="px-6 py-4" style="max-width: 200px; min-width: 200px; width: 200px;">
+                            <div class="text-sm text-gray-900 dark:text-white overflow-x-auto" style="white-space: nowrap;">
+                                {{ $publication->description }}
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900 dark:text-white">
+                                {{ $publication->likes }}
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900 dark:text-white">
+                                {{ $publication->reposts }}
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <div class="flex space-x-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                </svg>
+                                </a>
+                                <form action="{{ route('admin.publication.destroy', ['id' => $publication->id]) }}" method="POST" class="inline">
+                                    @csrf
+                                    @method('delete')
+                                    <button type="submit" class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                        </svg>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                @endforeach
                 </tbody>
             </table>
 
-            <div class="mt-3.5">
+            <div class="mt-6">
                 {{ $publications->withQueryString()->links('vendor.pagination.tailwind') }}
             </div>
         </div>

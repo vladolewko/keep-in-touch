@@ -14,7 +14,7 @@
                         Edit Publication
                     </h3>
 
-                    <form action="{{ route('publication.update', ['publication_id' => $publication->id]) }}" method="post">
+                    <form action="{{ route('publication.update', ['publication_id' => $publication->id]) }}" method="post" enctype="multipart/form-data">
                         @method('patch')
                         @csrf
 
@@ -36,7 +36,9 @@
                             </label>
                             @if($publication->getMedia('publication_images')->isNotEmpty())
                                 <img src="{{ $publication->getFirstMediaUrl('publication_images') }}" alt="Publication Image" class="object-cover w-full h-full">
+                                <button type="submit" name="remove_image" value="1" class="text-red-500 text-sm font-semibold">Remove Image</button>
                             @endif
+                            <input type="file" name="image">
 
                         </div>
 
