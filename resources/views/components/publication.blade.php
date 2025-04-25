@@ -1,6 +1,6 @@
 <div class="space-y-6">
     @foreach($publications as $publication)
-        <div class="bg-gray-800 rounded-lg overflow-hidden border border-gray-700">
+        <div class="bg-gray-800 bg-opacity-75 rounded-lg overflow-hidden border border-gray-700">
             <!-- Post header -->
             <div class="flex items-center justify-between p-3 {{ $publication->deleted_at ? 'bg-gray-300' : '' }}">
                 <div class="flex items-center">
@@ -67,7 +67,7 @@
             </div>
 
             <!-- Post image -->
-            <div class="aspect-w-4 aspect-h-3 bg-gray-900 flex items-center justify-center">
+            <div class="bg-gray-900 bg-opacity-75">
                 <div class="text-center p-4">
                     <h2 class="text-xl font-bold text-white mb-2">{{ $publication->title }}</h2>
                     @if($publication->description)
@@ -75,7 +75,9 @@
                     @endif
                 </div>
                 @if($publication->getMedia('publication_images')->isNotEmpty())
-                    <img src="{{ $publication->getFirstMediaUrl('publication_images') }}" alt="Publication Image" class="object-cover w-full h-full">
+                    <div class="w-full">
+                        <img src="{{ $publication->getFirstMediaUrl('publication_images') }}" alt="Publication Image" class="w-full object-contain max-h-96">
+                    </div>
                 @endif
             </div>
 

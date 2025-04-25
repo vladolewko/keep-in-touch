@@ -57,9 +57,8 @@ class Publication extends Model implements HasMedia
      * @param $filter
      * @param $search
      *
-     * @return array
      */
-    public static function getPublicationsList($parameter, $filter, $search): array
+    public static function getPublicationsList($parameter, $filter, $search)
     {
 
         $publications = Publication::sortPublication($parameter, $filter, $search);
@@ -120,9 +119,8 @@ class Publication extends Model implements HasMedia
      * @param $filter
      * @param $search
      *
-     * @return array
      */
-    public static function sortPublication($parameter = null, $filter = null, $search = null): array
+    public static function sortPublication($parameter = null, $filter = null, $search = null)
     {
         $query = Publication::query();
         $query->with('user');

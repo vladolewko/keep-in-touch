@@ -23,7 +23,10 @@
      ])
     </head>
     <body class="font-sans antialiased">
-        <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
+    <div class="min-h-screen bg-gray-100 dark:bg-gray-900 relative">
+        <img id="background" class="absolute inset-0 object-cover w-full h-full z-0" src="{{ asset('images/background.jpg') }}" alt="Laravel background" />
+
+        <div class="relative z-10"> <!-- Add this wrapper div with a higher z-index -->
             @include('layouts.navigation')
 
             <!-- Page Heading -->
@@ -40,5 +43,6 @@
                 {{ $slot }}
             </main>
         </div>
+    </div>
     </body>
 </html>

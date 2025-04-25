@@ -7,11 +7,9 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6 mb-5">
-
+            <div class="mb-5">
                 <div class="mb-6">
-                    <h3 class="text-lg font-medium text-gray-700 dark:text-gray-300 mb-3">Sort by:</h3>
-                    <div class="flex flex-wrap gap-2">
+                    <div class="flex flex-wrap justify-center gap-2">
                         <a href="{{ route('publications.sort', ['parameter' => 'likes ASC', 'filter' => request()->get('filter'), 'search' => request()->get('search')]) }}"
                            class="px-4 py-2 {{ request()->get('parameter') === 'likes ASC' ? 'bg-blue-500 text-white' : 'bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600' }} rounded-md text-sm font-medium transition-colors duration-150 flex items-center">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -82,7 +80,7 @@
                 <div class="mb-6">
                     <form action="{{ route('publications.sort') }}"
                           method="get"
-                          class="flex items-center">
+                          class="flex items-center justify-center">
                         <input type="hidden" name="filter" value="{{ request()->get('filter') ?? ''}}">
                          <input type="hidden" name="parameter" value="{{ request()->get('parameter') ?? ''}}">
                         <input type="text"

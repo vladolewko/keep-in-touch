@@ -98,9 +98,8 @@ class User extends Authenticatable implements HasMedia
      *
      * @param $user
      *
-     * @return array
      */
-    public static function getReposts($user): array
+    public static function getReposts($user)
     {
 
         $reposts_id = UserPublicationRepost::where('user_id', $user->id)->pluck('publication_id');
@@ -128,9 +127,8 @@ class User extends Authenticatable implements HasMedia
      * method for getting requests to subscribe
      *
      *
-     * @return array
      */
-    public static function getRequests(): array
+    public static function getRequests()
     {
         $user_id = auth()->user()->id;
 

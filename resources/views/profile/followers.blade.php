@@ -7,58 +7,65 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                    @if($requests->isNotEmpty()))
-                <div class="p-6 text-gray-900 dark:text-gray-100">
-                    <h3>Requests to follow you</h3>
+            @if($requests->isNotEmpty())
+                <div
+                    class="mb-5 bg-opacity-75 dark:bg-gray-800 dark:bg-opacity-75 overflow-hidden shadow-sm sm:rounded-lg">
+                    <div class="p-6 text-gray-900 dark:text-gray-100">
+                        <h3 class="text-center  p-4 bg-opacity-75 block text-lg font-semibold text-gray-700 dark:text-gray-200">Requests to follow you</h3>
 
-                @foreach($requests as $user)
-                        <div class="mx-auto py-12">
-                            <div class="bg-gray-800 rounded-lg overflow-hidden border border-gray-700 p-6">
+                        @foreach($requests as $user)
+                            <div class="mx-auto py-12">
+                                <div
+                                    class="bg-gray-800 rounded-lg overflow-hidden border border-gray-700 p-6 bg-opacity-75">
 
-                                <!-- Profile header -->
-                                <div class="flex items-center justify-between mb-6 border-b border-gray-700 pb-4">
-                                    <div class="flex items-center">
-                                        <div
-                                            class="w-16 h-16 rounded-full bg-gray-600 mr-4 flex items-center justify-center">
+                                    <!-- Profile header -->
+                                    <div class="flex items-center justify-between mb-6 border-b border-gray-700 pb-4">
+                                        <a href="{{ route('users.profile', ['id' => $user->id]) }}">
+
+                                        <div class="flex items-center">
+                                            <div
+                                                class="w-16 h-16 rounded-full bg-gray-600 mr-4 flex items-center justify-center">
                                             <span
                                                 class="text-white text-xl font-semibold">{{ strtoupper(substr($user->name, 0, 1)) }}</span>
+                                            </div>
+                                            <div>
+                                                <h2 class="text-white text-xl font-bold">{{ $user->nickname }}</h2>
+                                                <p class="text-gray-400 text-sm">{{ $user->name }} {{ $user->surname ?? '' }}</p>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <h2 class="text-white text-xl font-bold">{{ $user->nickname }}</h2>
-                                            <p class="text-gray-400 text-sm">{{ $user->name }} {{ $user->surname ?? '' }}</p>
+                                        </a>
+                                    </div>
+
+                                    <!-- Profile details -->
+                                    <div class="space-y-4">
+                                        <div class="flex">
+                                            <div class="w-28 text-gray-400 font-semibold text-sm">Name:</div>
+                                            <div class="text-white text-sm flex-1">{{ $user->name }}</div>
                                         </div>
+
+                                        <div class="flex">
+                                            <div class="w-28 text-gray-400 font-semibold text-sm">Surname:</div>
+                                            <div class="text-white text-sm flex-1">{{ $user->surname ?? '-' }}</div>
+                                        </div>
+
+                                        <div class="flex">
+                                            <div class="w-28 text-gray-400 font-semibold text-sm">Nickname:</div>
+                                            <div class="text-white text-sm flex-1">{{ $user->nickname }}</div>
+                                        </div>
+
+
+                                        <div class="flex">
+                                            <div class="w-28 text-gray-400 font-semibold text-sm">Bio:</div>
+                                            <div class="text-white text-sm flex-1">{{ $user->bio ?? '-' }}</div>
+                                        </div>
+
                                     </div>
-                                </div>
-
-                                <!-- Profile details -->
-                                <div class="space-y-4">
-                                    <div class="flex">
-                                        <div class="w-28 text-gray-400 font-semibold text-sm">Name:</div>
-                                        <div class="text-white text-sm flex-1">{{ $user->name }}</div>
-                                    </div>
-
-                                    <div class="flex">
-                                        <div class="w-28 text-gray-400 font-semibold text-sm">Surname:</div>
-                                        <div class="text-white text-sm flex-1">{{ $user->surname ?? '-' }}</div>
-                                    </div>
-
-                                    <div class="flex">
-                                        <div class="w-28 text-gray-400 font-semibold text-sm">Nickname:</div>
-                                        <div class="text-white text-sm flex-1">{{ $user->nickname }}</div>
-                                    </div>
-
-
-                                    <div class="flex">
-                                        <div class="w-28 text-gray-400 font-semibold text-sm">Bio:</div>
-                                        <div class="text-white text-sm flex-1">{{ $user->bio ?? '-' }}</div>
-                                    </div>
-
-                                </div>
-                                <p><a href="{{ route('users.profile', ['id' => $user->id]) }}">go to page</a></p>
-                                <form action="{{ route('user.manageSubscribitors', ['subscriber_id' => $user->id]) }}" method="post">
-                                    @csrf
-                                    @method('patch')
+                                    <p><a href="{{ route('users.profile', ['id' => $user->id]) }}">go to page</a></p>
+                                    <form
+                                        action="{{ route('user.manageSubscribitors', ['subscriber_id' => $user->id]) }}"
+                                        method="post">
+                                        @csrf
+                                        @method('patch')
 
                                         <x-primary-button name="action" value="accept">
                                             Accept
@@ -68,72 +75,82 @@
                                             Decline
                                         </x-danger-button>
 
-                                </form>
+                                    </form>
+                                </div>
                             </div>
-                        </div>
-                    @endforeach
-                </div>
+                        @endforeach
+                    </div>
                     @endif
+                </div>
 
-        @if($followers->isNotEmpty())
-                <div class="p-6 text-gray-900 dark:text-gray-100">
-                    <h3>Followers</h3>
-                    @foreach($followers as $user)
-                        <div class="mx-auto py-12">
-                            <div class="bg-gray-800 rounded-lg overflow-hidden border border-gray-700 p-6">
-                                <!-- Profile header -->
-                                <div class="flex items-center justify-between mb-6 border-b border-gray-700 pb-4">
-                                    <div class="flex items-center">
-                                        <div
-                                            class="w-16 h-16 rounded-full bg-gray-600 mr-4 flex items-center justify-center">
+                @if($followers->isNotEmpty())
+                    <div
+                        class="bg-white bg-opacity-75 dark:bg-gray-800 dark:bg-opacity-75 overflow-hidden shadow-sm sm:rounded-lg">
+
+                    <div class="p-6 text-gray-900 dark:text-gray-100">
+                        <h3 class="text-center  p-4  block text-lg font-semibold text-gray-700 dark:text-gray-200">
+                            Followers</h3>
+                        @foreach($followers as $user)
+                            <div class="mx-auto py-12">
+                                <div class="bg-gray-800 rounded-lg overflow-hidden border border-gray-700 p-6 bg-opacity-75">
+                                    <!-- Profile header -->
+                                    <div class="flex items-center justify-between mb-6 border-b border-gray-700 pb-4">
+                                        <a href="{{ route('users.profile', ['id' => $user->id]) }}">
+
+                                        <div class="flex items-center">
+                                            <div
+                                                class="w-16 h-16 rounded-full bg-gray-600 mr-4 flex items-center justify-center">
                                             <span
                                                 class="text-white text-xl font-semibold">{{ strtoupper(substr($user->name, 0, 1)) }}</span>
+                                            </div>
+                                            <div>
+                                                <h2 class="text-white text-xl font-bold">{{ $user->nickname }}</h2>
+                                                <p class="text-gray-400 text-sm">{{ $user->name }} {{ $user->surname ?? '' }}</p>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <h2 class="text-white text-xl font-bold">{{ $user->nickname }}</h2>
-                                            <p class="text-gray-400 text-sm">{{ $user->name }} {{ $user->surname ?? '' }}</p>
+                                        </a>
+                                    </div>
+
+                                    <!-- Profile details -->
+                                    <div class="space-y-4">
+                                        <div class="flex">
+                                            <div class="w-28 text-gray-400 font-semibold text-sm">Name:</div>
+                                            <div class="text-white text-sm flex-1">{{ $user->name }}</div>
                                         </div>
+
+                                        <div class="flex">
+                                            <div class="w-28 text-gray-400 font-semibold text-sm">Surname:</div>
+                                            <div class="text-white text-sm flex-1">{{ $user->surname ?? '-' }}</div>
+                                        </div>
+
+                                        <div class="flex">
+                                            <div class="w-28 text-gray-400 font-semibold text-sm">Nickname:</div>
+                                            <div class="text-white text-sm flex-1">{{ $user->nickname }}</div>
+                                        </div>
+
+
+                                        <div class="flex">
+                                            <div class="w-28 text-gray-400 font-semibold text-sm">Bio:</div>
+                                            <div class="text-white text-sm flex-1">{{ $user->bio ?? '-' }}</div>
+                                        </div>
+
                                     </div>
+                                    <p><a href="{{ route('users.profile', ['id' => $user->id]) }}">go to page</a></p>
+
+                                    <form
+                                        action="{{ route('user.manageSubscribitors', ['subscriber_id' => $user->id]) }}"
+                                        method="post">
+                                        @csrf
+                                        @method('patch')
+                                        <x-danger-button type="submit" name="action" value="decline">
+                                            Remove
+                                        </x-danger-button>
+
+                                    </form>
                                 </div>
-
-                                <!-- Profile details -->
-                                <div class="space-y-4">
-                                    <div class="flex">
-                                        <div class="w-28 text-gray-400 font-semibold text-sm">Name:</div>
-                                        <div class="text-white text-sm flex-1">{{ $user->name }}</div>
-                                    </div>
-
-                                    <div class="flex">
-                                        <div class="w-28 text-gray-400 font-semibold text-sm">Surname:</div>
-                                        <div class="text-white text-sm flex-1">{{ $user->surname ?? '-' }}</div>
-                                    </div>
-
-                                    <div class="flex">
-                                        <div class="w-28 text-gray-400 font-semibold text-sm">Nickname:</div>
-                                        <div class="text-white text-sm flex-1">{{ $user->nickname }}</div>
-                                    </div>
-
-
-                                    <div class="flex">
-                                        <div class="w-28 text-gray-400 font-semibold text-sm">Bio:</div>
-                                        <div class="text-white text-sm flex-1">{{ $user->bio ?? '-' }}</div>
-                                    </div>
-
-                                </div>
-                                <p><a href="{{ route('users.profile', ['id' => $user->id]) }}">go to page</a></p>
-
-                                <form action="{{ route('user.manageSubscribitors', ['subscriber_id' => $user->id]) }}" method="post">
-                                    @csrf
-                                    @method('patch')
-                                    <x-danger-button type="submit" name="action" value="decline">
-                                        Remove
-                                    </x-danger-button>
-
-                                </form>
                             </div>
-                        </div>
-                    @endforeach
-                </div>
+                        @endforeach
+                    </div>
                 @else
                     <div class="p-6 text-gray-900 dark:text-gray-100">
                         <h3>No followers</h3>
