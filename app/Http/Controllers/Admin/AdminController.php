@@ -48,19 +48,6 @@ class AdminController extends Controller
         return view('admin.comments', compact('comments'));
     }
 
-    public function publicationComments($id): View
-    {
-
-        $comments = PublicationComment::where('publication_id', $id)->get();
-//
-//        if ($comments) {
-//            foreach ($comments as $comment) {
-//                $comment->nickname = $comment->user->nickname;
-//            }
-//        }
-
-        return view('admin.publication-comments', compact('comments'));
-    }
 
     public function destroyComment($id)
     {

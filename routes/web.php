@@ -15,17 +15,6 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-//Route::get('/dashboard', function () {
-//    return view('dashboard');
-//})->middleware(['auth', 'verified'])->name('dashboard');
-
-//Route::get('/lang/change{lang}', [SiteController::class, 'changeLang'])->middleware(['auth', 'verified'])->name('lang.change');
-
-//Route::get('/lang/change{lang}', function () {
-//    return back();
-//})->middleware(LanguageMiddleware::class)->name('lang.change');
-
-//Route::middleware('auth')->group(function () {
 Route::middleware(['auth', LanguageMiddleware::class])->group(function () {
     //auth routes
     Route::get('/profile/settings', [ProfileController::class, 'settings'])->name('profile.settings');
@@ -66,29 +55,30 @@ Route::middleware(['auth', LanguageMiddleware::class])->group(function () {
 });
 
 
+// admin routes
 Route::middleware(AdminMiddleware::class)->group(function () {
+    //admin base route
     Route::get('/admin', [ AdminController::class, 'index'])->name('admin.dashboard');
+
+    //admin users routes
     Route::get('/admin/users', [ AdminController::class, 'users'])->name('admin.users');
-    Route::get('/admin/publications', [ AdminController::class, 'publications'])->name('admin.publications');
-    Route::get('/admin/comments', [ AdminController::class, 'comments'])->name('admin.comments');
-    Route::get('/admin/comments/sort', [AdminController::class, 'comments'])->name('admin.comments.sort');
-
-    Route::get('/admin/publication/comments{id}', [ AdminController::class, 'publicationComments'])->name('admin.publication.comments');
-    Route::delete('/admin/comment/destroy{id}', [ AdminController::class, 'destroyComment'])->name('admin.comment.destroy')->whereNumber('id');
-    Route::delete('/admin/publication/destroy{id}', [ AdminController::class, 'destroyPublication'])->name('admin.publication.destroy')->whereNumber('id');
-    Route::get('/admin/publications/sort', [ AdminController::class, 'publications'])->name('admin.publications.sort');
-    Route::get('/admin/publication/edit{id}', [AdminController::class, 'editPublication'])->name('admin.publication.edit')->whereNumber('id');
-    Route::patch('/admin/publication/update', [AdminController::class, 'updatePublication'])->name('admin.publication.update');
-    Route::delete('/admin/publication/destroy{id}', [AdminController::class, 'destroyPublication'])->name('admin.publication.destroy')->whereNumber('id');
-
-
     Route::get('/admin/users/sort', [AdminController::class, 'users'])->name('admin.users.sort');
     Route::delete('/admin/user/block{id}', [AdminController::class, 'blockUser'])->name('admin.user.block');
     Route::get('/admin/user/message{id}{comment?}', [AdminController::class, 'writeMessage'])->name('admin.user.message');
     Route::put('/admin/user/send{sended_to_id}', [AdminController::class, 'sendMessage'])->name('admin.send');
 
+    //admin publications routes
+    Route::get('/admin/publications', [ AdminController::class, 'publications'])->name('admin.publications');
+    Route::get('/admin/publications/sort', [ AdminController::class, 'publications'])->name('admin.publications.sort');
+    Route::get('/admin/publication/edit{id}', [AdminController::class, 'editPublication'])->name('admin.publication.edit')->whereNumber('id');
+    Route::patch('/admin/publication/update', [AdminController::class, 'updatePublication'])->name('admin.publication.update');
+    Route::delete('/admin/publication/destroy{id}', [AdminController::class, 'destroyPublication'])->name('admin.publication.destroy')->whereNumber('id');
 
-
+    //admin comments routes
+    Route::get('/admin/comments', [ AdminController::class, 'comments'])->name('admin.comments');
+    Route::get('/admin/comments/sort', [AdminController::class, 'comments'])->name('admin.comments.sort');
+    Route::delete('/admin/comment/destroy{id}', [ AdminController::class, 'destroyComment'])->name('admin.comment.destroy')->whereNumber('id');
+    Route::delete('/admin/publication/destroy{id}', [ AdminController::class, 'destroyPublication'])->name('admin.publication.destroy')->whereNumber('id');
 });
 
 require __DIR__.'/auth.php';
