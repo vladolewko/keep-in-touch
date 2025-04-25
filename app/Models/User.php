@@ -3,12 +3,14 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
@@ -64,7 +66,7 @@ class User extends Authenticatable implements HasMedia
         ];
     }
 
-    // User.php
+    // Relations
     public function publications(): HasMany
     {
         return $this->hasMany(Publication::class);
@@ -91,7 +93,14 @@ class User extends Authenticatable implements HasMedia
     }
 
 
-    public static function getReposts($user)
+    /**
+     * method for getting reposts
+     *
+     * @param $user
+     *
+     * @return array
+     */
+    public static function getReposts($user): array
     {
 
         $reposts_id = UserPublicationRepost::where('user_id', $user->id)->pluck('publication_id');
@@ -115,7 +124,13 @@ class User extends Authenticatable implements HasMedia
     }
 
 
-    public static function getRequests()
+    /**
+     * method for getting requests to subscribe
+     *
+     *
+     * @return array
+     */
+    public static function getRequests(): array
     {
         $user_id = auth()->user()->id;
 
@@ -127,7 +142,14 @@ class User extends Authenticatable implements HasMedia
     }
 
 
-    public static function getPublications($user)
+    /**
+     * method for getting publications
+     *
+     * @param $user
+     *
+     * @return Collection
+     */
+    public static function getPublications($user): Collection
     {
         $publications = Publication::withTrashed()
             ->where('user_id', $user->id)
@@ -150,7 +172,16 @@ class User extends Authenticatable implements HasMedia
     }
 
 
-    public static function sortUsers($parameter = null, $search = null, $filter = null)
+    /**
+     * method for getting list of users
+     *
+     * @param $parameter
+     * @param $search
+     * @param $filter
+     *
+     * @return LengthAwarePaginator
+     */
+    public static function sortUsers($parameter = null, $search = null, $filter = null): LengthAwarePaginator
     {
         $query = User::query();
 
@@ -204,7 +235,16 @@ class User extends Authenticatable implements HasMedia
 
 
 
-    public static function adminSortUsers($parameter = null, $search = null, $filter = null)
+    /**
+     * method for getting comments for admin
+     *
+     * @param $parameter
+     * @param $search
+     * @param $filter
+     *
+     * @return LengthAwarePaginator
+     */
+    public static function adminSortUsers($parameter = null, $search = null, $filter = null): LengthAwarePaginator
     {
         $query = User::query();
 
@@ -267,8 +307,12 @@ class User extends Authenticatable implements HasMedia
 
     /**
      * method for making account private or public
+     *
+     * @param $access
+     *
+     * @return bool
      */
-    public static function changeAccess($access)
+    public static function changeAccess($access): bool
     {
         if ($access == 'private') {
             $access = 1;
@@ -282,8 +326,12 @@ class User extends Authenticatable implements HasMedia
 
     /**
      * method for checking if user has access to account
+     *
+     * @param $user_id
+     *
+     * @return bool
      */
-    public static function checkIfHaveAccess($user_id)
+    public static function checkIfHaveAccess($user_id): bool
     {
         $user = User::find($user_id);
         $subscription = UserSubscription::checkSubscriptionStatus(auth()->user()->id, $user_id);
@@ -302,7 +350,14 @@ class User extends Authenticatable implements HasMedia
     }
 
 
-    public static function blockUser($user_id)
+    /**
+     * method for blocking user by admin
+     *
+     * @param $user_id
+     *
+     * @return bool
+     */
+    public static function blockUser($user_id): bool
     {
         $user = User::find($user_id);
         if ($user) {

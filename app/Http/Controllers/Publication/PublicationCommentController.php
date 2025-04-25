@@ -5,11 +5,20 @@ namespace App\Http\Controllers\Publication;
 use App\Http\Controllers\Controller;
 use App\Models\PublicationComment;
 use App\Models\UserCommentLike;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 class PublicationCommentController extends Controller
 {
-    public function like(Request $request)
+    /**
+     * Method for liking a comment.
+     *
+     * @param Request $request
+     *
+     * @return JsonResponse
+     */
+    public function like(Request $request): JsonResponse
     {
         // Validate the request
         $comment_id = $request->validate([
@@ -22,8 +31,12 @@ class PublicationCommentController extends Controller
 
     /**
      * Method for commenting a publication.
+     *
+     * @param Request $request
+     *
+     * @return RedirectResponse
      */
-    public function storeComment(Request $request)
+    public function storeComment(Request $request): RedirectResponse
     {
         $data =$request->validate([
             'publication_id' => 'required|exists:publications,id',

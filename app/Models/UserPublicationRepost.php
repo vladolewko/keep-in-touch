@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -16,7 +17,7 @@ class UserPublicationRepost extends Model
         'repost_comment'
     ];
 
-    // UserPublicationRepost.php
+    // Relations
     public function user() {
         return $this->belongsTo(User::class);
     }
@@ -28,8 +29,12 @@ class UserPublicationRepost extends Model
 
     /**
      * method for reposting or unreposting a publication
+     *
+     * @param $publication_id
+     *
+     * @return JsonResponse
      */
-    public static function repostPublication($publication_id)
+    public static function repostPublication($publication_id): JsonResponse
     {
         if (!auth()->check()) {
             return response()->json([
@@ -72,13 +77,12 @@ class UserPublicationRepost extends Model
         } catch (\Exception $e) {
             DB::rollBack();
 
-            // Log the actual error for debugging
             Log::error('Repost Error: ' . $e->getMessage());
 
             return response()->json([
                 'success' => false,
                 'message' => 'An error occurred while processing your request.',
-                'error' => $e->getMessage() // Only in development
+                'error' => $e->getMessage()
             ], 500);
         }
     }

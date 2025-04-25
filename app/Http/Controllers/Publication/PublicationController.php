@@ -10,26 +10,28 @@ use App\Models\User;
 use App\Models\UserCommentLike;
 use App\Models\UserPublicationLike;
 use App\Models\UserPublicationRepost;
+use Illuminate\Foundation\Application;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Routing\Redirector;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 
 class PublicationController extends Controller
 {
     /**
      * Display publications list page.
+     *
+     * @param Request $request for sorting
+     *
+     *  @return View
      */
     public function publications(Request $request): View
     {
         $parameter = $request->get('parameter') ?? null;
         $filter = $request->get('filter') ?? null;
         $search = $request->get('search') ?? null;
-//        app()->setLocale('uk');
-//        session()->put('locale', 'uk');
-//        dd(app()->getLocale());
-//
-//        dd(session()->get('locale'));
 
         $publications = Publication::getPublicationsList($parameter, $filter, $search);
 
@@ -38,6 +40,8 @@ class PublicationController extends Controller
 
     /**
      * Display publications list page.
+     *
+     * @return View
      */
     public function subscriptions(): View
     {
@@ -46,8 +50,10 @@ class PublicationController extends Controller
 
     /**
      * Method for creating new publication.
+     *
+     * @param CreatePublicationRequest $request
      */
-    public function create(CreatePublicationRequest $request)
+    public function create(CreatePublicationRequest $request): RedirectResponse
     {
 
         $data = $request->validated();
@@ -63,8 +69,12 @@ class PublicationController extends Controller
 
     /**
      * Method for editing new publication.
+     *
+     * @param int $id
+     *
+     * @return View
      */
-    public function edit($id)
+    public function edit($id): View
     {
         $publication = Publication::findOrFail($id);
         return view('publications/edit', compact('publication'));
@@ -72,6 +82,10 @@ class PublicationController extends Controller
 
     /**
      * Method for updating publication.
+     *
+     * @param Request $request
+     *
+     * @return Application|RedirectResponse|Redirector|object
      */
     public function update(Request $request)
     {
@@ -107,8 +121,12 @@ class PublicationController extends Controller
 
     /**
      * Method for liking/unliking a publication.
+     *
+     * @param Request $request
+     *
+     * @return JsonResponse
      */
-    public function like(Request $request)
+    public function like(Request $request): JsonResponse
     {
         // Validate the request
         $publication_id = $request->validate([
@@ -120,8 +138,12 @@ class PublicationController extends Controller
 
     /**
      * Method for repost/unrepost a publication.
+     *
+     * @param Request $request
+     *
+     * @return JsonResponse
      */
-    public function repost(Request $request)
+    public function repost(Request $request): JsonResponse
     {
         // Validate the request
         $publication_id = $request->validate([
@@ -134,8 +156,12 @@ class PublicationController extends Controller
 
     /**
      * Method for hiding/unhiding a publication.
+     *
+     * @param Request $request
+     *
+     * @return RedirectResponse
      */
-    public function hide(Request $request)
+    public function hide(Request $request): RedirectResponse
     {
         $publication_id = $request->validate([
             'publication_id' => 'required|exists:publications,id'
@@ -147,7 +173,14 @@ class PublicationController extends Controller
     }
 
 
-    public function destroy($publication_id)
+    /**
+     * Method for deleting a publication.
+     *
+     * @param int $publication_id
+     *
+     * @return RedirectResponse
+     */
+    public function destroy(int $publication_id): RedirectResponse
     {
         Publication::destroy($publication_id);
 

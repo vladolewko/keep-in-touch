@@ -10,6 +10,7 @@ use App\Models\UserCommentLike;
 use App\Models\UserPublicationLike;
 use App\Models\UserPublicationRepost;
 use App\Models\UserSubscription;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -17,6 +18,10 @@ class UserController extends Controller
 {
     /**
      * Display the users list page.
+     *
+     * @param Request $request for sorting
+     *
+     * @return View
      */
     public function users(Request $request): View
     {
@@ -35,6 +40,10 @@ class UserController extends Controller
 
     /**
      * Display the users list page.
+     *
+     * @param $id
+     *
+     * @return View
      */
     public function profile($id): View
     {
@@ -53,8 +62,12 @@ class UserController extends Controller
 
     /**
      * method for subscribing/unsubscribing to a user.
+     *
+     * @param Request $request
+     *
+     * @return RedirectResponse
      */
-    public function changeSubscription(Request $request)
+    public function changeSubscription(Request $request): RedirectResponse
     {
         $user_id = $request->validate([
             'user_id' => 'required|integer|exists:users,id',

@@ -15,6 +15,7 @@
                 @foreach($requests as $user)
                         <div class="mx-auto py-12">
                             <div class="bg-gray-800 rounded-lg overflow-hidden border border-gray-700 p-6">
+
                                 <!-- Profile header -->
                                 <div class="flex items-center justify-between mb-6 border-b border-gray-700 pb-4">
                                     <div class="flex items-center">
@@ -28,15 +29,6 @@
                                             <p class="text-gray-400 text-sm">{{ $user->name }} {{ $user->surname ?? '' }}</p>
                                         </div>
                                     </div>
-{{--                                    @if($user->is_subscribed === 'requested')--}}
-{{--                                        <div>--}}
-{{--                                            <p class="text-black dark:text-gray-200">Requested</p>--}}
-{{--                                        </div>--}}
-{{--                                    @elseif($user->is_subscribed === true)--}}
-{{--                                        <div>--}}
-{{--                                            <p class="text-black dark:text-yellow-200">Subscribed</p>--}}
-{{--                                        </div>--}}
-{{--                                    @endif--}}
                                 </div>
 
                                 <!-- Profile details -->
@@ -102,15 +94,6 @@
                                             <p class="text-gray-400 text-sm">{{ $user->name }} {{ $user->surname ?? '' }}</p>
                                         </div>
                                     </div>
-                                    {{--                                    @if($user->is_subscribed === 'requested')--}}
-                                    {{--                                        <div>--}}
-                                    {{--                                            <p class="text-black dark:text-gray-200">Requested</p>--}}
-                                    {{--                                        </div>--}}
-                                    {{--                                    @elseif($user->is_subscribed === true)--}}
-                                    {{--                                        <div>--}}
-                                    {{--                                            <p class="text-black dark:text-yellow-200">Subscribed</p>--}}
-                                    {{--                                        </div>--}}
-                                    {{--                                    @endif--}}
                                 </div>
 
                                 <!-- Profile details -->

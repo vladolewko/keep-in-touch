@@ -13,6 +13,7 @@
                     @foreach($subscriptions as $user)
                         <div class="mx-auto py-12">
                             <div class="bg-gray-800 rounded-lg overflow-hidden border border-gray-700 p-6">
+
                                 <!-- Profile header -->
                                 <div class="flex items-center justify-between mb-6 border-b border-gray-700 pb-4">
                                     <div class="flex items-center">

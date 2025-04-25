@@ -7,17 +7,29 @@ use App\Models\Publication;
 use App\Models\PublicationComment;
 use App\Models\User;
 use App\Models\UserNotification;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class AdminController extends Controller
 {
-    public function index()
+    /**
+     * Display the admin dashboard.
+     *
+     * @return View
+     */
+    public function index(): View
     {
         return view('admin.dashboard');
     }
 
-    public function users(Request $request)
+    /**
+     * Display the admin users table page.
+     *
+     * @param Request $request? for sorting
+     * @return View
+     */
+    public function users(Request $request): View
     {
         $parameter = $request->get('parameter') ?? null;
         $search = $request->get('search') ?? null;
@@ -26,6 +38,12 @@ class AdminController extends Controller
         return view('admin.users', compact('users'));
     }
 
+    /**
+     * Display the admin publications table page.
+     *
+     * @param Request $request? for sorting
+     * @return View
+     */
     public function publications(Request $request): View
     {
         $parameter = $request->get('parameter') ?? null;
@@ -37,6 +55,12 @@ class AdminController extends Controller
         return view('admin.publications', compact('publications'));
     }
 
+    /**
+     * Display the admin comments table page.
+     *
+     * @param Request $request? for sorting
+     * @return View
+     */
     public function comments(Request $request): View
     {
         $parameter = $request->get('parameter') ?? null;
@@ -49,6 +73,13 @@ class AdminController extends Controller
     }
 
 
+    /**
+     * Destroy comment
+     *
+     * @param $id
+     *
+     * @return RedirectResponse
+     */
     public function destroyComment($id)
     {
         $comment = PublicationComment::findOrFail($id);
@@ -56,6 +87,13 @@ class AdminController extends Controller
         return redirect()->back()->with('success', 'Comment deleted successfully.');
     }
 
+    /**
+     * Destroy publication
+     *
+     * @param $id
+     *
+     * @return RedirectResponse
+     */
     public function destroyPublication($id)
     {
         $comment = Publication::findOrFail($id);
@@ -64,6 +102,13 @@ class AdminController extends Controller
     }
 
 
+    /**
+     * Destroy or restore user
+     *
+     * @param $id
+     *
+     * @return RedirectResponse
+     */
     public function blockUser($id)
     {
         $user = User::withTrashed()->findOrFail($id);
@@ -78,12 +123,27 @@ class AdminController extends Controller
         return redirect()->back()->with('success', 'User status updated successfully.');
     }
 
-    public function writeMessage($id, $comment)
+    /**
+     * Display the admin send message page.
+     *
+     * @param $id
+     * @param $comment
+     * @return View
+     */
+    public function writeMessage($id, $comment): View
     {
         $user = User::findOrFail($id);
         return view('admin.send-message', compact('user',  'comment'));
     }
 
+    /**
+     * Send message to user
+     *
+     * @param Request $request
+     * @param $sended_to_id
+     *
+     * @return RedirectResponse
+     */
     public function sendMessage(Request $request, $sended_to_id)
     {
         $data = $request->validate([

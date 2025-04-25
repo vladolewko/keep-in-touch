@@ -7,7 +7,6 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <!-- Styled Sort Filters -->
             <div class="mb-6">
                 <h3 class="text-lg font-medium text-gray-700 dark:text-gray-300 mb-3">Sort by:</h3>
                 <div class="flex flex-wrap gap-2">

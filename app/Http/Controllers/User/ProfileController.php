@@ -22,6 +22,8 @@ class ProfileController extends Controller
 {
     /**
      * Display the user's profile page.
+     *
+     * @return View
      */
     public function profile(): View
     {
@@ -36,6 +38,8 @@ class ProfileController extends Controller
 
     /**
      * Display the user's followers page.
+     *
+     * @return View
      */
     public function followers(): View
     {
@@ -49,6 +53,10 @@ class ProfileController extends Controller
 
     /**
      * manage subscribitors
+     *
+     * @param Request $request
+     *
+     * @return RedirectResponse
      */
     public function manageSubscribitors(Request $request)
     {
@@ -62,6 +70,8 @@ class ProfileController extends Controller
 
     /**
      * Display the user's subscriptions page.
+     *
+     * @return View
      */
     public function subscriptions(): View
     {
@@ -77,12 +87,20 @@ class ProfileController extends Controller
 
     /**
      * Display the user's profile settings page.
+     *
+     * @return View
      */
     public function settings(): View
     {
         return view('profile/profileSettings');
     }
 
+
+    /**
+     * Display the user's notifications page.
+     *
+     * @return View
+     */
     public function notifications(): View
     {
         $notifications = UserNotification::where('sended_to_id', auth()->user()->id)->get();
@@ -90,7 +108,15 @@ class ProfileController extends Controller
         return view('profile/notifications', compact('notifications'));
     }
 
-    public function readNotification($id)
+
+    /**
+     * Method for check notification read status
+     *
+     * @param int $id
+     *
+     * @return RedirectResponse
+     */
+    public function readNotification($id): RedirectResponse
     {
         UserNotification::where('id', $id)->update(['is_read' => 1]);
         return back();
@@ -98,6 +124,10 @@ class ProfileController extends Controller
 
     /**
      * Display the user's profile edit form.
+     *
+     * @param Request $request
+     *
+     * @return View
      */
     public function edit(Request $request): View
     {
@@ -108,11 +138,14 @@ class ProfileController extends Controller
 
     /**
      * Update the user's profile information.
+     *
+     * @param ProfileUpdateRequest $request
+     *
+     * @return RedirectResponse
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
         if ($request->has('remove_image')) {
-            // Just remove the image, don't update other fields
             auth()->user()->clearMediaCollection('profile_images');
         } else {
             $request->user()->fill($request->validated());
@@ -120,13 +153,12 @@ class ProfileController extends Controller
             if ($request->user()->isDirty('email')) {
                 $request->user()->email_verified_at = null;
             }
-//        dd($request->validated('profile_image'));
+
             $request->user()->addMedia($request->validated('profile_image'))
                 ->toMediaCollection('profile_images');
 
             $request->user()->save();
         }
-
 
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }
@@ -134,8 +166,12 @@ class ProfileController extends Controller
 
     /**
      * Change access to account
+     *
+     * @param Request $request
+     *
+     * @return RedirectResponse
      */
-    public function changeAccess(Request $request)
+    public function changeAccess(Request $request): RedirectResponse
     {
         User::where('id', auth()->user()->id)->update(['is_private' => $request->input('access')]);
 
@@ -144,6 +180,10 @@ class ProfileController extends Controller
 
     /**
      * Delete the user's account.
+     *
+     * @param Request $request
+     *
+     * @return RedirectResponse
      */
     public function destroy(Request $request): RedirectResponse
     {

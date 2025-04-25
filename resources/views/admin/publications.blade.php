@@ -9,7 +9,6 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6 mb-5">
 
-                <!-- Styled Sort Filters -->
                 <div class="mb-6">
                     <h3 class="text-lg font-medium text-gray-700 dark:text-gray-300 mb-3">Sort by:</h3>
                     <div class="flex flex-wrap gap-2">
@@ -125,7 +124,6 @@
                 </div>
 
             </div>
-            {{--            @include('components.publication')--}}
 
             <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                 <thead class="bg-gray-50 dark:bg-gray-700">
@@ -178,7 +176,6 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                 </svg>
-                                </a>
                                 <form action="{{ route('admin.publication.destroy', ['id' => $publication->id]) }}" method="POST" class="inline">
                                     @csrf
                                     @method('delete')

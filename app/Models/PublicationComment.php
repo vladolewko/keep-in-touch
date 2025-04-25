@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -17,7 +18,7 @@ class PublicationComment extends Model
         'likes',
     ];
 
-    // PublicationComment.php
+    // Relations
     public function user() {
         return $this->belongsTo(User::class);
     }
@@ -30,9 +31,16 @@ class PublicationComment extends Model
         return $this->belongsTo(Publication::class);
     }
 
-    public static function likeComment($publication_id)
+
+    /**
+     * method for liking/unliking a comment
+     *
+     * @param $publication_id
+     *
+     * @return JsonResponse
+     */
+    public static function likeComment($publication_id): JsonResponse
     {
-        // Ensure user is authenticated
         if (!auth()->check()) {
             return response()->json([
                 'success' => false,
@@ -44,7 +52,7 @@ class PublicationComment extends Model
 
         DB::beginTransaction();
         try {
-            $existingLike = PublicationLi::where('user_id', $user_id)
+            $existingLike = UserCommentLike::where('user_id', $user_id)
                 ->where('publication_id', $publication_id)
                 ->first();
 
@@ -87,7 +95,18 @@ class PublicationComment extends Model
         }
     }
 
-    public static function AdminGetComments($parameter, $search)
+
+    // Admin methods
+
+    /**
+     * method for getting comments for admin
+     *
+     * @param $parameter
+     * @param $search
+     *
+     * @return array
+     */
+    public static function AdminGetComments($parameter, $search): array
     {
         $query = PublicationComment::query();
 

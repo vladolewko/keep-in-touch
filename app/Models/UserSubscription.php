@@ -22,8 +22,13 @@ class UserSubscription extends Model
 
     /**
      * method for checking status of subscription to another user
+     *
+     * @param $userId
+     * @param $subscribedToId
+     *
+     * @return bool|string
      */
-    public static function checkSubscriptionStatus($userId, $subscribedToId)
+    public static function checkSubscriptionStatus($userId, $subscribedToId): bool|string
     {
         $subscription = UserSubscription::where('user_id', $userId)
             ->where('subscribed_to_id', $subscribedToId)
@@ -42,8 +47,12 @@ class UserSubscription extends Model
 
     /**
      * method for subscribing or unsubscribing to another user
+     *
+     * @param $subscribed_to_id
+     *
+     * @return void
      */
-    public static function changeSubscription($subscribed_to_id)
+    public static function changeSubscription($subscribed_to_id): void
     {
         $user_id = auth()->user()->id;
         $userAccess = User::where('id', $subscribed_to_id)->value('is_private');
@@ -65,8 +74,13 @@ class UserSubscription extends Model
 
     /**
      * method for subscribing/unsubscribing followers
+     *
+     * @param $user_id
+     * @param $action
+     *
+     * @return void
      */
-    public static function manageSubscribitors($user_id, $action)
+    public static function manageSubscribitors($user_id, $action): void
     {
         if ($action == 'decline') {
             UserSubscription::where('user_id', $user_id)

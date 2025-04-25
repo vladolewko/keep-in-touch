@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
@@ -28,7 +30,7 @@ class Publication extends Model implements HasMedia
         'reposts'
     ];
 
-    // Publication.php
+    // Relations
     public function likes() {
         return $this->hasMany(UserPublicationLike::class);
     }
@@ -45,7 +47,19 @@ class Publication extends Model implements HasMedia
         return $this->belongsTo(User::class);
     }
 
-    public static function getPublicationsList($parameter, $filter, $search)
+
+    // Users Methods
+
+    /**
+     * method for getting list of publications
+     *
+     * @param $parameter
+     * @param $filter
+     * @param $search
+     *
+     * @return array
+     */
+    public static function getPublicationsList($parameter, $filter, $search): array
     {
 
         $publications = Publication::sortPublication($parameter, $filter, $search);
@@ -64,20 +78,14 @@ class Publication extends Model implements HasMedia
         return $publications;
     }
 
-    public static function AdminGetPublications($parameter, $filter, $search)
-    {
-
-        $publications = Publication::sortPublication($parameter, $filter, $search);
-
-        foreach ($publications as $publication) {
-            $publication->nickname = User::withTrashed()->where('id', $publication->user_id)->value('nickname');
-//            $publication->comments = PublicationComment::where('publication_id', $publication->id)->with('user:id,nickname')->get();
-        }
-        return $publications;
-    }
-
-
-    public static function togglePublication($publication_id)
+    /**
+     * method for toggle publication status
+     *
+     * @param $publication_id
+     *
+     * @return void
+     */
+    public static function togglePublication($publication_id): void
     {
         $publication = Publication::withTrashed()->find($publication_id);
 
@@ -90,7 +98,14 @@ class Publication extends Model implements HasMedia
         }
     }
 
-    public static function destroy($publication_id)
+    /**
+     * method for delete publication
+     *
+     * @param $publication_id
+     *
+     * @return void
+     */
+    public static function destroy($publication_id): void
     {
         $publication = Publication::withTrashed()->findOrFail($publication_id);
         $publication->clearMediaCollection();
@@ -98,7 +113,16 @@ class Publication extends Model implements HasMedia
     }
 
 
-    public static function sortPublication($parameter = null, $filter = null, $search = null)
+    /**
+     * method for sorting list of publications
+     *
+     * @param $parameter
+     * @param $filter
+     * @param $search
+     *
+     * @return array
+     */
+    public static function sortPublication($parameter = null, $filter = null, $search = null): array
     {
         $query = Publication::query();
         $query->with('user');
@@ -141,6 +165,30 @@ class Publication extends Model implements HasMedia
             $query->orderBy('updated_at', 'desc');
         }
         return $query->paginate(10);
+    }
+
+
+    // Admin Methods
+
+
+    /**
+     * method for getting list of publications
+     *
+     * @param $parameter
+     * @param $filter
+     * @param $search
+     *
+     * @return array
+     */
+    public static function AdminGetPublications($parameter, $filter, $search)
+    {
+
+        $publications = Publication::sortPublication($parameter, $filter, $search);
+
+        foreach ($publications as $publication) {
+            $publication->nickname = User::withTrashed()->where('id', $publication->user_id)->value('nickname');
+        }
+        return $publications;
     }
 
 }

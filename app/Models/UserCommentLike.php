@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -15,7 +16,7 @@ class UserCommentLike extends Model
         'comment_id',
         ];
 
-    // UserCommentLike.php
+    // Relations
     public function user() {
         return $this->belongsTo(User::class);
     }
@@ -26,9 +27,13 @@ class UserCommentLike extends Model
 
 
     /**
-     * method for likeing or unliking a publication
+     * method for liking or unliking a publication
+     *
+     * @param $comment_id
+     *
+     * @return JsonResponse
      */
-    public static function likePublication($comment_id)
+    public static function likePublication($comment_id): JsonResponse
     {
         // Ensure user is authenticated
         if (!auth()->check()) {
