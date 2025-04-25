@@ -11,7 +11,7 @@
                 <div class="mb-6">
                     <div class="flex flex-wrap justify-center gap-2">
                         <a href="{{ route('publications.sort', ['parameter' => 'likes ASC', 'filter' => request()->get('filter'), 'search' => request()->get('search')]) }}"
-                           class="px-4 py-2 {{ request()->get('parameter') === 'likes ASC' ? 'bg-blue-500 text-white' : 'bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600' }} rounded-md text-sm font-medium transition-colors duration-150 flex items-center">
+                           class="px-4 py-2 {{ request()->get('parameter') === 'likes ASC' ? 'bg-blue-500 text-white' : 'bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600' }} dark:text-gray-400 rounded-md text-sm font-medium transition-colors duration-150 flex items-center">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
                             </svg>
@@ -19,7 +19,7 @@
                         </a>
 
                         <a href="{{ route('publications.sort', ['parameter' => 'likes DESC', 'filter' => request()->get('filter'), 'search' => request()->get('search')]) }}"
-                           class="px-4 py-2 {{ request()->get('parameter') === 'likes DESC' ? 'bg-blue-500 text-white' : 'bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600' }} rounded-md text-sm font-medium transition-colors duration-150 flex items-center">
+                           class="px-4 py-2 {{ request()->get('parameter') === 'likes DESC' ? 'bg-blue-500 text-white' : 'bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600' }} dark:text-gray-400 rounded-md text-sm font-medium transition-colors duration-150 flex items-center">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                             </svg>
@@ -27,7 +27,7 @@
                         </a>
 
                         <a href="{{ route('publications.sort', ['parameter' => 'newest', 'filter' => request()->get('filter'), 'search' => request()->get('search')]) }}"
-                           class="px-4 py-2 {{ !request()->get('parameter') || request()->get('parameter') == 'newest' ? 'bg-blue-500 text-white' : 'bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600' }} rounded-md text-sm font-medium transition-colors duration-150 flex items-center">
+                           class="px-4 py-2 {{ !request()->get('parameter') || request()->get('parameter') == 'newest' ? 'bg-blue-500 text-white' : 'bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600' }} dark:text-gray-400 rounded-md text-sm font-medium transition-colors duration-150 flex items-center">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
@@ -35,7 +35,7 @@
                         </a>
 
                         <a href="{{ route('publications.sort', ['parameter' => 'oldest', 'filter' => request()->get('filter'), 'search' => request()->get('search')]) }}"
-                           class="px-4 py-2 {{ request()->get('parameter') === 'oldest' ? 'bg-blue-500 text-white' : 'bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600' }} rounded-md text-sm font-medium transition-colors duration-150 flex items-center">
+                           class="px-4 py-2 {{ request()->get('parameter') === 'oldest' ? 'bg-blue-500 text-white' : 'bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600' }} dark:text-gray-400 rounded-md text-sm font-medium transition-colors duration-150 flex items-center">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
@@ -43,7 +43,7 @@
                         </a>
 
                         <a href="{{ route('publications.sort', ['parameter' => 'reposts ASC', 'filter' => request()->get('filter'), 'search' => request()->get('search')]) }}"
-                           class="px-4 py-2 {{ request()->get('parameter') === 'reposts ASC' ? 'bg-blue-500 text-white' : 'bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600' }} rounded-md text-sm font-medium transition-colors duration-150 flex items-center">
+                           class="px-4 py-2 {{ request()->get('parameter') === 'reposts ASC' ? 'bg-blue-500 text-white' : 'bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600' }} dark:text-gray-400 rounded-md text-sm font-medium transition-colors duration-150 flex items-center">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
                             </svg>
@@ -51,7 +51,7 @@
                         </a>
 
                         <a href="{{ route('publications.sort', ['parameter' => 'reposts DESC', 'filter' => request()->get('filter'), 'search' => request()->get('search')]) }}"
-                           class="px-4 py-2 {{ request()->get('parameter') === 'reposts DESC' ? 'bg-blue-500 text-white' : 'bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600' }} rounded-md text-sm font-medium transition-colors duration-150 flex items-center">
+                           class="px-4 py-2 {{ request()->get('parameter') === 'reposts DESC' ? 'bg-blue-500 text-white' : 'bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600' }} dark:text-gray-400 rounded-md text-sm font-medium transition-colors duration-150 flex items-center">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                             </svg>
@@ -59,7 +59,7 @@
                         </a>
 
                         <a href="{{ route('publications.sort', ['parameter' => 'comments ASC', 'filter' => request()->get('filter'), 'search' => request()->get('search')]) }}"
-                           class="px-4 py-2 {{ request()->get('parameter') === 'comments ASC' ? 'bg-blue-500 text-white' : 'bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600' }} rounded-md text-sm font-medium transition-colors duration-150 flex items-center">
+                           class="px-4 py-2 {{ request()->get('parameter') === 'comments ASC' ? 'bg-blue-500 text-white' : 'bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600' }} dark:text-gray-400  dark:text-gray-400 rounded-md text-sm font-medium transition-colors duration-150 flex items-center">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                             </svg>
@@ -67,7 +67,7 @@
                         </a>
 
                         <a href="{{ route('publications.sort', ['parameter' => 'comments DESC', 'filter' => request()->get('filter'), 'search' => request()->get('search')]) }}"
-                           class="px-4 py-2 {{ request()->get('parameter') === 'comments DESC' ? 'bg-blue-500 text-white' : 'bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600' }} rounded-md text-sm font-medium transition-colors duration-150 flex items-center">
+                           class="px-4 py-2 {{ request()->get('parameter') === 'comments DESC' ? 'bg-blue-500 text-white' : 'bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600' }} dark:text-gray-400 rounded-md text-sm font-medium transition-colors duration-150 flex items-center">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
                             </svg>

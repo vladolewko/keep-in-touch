@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Http\RedirectResponse;
@@ -43,8 +44,9 @@ class Publication extends Model implements HasMedia
         return $this->hasMany(PublicationComment::class);
     }
 
-    public function user() {
-        return $this->belongsTo(User::class);
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id')->withTrashed();
     }
 
 
@@ -64,15 +66,20 @@ class Publication extends Model implements HasMedia
         $publications = Publication::sortPublication($parameter, $filter, $search);
 
         foreach ($publications as $publication) {
-            $publication->nickname = $publication->user->nickname;
-            $publication->is_liked = $publication->likes()->where('user_id', auth()->user()->id)->where('publication_id', $publication->id)->exists();
-            $publication->is_reposted = $publication->reposts()->where('user_id', auth()->user()->id)->where('publication_id', $publication->id)->exists();
-            $publication->commentsCount = $publication->comments->count();
+            if ($publication->user) {
+                $publication->nickname = $publication->user->nickname;
+                $publication->is_liked = $publication->likes()->where('user_id', auth()->user()->id)->where('publication_id', $publication->id)->exists();
+                $publication->is_reposted = $publication->reposts()->where('user_id', auth()->user()->id)->where('publication_id', $publication->id)->exists();
+                $publication->commentsCount = $publication->comments->count();
 
-            foreach ($publication->comments as $comment) {
-                $comment->nickname = $comment->user->nickname;
-                $comment->is_liked = $comment->likes()->where('user_id', auth()->user()->id)->exists();
+                foreach ($publication->comments as $comment) {
+                    $comment->nickname = $comment->user->nickname;
+                    $comment->is_liked = $comment->likes()->where('user_id', auth()->user()->id)->exists();
+                }
+            } else {
+              continue;
             }
+
         }
         return $publications;
     }
@@ -123,7 +130,7 @@ class Publication extends Model implements HasMedia
     public static function sortPublication($parameter = null, $filter = null, $search = null)
     {
         $query = Publication::query();
-        $query->with('user');
+
 
         if (auth()->check()) {
             $query->where('user_id', '!=', auth()->user()->id);
