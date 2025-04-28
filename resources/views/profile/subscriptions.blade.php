@@ -56,7 +56,7 @@
                                     @if($user->subscription_status === 'requested')
 
                                         <x-secondary-button type="submit">
-                                            Requested
+                                            {{ __('buttons.requested') }}
                                         </x-secondary-button>
                                     @elseif($user->subscription_status === true)
                                         <x-primary-button>
@@ -65,7 +65,7 @@
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                       d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
                                             </svg>
-                                            Unsubscribe
+                                            {{ __('buttons.unsubscribe') }}
                                         </x-primary-button>
                                     @elseif($user->subscription_status === false)
                                         <x-primary-button>
@@ -74,7 +74,7 @@
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                       d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
                                             </svg>
-                                            Subscribe
+                                            {{ __('buttons.subscribe') }}
                                         </x-primary-button>
                                     @endif
 

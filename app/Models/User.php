@@ -14,14 +14,13 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
-
 class User extends Authenticatable implements HasMedia
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory,
-        Notifiable,
-        InteractsWithMedia,
-        softDeletes;
+    use HasFactory;
+    use Notifiable;
+    use InteractsWithMedia;
+    use softDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -251,7 +250,7 @@ class User extends Authenticatable implements HasMedia
             $query = User::onlyTrashed();
         } elseif ($filter == 'unblocked') {
             $query = User::where('role', '!=', 'admin');
-        }  else {
+        } else {
             $query = User::withTrashed();
         }
 

@@ -17,11 +17,13 @@ class UserCommentLike extends Model
         ];
 
     // Relations
-    public function user() {
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
 
-    public function comment() {
+    public function comment()
+    {
         return $this->belongsTo(PublicationComment::class, 'comment_id');
     }
 

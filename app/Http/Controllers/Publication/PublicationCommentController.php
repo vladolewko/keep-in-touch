@@ -38,7 +38,7 @@ class PublicationCommentController extends Controller
      */
     public function storeComment(Request $request): RedirectResponse
     {
-        $data =$request->validate([
+        $data = $request->validate([
             'publication_id' => 'required|exists:publications,id',
             'comment' => 'required|string|max:255',
         ]);

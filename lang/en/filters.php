@@ -6,8 +6,8 @@ return [
     'likesHigh-low' => 'Likes (High to Low)',
     'newest' => 'Newest',
     'oldest' => 'Oldest',
-    'repliesLow-high' => 'Replies (Low to High)',
-    'repliesHigh-low' => 'Replies (High to Low)',
+    'repostsLow-high' => 'Reposts (Low to High)',
+    'repostsHigh-low' => 'Reposts (High to Low)',
     'commentsLow-high' => 'Comments (Low to High)',
     'commentsHigh-low' => 'Comments (High to Low)',
 

@@ -67,7 +67,7 @@ class AdminController extends Controller
         $search = $request->get('search') ?? null;
 
         $comments = PublicationComment::adminGetComments($parameter, $search);
-//        $comments = PublicationComment::paginate(10);
+        //        $comments = PublicationComment::paginate(10);
 
         return view('admin.comments', compact('comments'));
     }
@@ -133,7 +133,7 @@ class AdminController extends Controller
     public function writeMessage($id, $comment): View
     {
         $user = User::findOrFail($id);
-        return view('admin.send-message', compact('user',  'comment'));
+        return view('admin.send-message', compact('user', 'comment'));
     }
 
     /**

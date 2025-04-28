@@ -10,7 +10,8 @@ class UserSubscription extends Model
 {
     /** @use HasFactory<\Database\Factories\UserSubscriptionFactory> */
 
-    use SoftDeletes, HasFactory;
+    use SoftDeletes;
+    use HasFactory;
     protected $table = 'user_subscriptions';
     protected $primaryKey = 'id';
     protected $fillable = [

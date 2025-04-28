@@ -37,30 +37,29 @@
                                     </div>
 
                                     <!-- Profile details -->
-                                    <div class="space-y-4">
+                                    <div class="space-y-4 mb-2">
                                         <div class="flex">
-                                            <div class="w-28 text-gray-400 font-semibold text-sm">Name:</div>
+                                            <div class="w-28 text-gray-400 font-semibold text-sm">{{ __('profile-info.name') }}:</div>
                                             <div class="text-white text-sm flex-1">{{ $user->name }}</div>
                                         </div>
 
                                         <div class="flex">
-                                            <div class="w-28 text-gray-400 font-semibold text-sm">Surname:</div>
+                                            <div class="w-28 text-gray-400 font-semibold text-sm">{{ __('profile-info.surname') }}:</div>
                                             <div class="text-white text-sm flex-1">{{ $user->surname ?? '-' }}</div>
                                         </div>
 
                                         <div class="flex">
-                                            <div class="w-28 text-gray-400 font-semibold text-sm">Nickname:</div>
+                                            <div class="w-28 text-gray-400 font-semibold text-sm">{{ __('profile-info.nickname') }}:</div>
                                             <div class="text-white text-sm flex-1">{{ $user->nickname }}</div>
                                         </div>
 
 
                                         <div class="flex">
-                                            <div class="w-28 text-gray-400 font-semibold text-sm">Bio:</div>
+                                            <div class="w-28 text-gray-400 font-semibold text-sm">{{ __('profile-info.bio') }}:</div>
                                             <div class="text-white text-sm flex-1">{{ $user->bio ?? '-' }}</div>
                                         </div>
 
                                     </div>
-                                    <p><a href="{{ route('users.profile', ['id' => $user->id]) }}">go to page</a></p>
                                     <form
                                         action="{{ route('user.manageSubscribitors', ['subscriber_id' => $user->id]) }}"
                                         method="post">
@@ -68,11 +67,11 @@
                                         @method('patch')
 
                                         <x-primary-button name="action" value="accept">
-                                            Accept
+                                            {{ __('buttons.accept') }}
                                         </x-primary-button>
 
                                         <x-danger-button name="action" value="decline">
-                                            Decline
+                                            {{ __('buttons.decline') }}
                                         </x-danger-button>
 
                                     </form>
@@ -89,7 +88,7 @@
 
                     <div class="p-6 text-gray-900 dark:text-gray-100">
                         <h3 class="text-center  p-4  block text-lg font-semibold text-gray-700 dark:text-gray-200">
-                            Followers</h3>
+                            {{ __('navigation.followers') }}</h3>
                         @foreach($followers as $user)
                             <div class="mx-auto py-12">
                                 <div class="bg-gray-800 rounded-lg overflow-hidden border border-gray-700 p-6 bg-opacity-75">
@@ -112,30 +111,29 @@
                                     </div>
 
                                     <!-- Profile details -->
-                                    <div class="space-y-4">
+                                    <div class="space-y-4 mb-2">
                                         <div class="flex">
-                                            <div class="w-28 text-gray-400 font-semibold text-sm">Name:</div>
+                                            <div class="w-28 text-gray-400 font-semibold text-sm">{{ __('profile-info.name') }}:</div>
                                             <div class="text-white text-sm flex-1">{{ $user->name }}</div>
                                         </div>
 
                                         <div class="flex">
-                                            <div class="w-28 text-gray-400 font-semibold text-sm">Surname:</div>
+                                            <div class="w-28 text-gray-400 font-semibold text-sm">{{ __('profile-info.surname') }}:</div>
                                             <div class="text-white text-sm flex-1">{{ $user->surname ?? '-' }}</div>
                                         </div>
 
                                         <div class="flex">
-                                            <div class="w-28 text-gray-400 font-semibold text-sm">Nickname:</div>
+                                            <div class="w-28 text-gray-400 font-semibold text-sm">{{ __('profile-info.nickname') }}:</div>
                                             <div class="text-white text-sm flex-1">{{ $user->nickname }}</div>
                                         </div>
 
 
                                         <div class="flex">
-                                            <div class="w-28 text-gray-400 font-semibold text-sm">Bio:</div>
+                                            <div class="w-28 text-gray-400 font-semibold text-sm">{{ __('profile-info.bio') }}:</div>
                                             <div class="text-white text-sm flex-1">{{ $user->bio ?? '-' }}</div>
                                         </div>
 
                                     </div>
-                                    <p><a href="{{ route('users.profile', ['id' => $user->id]) }}">go to page</a></p>
 
                                     <form
                                         action="{{ route('user.manageSubscribitors', ['subscriber_id' => $user->id]) }}"
@@ -143,7 +141,7 @@
                                         @csrf
                                         @method('patch')
                                         <x-danger-button type="submit" name="action" value="decline">
-                                            Remove
+                                            {{ __('buttons.remove') }}
                                         </x-danger-button>
 
                                     </form>

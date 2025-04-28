@@ -11,14 +11,12 @@ use Illuminate\Http\Request;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
-
 class Publication extends Model implements HasMedia
 {
-
     /** @use HasFactory<\Database\Factories\PublicationFactory> */
-    use HasFactory,
-        SoftDeletes,
-        InteractsWithMedia;
+    use HasFactory;
+    use SoftDeletes;
+    use InteractsWithMedia;
 
     protected $table = 'publications';
     protected $primaryKey = 'id';
@@ -32,15 +30,18 @@ class Publication extends Model implements HasMedia
     ];
 
     // Relations
-    public function likes() {
+    public function likes()
+    {
         return $this->hasMany(UserPublicationLike::class);
     }
 
-    public function reposts() {
+    public function reposts()
+    {
         return $this->hasMany(UserPublicationRepost::class);
     }
 
-    public function comments() {
+    public function comments()
+    {
         return $this->hasMany(PublicationComment::class);
     }
 
@@ -77,7 +78,7 @@ class Publication extends Model implements HasMedia
                     $comment->is_liked = $comment->likes()->where('user_id', auth()->user()->id)->exists();
                 }
             } else {
-              continue;
+                continue;
             }
 
         }
@@ -166,7 +167,7 @@ class Publication extends Model implements HasMedia
             $query->orderBy('id', 'asc');
         } elseif ($parameter === 'id DESC') {
             $query->orderBy('id', 'desc');
-        }else {
+        } else {
             $query->orderBy('updated_at', 'desc');
         }
         return $query->paginate(10);
