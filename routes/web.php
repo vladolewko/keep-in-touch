@@ -15,6 +15,9 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/publications', [PublicationController::class, 'publications'])->name('publications');
+
+
 Route::middleware(['auth', LanguageMiddleware::class])->group(function () {
     //auth routes
     Route::get('/profile/settings', [ProfileController::class, 'settings'])->name('profile.settings');
@@ -29,7 +32,7 @@ Route::middleware(['auth', LanguageMiddleware::class])->group(function () {
     Route::get('/profile/subscriptions', [ProfileController::class, 'subscriptions'])->name('profile.subscriptions');
 
     //publications routes
-    Route::get('/publications', [PublicationController::class, 'publications'])->name('publications');
+//    Route::get('/publications', [PublicationController::class, 'publications'])->name('publications');
     Route::get('/publications/sort', [PublicationController::class, 'publications'])->name('publications.sort');
     Route::get('/publications/subscriptions', [PublicationController::class, 'subscriptions'])->name('publications.subscriptions');
     Route::put('/publications/create', [PublicationController::class, 'create'])->name('publications.create');
@@ -53,7 +56,6 @@ Route::middleware(['auth', LanguageMiddleware::class])->group(function () {
     Route::patch('/users/manageSubscribitors', [ProfileController::class, 'manageSubscribitors'])->name('user.manageSubscribitors');
 
 });
-
 
 // admin routes
 Route::middleware(AdminMiddleware::class)->group(function () {

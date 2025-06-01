@@ -17,9 +17,17 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
+use App\Http\Services\GoogleTagManagerService;
 
 class PublicationController extends Controller
 {
+    protected $googleTagManagerService;
+
+    public function __construct(GoogleTagManagerService $googleTagManagerService)
+    {
+        $this->googleTagManagerService = $googleTagManagerService;
+    }
+
     /**
      * Display publications list page.
      *
@@ -61,10 +69,15 @@ class PublicationController extends Controller
 
         $publication = Publication::create($data);
 
-        $publication->addMedia($data['image'])
-            ->toMediaCollection('publication_images');
+        $createPublicationGTM = $this->googleTagManagerService->createPublication($publication);
+        // dd($createPublicationGTM);
 
-        return back();
+        if (isset($data['image'])) {
+            $publication->addMedia($data['image'])
+                ->toMediaCollection('publication_images');
+        }
+
+        return back()->with(' ', $createPublicationGTM);
     }
 
     /**

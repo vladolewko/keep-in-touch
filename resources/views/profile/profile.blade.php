@@ -79,4 +79,10 @@
 
         </div>
     </div>
+    @if(session('createPublicationGTM'))
+        <script>
+            window.dataLayer.push(@json(session('createPublicationGTM')));
+            console.log(dataLayer);
+        </script>
+    @endif
 </x-app-layout>

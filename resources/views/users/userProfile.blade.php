@@ -17,4 +17,10 @@
             @endif
         </div>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            window.dataLayer.push(@json($profileGTM));
+            console.log(dataLayer);
+        });
+    </script>
 </x-app-layout>

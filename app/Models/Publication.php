@@ -66,11 +66,15 @@ class Publication extends Model implements HasMedia
 
         $publications = Publication::sortPublication($parameter, $filter, $search);
 
+        $user_id = auth()->user()->id;
+//        $user_id = 1;
+
+
         foreach ($publications as $publication) {
             if ($publication->user) {
                 $publication->nickname = $publication->user->nickname;
-                $publication->is_liked = $publication->likes()->where('user_id', auth()->user()->id)->where('publication_id', $publication->id)->exists();
-                $publication->is_reposted = $publication->reposts()->where('user_id', auth()->user()->id)->where('publication_id', $publication->id)->exists();
+                $publication->is_liked = $publication->likes()->where('user_id', $user_id)->where('publication_id', $publication->id)->exists();
+                $publication->is_reposted = $publication->reposts()->where('user_id', $user_id)->where('publication_id', $publication->id)->exists();
                 $publication->commentsCount = $publication->comments->count();
 
                 foreach ($publication->comments as $comment) {
@@ -131,10 +135,12 @@ class Publication extends Model implements HasMedia
     public static function sortPublication($parameter = null, $filter = null, $search = null)
     {
         $query = Publication::query();
+        $user_id = auth()->user()->id;
+//        $user_id = 1;
 
 
         if (auth()->check()) {
-            $query->where('user_id', '!=', auth()->user()->id);
+            $query->where('user_id', '!=', $user_id);
         }
 
         if ($search) {
@@ -145,7 +151,7 @@ class Publication extends Model implements HasMedia
         }
 
         if ($filter === 'subscriptions') {
-            $subscriptions = UserSubscription::where('user_id', auth()->user()->id)
+            $subscriptions = UserSubscription::where('user_id', $user_id)
                 ->pluck('subscribed_to_id');
 
             $query->whereIn('user_id', $subscriptions);

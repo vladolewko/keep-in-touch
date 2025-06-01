@@ -13,9 +13,18 @@ use App\Models\UserSubscription;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use App\Http\Services\GoogleTagManagerService;
 
 class UserController extends Controller
 {
+
+    protected $googleTagManagerService;
+
+    public function __construct(GoogleTagManagerService $googleTagManagerService)
+    {
+        $this->googleTagManagerService = $googleTagManagerService;
+    }
+
     /**
      * Display the users list page.
      *
@@ -47,7 +56,11 @@ class UserController extends Controller
      */
     public function profile($id): View
     {
+        $profileGTM = $this->googleTagManagerService->viewProfilePage($id);
+
+        // dd($profileGTM);
         $user = User::find($id);
+
         $user->haveAccess = User::checkIfHaveAccess($user->id);
         $user->subscription_status = UserSubscription::checkSubscriptionStatus(auth()->user()->id, $user->id);
 
@@ -55,7 +68,7 @@ class UserController extends Controller
 
         $reposts = User::getReposts($user);
 
-        return view('users/userProfile', compact('user', 'publications', 'reposts'));
+        return view('users/userProfile', compact('user', 'publications', 'reposts', 'profileGTM'));
     }
 
 
