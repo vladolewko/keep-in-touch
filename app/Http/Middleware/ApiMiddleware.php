@@ -15,11 +15,13 @@ class ApiMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $token = $request->header('Authorization');
-        if (!$token || $token !==  'Bearer ' . env('API_ACCESS_TOKEN')) {
-            
+        $token = env('API_ACCESS_TOKEN', '123456');
+        $header = $request->header('Authorization');
+
+        if (!$header || $header !== 'Bearer ' . $token) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
+
         return $next($request);
     }
 }

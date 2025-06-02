@@ -14,3 +14,4 @@ Route::prefix('v1')->middleware(ApiMiddleware::class)->group(function () {
     Route::put('/publications/{publicationId}', [PublicationController::class, 'update'])->name('publications.update');
     Route::delete('/publications/{id}', [PublicationController::class, 'destroy'])->name('publications.destroy');
 });
+
