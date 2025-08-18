@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Profile') }}
+            {{ __('navigation.profile') }}
         </h2>
     </x-slot>
 
@@ -12,14 +12,13 @@
             @include('components.profile-info')
 
 
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                <div class=" bg-opacity-75 bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-5">
                     <div class="p-6">
                         <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
                             New Publication Details
                         </h3>
 
-                        <form action="{{ route('publications.create') }}" method="post">
+                        <form action="{{ route('publications.create') }}" method="post" enctype="multipart/form-data">
                             @method('put')
                             @csrf
 
@@ -32,6 +31,12 @@
                                               id="title"
                                               class="w-full rounded-md shadow-sm border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600"
                                               placeholder="Enter publication title"/>
+                                <input type="file" name="image">
+                                @error('title')
+                                <span class="text-red-600 text-sm">
+                                        {{ $message }}
+                                    </span>
+                                @enderror
 
                             </div>
 
@@ -71,7 +76,13 @@
 
                 @include('components.repost')
 
-            </div>
+
         </div>
     </div>
+    @if(session('createPublicationGTM'))
+        <script>
+            window.dataLayer.push(@json(session('createPublicationGTM')));
+            console.log(dataLayer);
+        </script>
+    @endif
 </x-app-layout>

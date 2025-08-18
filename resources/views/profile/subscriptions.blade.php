@@ -1,20 +1,18 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Subscriptions') }}
+            {{ __('navigation.subscriptions') }}
         </h2>
     </x-slot>
 
-    <div class="py-12">
+    <div class="py-12 ">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900 dark:text-gray-100">
-                    <h3>Subscriptions</h3>
                     @foreach($subscriptions as $user)
                         <div class="mx-auto py-12">
-                            <div class="bg-gray-800 rounded-lg overflow-hidden border border-gray-700 p-6">
+                            <div class="bg-gray-800 bg-opacity-75 rounded-lg overflow-hidden border border-gray-700 p-6">
                                 <!-- Profile header -->
                                 <div class="flex items-center justify-between mb-6 border-b border-gray-700 pb-4">
+                                    <a href="{{ route('users.profile', ['id' => $user->id]) }}">
                                     <div class="flex items-center">
                                         <div
                                             class="w-16 h-16 rounded-full bg-gray-600 mr-4 flex items-center justify-center">
@@ -26,6 +24,7 @@
                                             <p class="text-gray-400 text-sm">{{ $user->name }} {{ $user->surname ?? '' }}</p>
                                         </div>
                                     </div>
+                                    </a>
                                 </div>
 
                                 <!-- Profile details -->
@@ -52,13 +51,12 @@
                                     </div>
 
                                 </div>
-                                <p><a href="{{ route('users.profile', ['id' => $user->id]) }}">go to page</a></p>
                                 <form class="space-y-4" action="{{ route('user.changeSubscription', ['user_id' => $user->id]) }}" method="post">
                                     @csrf
                                     @if($user->subscription_status === 'requested')
 
                                         <x-secondary-button type="submit">
-                                            Requested
+                                            {{ __('buttons.requested') }}
                                         </x-secondary-button>
                                     @elseif($user->subscription_status === true)
                                         <x-primary-button>
@@ -67,7 +65,7 @@
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                       d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
                                             </svg>
-                                            Unsubscribe
+                                            {{ __('buttons.unsubscribe') }}
                                         </x-primary-button>
                                     @elseif($user->subscription_status === false)
                                         <x-primary-button>
@@ -76,7 +74,7 @@
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                       d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
                                             </svg>
-                                            Subscribe
+                                            {{ __('buttons.subscribe') }}
                                         </x-primary-button>
                                     @endif
 
@@ -84,8 +82,6 @@
                             </div>
                         </div>
                     @endforeach
-                </div>
-            </div>
         </div>
     </div>
 </x-app-layout>

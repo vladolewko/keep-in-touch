@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('users_communities_subscriptions', function (Blueprint $table) {
+        Schema::create('user_community_subscriptions', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onUpdate('cascade')->onDelete('cascade');
             $table->foreignId('community_id')->nullable()->constrained('users')->onUpdate('cascade')->onDelete('cascade');
@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('users_communities_subscriptions');
+        Schema::dropIfExists('user_community_subscriptions');
     }
 };

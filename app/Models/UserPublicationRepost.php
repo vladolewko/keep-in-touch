@@ -3,17 +3,89 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class UserPublicationRepost extends Model
 {
-    protected $table = 'users_publications_reposts';
+    protected $table = 'user_publication_reposts';
     protected $primaryKey = 'id';
     protected $fillable = [
         'user_id',
         'publication_id',
-        'repost_comment',
-        'created_at',
-        'updated_at',
-        'deleted_at'
+        'repost_comment'
     ];
+
+    // Relations
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function publication()
+    {
+        return $this->belongsTo(Publication::class);
+    }
+
+
+    /**
+     * method for reposting or unreposting a publication
+     *
+     * @param $publication_id
+     *
+     * @return JsonResponse
+     */
+    public static function repostPublication($publication_id): JsonResponse
+    {
+        if (!auth()->check()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You must be logged in to like a publication.'
+            ], 401);
+        }
+
+        DB::beginTransaction();
+        try {
+            // Check if the user has already liked the publication
+            $existingRepost = UserPublicationRepost::where('user_id', auth()->user()->id)
+                ->where('publication_id', $publication_id)
+                ->first();
+
+            $publication = Publication::findOrFail($publication_id);
+
+            if ($existingRepost) {
+                // Unlike the publication
+                $existingRepost->delete();
+                $publication->decrement('reposts');
+                $isReposted = false;
+            } else {
+                // Like the publication
+                UserPublicationRepost::create([
+                    'user_id' => auth()->user()->id,
+                    'publication_id' => $publication_id
+                ]);
+                $publication->increment('reposts');
+                $isReposted = true;
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'reposted' => $isReposted,
+                'reposts_count' => $publication->reposts
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            Log::error('Repost Error: ' . $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while processing your request.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 }

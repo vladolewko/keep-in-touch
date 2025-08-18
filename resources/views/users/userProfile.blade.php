@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __($user->nickname . ' Profile') }}
+            {{$user->nickname}} {{ __('navigation.profile') }}
         </h2>
     </x-slot>
 
@@ -17,4 +17,10 @@
             @endif
         </div>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            window.dataLayer.push(@json($profileGTM));
+            console.log(dataLayer);
+        });
+    </script>
 </x-app-layout>
