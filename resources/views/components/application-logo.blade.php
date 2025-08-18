@@ -1,7 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 160" width="250" height="60" class="h-10">
     <!-- Background Rectangle with rounded corners -->
-    <rect class="fill-white dark:fill-gray-800 border-b border-gray-100 dark:border-gray-700" x="10" y="10" width="780"
-          height="140" rx="20" ry="20"/>
 
     <!-- Network Nodes and Connections -->
     <!-- Node 1 -->

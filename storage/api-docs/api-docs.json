@@ -1,0 +1,339 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "My Laravel API",
+        "description": "API Documentation for Publications",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://127.0.0.1:8000",
+            "description": "Local Development Server"
+        }
+    ],
+    "paths": {
+        "/api/v1/publications": {
+            "get": {
+                "tags": [
+                    "Publications"
+                ],
+                "summary": "Get all publications",
+                "operationId": "2a08e4b1bb8cd2bac2b4cddb92f824d2",
+                "responses": {
+                    "200": {
+                        "description": "List of publications",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/PublicationResource"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/users/{userId}/publications": {
+            "get": {
+                "tags": [
+                    "Publications"
+                ],
+                "summary": "Get publications by user",
+                "operationId": "6de6bc1089c7e4156bd8fc634e9ae9d7",
+                "parameters": [
+                    {
+                        "name": "userId",
+                        "in": "path",
+                        "description": "User ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of user publications",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/PublicationResource"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Publications"
+                ],
+                "summary": "Create new publication",
+                "operationId": "21bede876e9a597f2ecac15ecfe84580",
+                "parameters": [
+                    {
+                        "name": "userId",
+                        "in": "path",
+                        "description": "User ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "title"
+                                ],
+                                "properties": {
+                                    "title": {
+                                        "type": "string",
+                                        "maxLength": 255,
+                                        "example": "My Publication Title"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "Publication description",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Publication created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PublicationResource"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
+        "/api/v1/publications/{id}": {
+            "get": {
+                "tags": [
+                    "Publications"
+                ],
+                "summary": "Get publication by ID",
+                "operationId": "5f602b06f76c8393589dab624c3a60b3",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Publication ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Publication details",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PublicationResource"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Publication not found"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Publications"
+                ],
+                "summary": "Delete publication",
+                "operationId": "4bb544253372b2efeaeffa8e0789cf24",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Publication ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Publication deleted successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Publication deleted successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Publication not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Publication not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/publications/{publicationId}": {
+            "put": {
+                "tags": [
+                    "Publications"
+                ],
+                "summary": "Update publication",
+                "operationId": "aa2111eebc0598817d8b8910d2bbc325",
+                "parameters": [
+                    {
+                        "name": "publicationId",
+                        "in": "path",
+                        "description": "Publication ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "title"
+                                ],
+                                "properties": {
+                                    "title": {
+                                        "type": "string",
+                                        "maxLength": 255,
+                                        "example": "Updated Publication Title"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "Updated description",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Publication updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PublicationResource"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Publication not found"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "PublicationResource": {
+                "title": "Publication Resource",
+                "description": "Publication resource representation",
+                "properties": {
+                    "id": {
+                        "description": "Publication ID",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "title": {
+                        "description": "Publication title",
+                        "type": "string",
+                        "example": "My First Publication"
+                    },
+                    "description": {
+                        "description": "Publication description",
+                        "type": "string",
+                        "example": "This is a publication description",
+                        "nullable": true
+                    },
+                    "user": {
+                        "description": "User who created the publication",
+                        "properties": {
+                            "id": {
+                                "description": "User ID",
+                                "type": "integer",
+                                "example": 1
+                            },
+                            "nickname": {
+                                "description": "User nickname",
+                                "type": "string",
+                                "example": "john_doe"
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "type": "object"
+            }
+        },
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "bearerFormat": "",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Publications",
+            "description": "Publication Api"
+        }
+    ]
+}

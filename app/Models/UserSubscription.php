@@ -2,24 +2,34 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class UserSubscription extends Model
 {
+    /** @use HasFactory<\Database\Factories\UserSubscriptionFactory> */
+
     use SoftDeletes;
-    protected $table = 'users_subscriptions';
+    use HasFactory;
+    protected $table = 'user_subscriptions';
     protected $primaryKey = 'id';
     protected $fillable = [
         'user_id',
         'subscribed_to_id',
-        'is_accepted',
-        'created_at',
-        'updated_at',
-        'deleted_at'
+        'is_accepted'
     ];
 
-    public static function checkSubscriptionStatus($userId, $subscribedToId)
+
+    /**
+     * method for checking status of subscription to another user
+     *
+     * @param $userId
+     * @param $subscribedToId
+     *
+     * @return bool|string
+     */
+    public static function checkSubscriptionStatus($userId, $subscribedToId): bool|string
     {
         $subscription = UserSubscription::where('user_id', $userId)
             ->where('subscribed_to_id', $subscribedToId)
@@ -35,8 +45,17 @@ class UserSubscription extends Model
         }
     }
 
-    public static function changeSubscription($user_id, $subscribed_to_id)
+
+    /**
+     * method for subscribing or unsubscribing to another user
+     *
+     * @param $subscribed_to_id
+     *
+     * @return void
+     */
+    public static function changeSubscription($subscribed_to_id): void
     {
+        $user_id = auth()->user()->id;
         $userAccess = User::where('id', $subscribed_to_id)->value('is_private');
         $subscription = self::checkSubscriptionStatus($user_id, $subscribed_to_id);
 
@@ -53,12 +72,22 @@ class UserSubscription extends Model
         }
     }
 
-    public static function manageSubscribitors($user_id, $action)
+
+    /**
+     * method for subscribing/unsubscribing followers
+     *
+     * @param $user_id
+     * @param $action
+     *
+     * @return void
+     */
+    public static function manageSubscribitors($user_id, $action): void
     {
         if ($action == 'decline') {
             UserSubscription::where('user_id', $user_id)
                 ->where('subscribed_to_id', auth()->user()->id)
                 ->delete();
+
         } elseif ($action == 'accept') {
             UserSubscription::where('user_id', $user_id)
                 ->where('subscribed_to_id', auth()->user()->id)
