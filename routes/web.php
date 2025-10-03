@@ -15,7 +15,6 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/publications', [PublicationController::class, 'publications'])->name('publications');
 
 
 Route::middleware(['auth', LanguageMiddleware::class])->group(function () {
@@ -32,7 +31,7 @@ Route::middleware(['auth', LanguageMiddleware::class])->group(function () {
     Route::get('/profile/subscriptions', [ProfileController::class, 'subscriptions'])->name('profile.subscriptions');
 
     //publications routes
-//    Route::get('/publications', [PublicationController::class, 'publications'])->name('publications');
+    Route::get('/publications', [PublicationController::class, 'publications'])->name('publications');
     Route::get('/publications/sort', [PublicationController::class, 'publications'])->name('publications.sort');
     Route::get('/publications/subscriptions', [PublicationController::class, 'subscriptions'])->name('publications.subscriptions');
     Route::put('/publications/create', [PublicationController::class, 'create'])->name('publications.create');
@@ -66,7 +65,7 @@ Route::middleware(AdminMiddleware::class)->group(function () {
     Route::get('/admin/users', [ AdminController::class, 'users'])->name('admin.users');
     Route::get('/admin/users/sort', [AdminController::class, 'users'])->name('admin.users.sort');
     Route::delete('/admin/user/block{id}', [AdminController::class, 'blockUser'])->name('admin.user.block');
-    Route::get('/admin/user/message{id}{comment?}', [AdminController::class, 'writeMessage'])->name('admin.user.message');
+    Route::get('/admin/user/message{userId?}', [AdminController::class, 'writeMessage'])->name('admin.user.message');
     Route::put('/admin/user/send{sended_to_id}', [AdminController::class, 'sendMessage'])->name('admin.send');
 
     //admin publications routes

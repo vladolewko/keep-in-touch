@@ -17,21 +17,6 @@ use App\Http\Services\GoogleTagManagerService;
 
 class UserController extends Controller
 {
-
-    protected $googleTagManagerService;
-
-    public function __construct(GoogleTagManagerService $googleTagManagerService)
-    {
-        $this->googleTagManagerService = $googleTagManagerService;
-    }
-
-    /**
-     * Display the users list page.
-     *
-     * @param Request $request for sorting
-     *
-     * @return View
-     */
     public function users(Request $request): View
     {
         $parameter = $request->get('parameter') ?? null;
@@ -47,13 +32,6 @@ class UserController extends Controller
         return view('users/usersList', compact('users'));
     }
 
-    /**
-     * Display the users list page.
-     *
-     * @param $id
-     *
-     * @return View
-     */
     public function profile($id): View
     {
         $profileGTM = $this->googleTagManagerService->viewProfilePage($id);
@@ -71,15 +49,6 @@ class UserController extends Controller
         return view('users/userProfile', compact('user', 'publications', 'reposts', 'profileGTM'));
     }
 
-
-
-    /**
-     * method for subscribing/unsubscribing to a user.
-     *
-     * @param Request $request
-     *
-     * @return RedirectResponse
-     */
     public function changeSubscription(Request $request): RedirectResponse
     {
         $user_id = $request->validate([

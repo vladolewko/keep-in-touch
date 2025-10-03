@@ -11,13 +11,6 @@ use Illuminate\Http\Request;
 
 class PublicationCommentController extends Controller
 {
-    /**
-     * Method for liking a comment.
-     *
-     * @param Request $request
-     *
-     * @return JsonResponse
-     */
     public function like(Request $request): JsonResponse
     {
         // Validate the request
@@ -29,13 +22,6 @@ class PublicationCommentController extends Controller
         return UserCommentLike::likePublication($comment_id);
     }
 
-    /**
-     * Method for commenting a publication.
-     *
-     * @param Request $request
-     *
-     * @return RedirectResponse
-     */
     public function storeComment(Request $request): RedirectResponse
     {
         $data = $request->validate([

@@ -20,11 +20,6 @@ use Illuminate\View\View;
 
 class ProfileController extends Controller
 {
-    /**
-     * Display the user's profile page.
-     *
-     * @return View
-     */
     public function profile(): View
     {
         $user = auth()->user();
@@ -36,11 +31,6 @@ class ProfileController extends Controller
         return view('profile/profile', compact('user', 'publications', 'reposts'));
     }
 
-    /**
-     * Display the user's followers page.
-     *
-     * @return View
-     */
     public function followers(): View
     {
 
@@ -51,13 +41,6 @@ class ProfileController extends Controller
         return view('profile/followers', compact('requests', 'followers'));
     }
 
-    /**
-     * manage subscribitors
-     *
-     * @param Request $request
-     *
-     * @return RedirectResponse
-     */
     public function manageSubscribitors(Request $request)
     {
         $subscriber_id = $request->input('subscriber_id');
@@ -67,12 +50,6 @@ class ProfileController extends Controller
         return back();
     }
 
-
-    /**
-     * Display the user's subscriptions page.
-     *
-     * @return View
-     */
     public function subscriptions(): View
     {
         $subscriptionsIds = UserSubscription::where('user_id', auth()->user()->id)->pluck('subscribed_to_id');
@@ -85,22 +62,11 @@ class ProfileController extends Controller
         return view('profile/subscriptions', compact('subscriptions'));
     }
 
-    /**
-     * Display the user's profile settings page.
-     *
-     * @return View
-     */
     public function settings(): View
     {
         return view('profile/profileSettings');
     }
 
-
-    /**
-     * Display the user's notifications page.
-     *
-     * @return View
-     */
     public function notifications(): View
     {
         $notifications = UserNotification::where('sended_to_id', auth()->user()->id)->get();
@@ -108,27 +74,12 @@ class ProfileController extends Controller
         return view('profile/notifications', compact('notifications'));
     }
 
-
-    /**
-     * Method for check notification read status
-     *
-     * @param int $id
-     *
-     * @return RedirectResponse
-     */
     public function readNotification($id): RedirectResponse
     {
         UserNotification::where('id', $id)->update(['is_read' => 1]);
         return back();
     }
 
-    /**
-     * Display the user's profile edit form.
-     *
-     * @param Request $request
-     *
-     * @return View
-     */
     public function edit(Request $request): View
     {
         return view('profile.edit', [
@@ -136,13 +87,6 @@ class ProfileController extends Controller
         ]);
     }
 
-    /**
-     * Update the user's profile information.
-     *
-     * @param ProfileUpdateRequest $request
-     *
-     * @return RedirectResponse
-     */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
         if ($request->has('remove_image')) {
@@ -163,14 +107,6 @@ class ProfileController extends Controller
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }
 
-
-    /**
-     * Change access to account
-     *
-     * @param Request $request
-     *
-     * @return RedirectResponse
-     */
     public function changeAccess(Request $request): RedirectResponse
     {
         User::where('id', auth()->user()->id)->update(['is_private' => $request->input('access')]);
@@ -178,13 +114,6 @@ class ProfileController extends Controller
         return back();
     }
 
-    /**
-     * Delete the user's account.
-     *
-     * @param Request $request
-     *
-     * @return RedirectResponse
-     */
     public function destroy(Request $request): RedirectResponse
     {
         $request->validateWithBag('userDeletion', [

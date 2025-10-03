@@ -25,7 +25,7 @@
                                 <option value="other">Other</option>
                             </select>
                             <label for="message" class="block text-gray-700 dark:text-gray-300 font-bold mb-2">Message:</label>
-                            <textarea id="message" name="message" rows="4" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-800  leading-tight focus:outline-none focus:shadow-outline">'{{ $comment }}'</textarea>
+                            <textarea id="message" name="message" rows="4" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-800  leading-tight focus:outline-none focus:shadow-outline">{{ $comment ?? ""}}</textarea>
                             <button type="submit">send</button>
                         </div>
                     </form>

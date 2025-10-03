@@ -19,7 +19,7 @@ class PublicationComment extends Model
     ];
 
     // Relations
-    public function user()
+    public function user(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(User::class);
     }
@@ -101,17 +101,10 @@ class PublicationComment extends Model
 
     // Admin methods
 
-    /**
-     * method for getting comments for admin
-     *
-     * @param $parameter
-     * @param $search
-     *
-     * @return array
-     */
-    public static function AdminGetComments($parameter, $search): array
+
+    public static function AdminGetComments($parameter, $search): \Illuminate\Pagination\LengthAwarePaginator
     {
-        $query = PublicationComment::query();
+        $query = self::query();
 
         if ($search) {
             $query->where(function ($q) use ($search) {
@@ -147,7 +140,7 @@ class PublicationComment extends Model
         $comments = $query->paginate(10);
 
         foreach ($comments as $comment) {
-            $comment->nickname = User::where('id', $comment->user_id)->value('nickname');
+            $comment->nickname = User::where('id', $comment->user_id)->value('nickname') ?? 'unknown';
         }
 
         return $comments;

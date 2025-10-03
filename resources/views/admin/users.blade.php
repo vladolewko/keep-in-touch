@@ -192,7 +192,7 @@
                                             {{ $user->deleted_at ? 'Restore' : 'Block' }}
                                         </button>
                                     </form>
-                                    <a href="{{ route('admin.user.message', ['id' => $user->id, 'comment' => null]) }}" class="bg-blue-500 hover:bg-blue-600 text-white py-1 px-3 rounded-md text-sm font-medium transition-colors duration-150 flex items-center">
+                                    <a href="{{ route('admin.user.message', ['userId' => $user->id]) }}" class="bg-blue-500 hover:bg-blue-600 text-white py-1 px-3 rounded-md text-sm font-medium transition-colors duration-150 flex items-center">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
                                         </svg>

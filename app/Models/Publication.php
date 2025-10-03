@@ -66,24 +66,13 @@ class    Publication extends Model implements HasMedia
             return null;
         }
     }
-    // Users Methods
 
-    /**
-     * method for getting list of publications
-     *
-     * @param $parameter
-     * @param $filter
-     * @param $search
-     *
-     */
     public static function getPublicationsList($parameter, $filter, $search)
     {
 
-        $publications = Publication::sortPublication($parameter, $filter, $search);
+        $publications = self::sortPublication($parameter, $filter, $search);
 
         $user_id = auth()->user()->id;
-//        $user_id = 1;
-
 
         foreach ($publications as $publication) {
             if ($publication->user) {
