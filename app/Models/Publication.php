@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
-class Publication extends Model implements HasMedia
+class    Publication extends Model implements HasMedia
 {
     /** @use HasFactory<\Database\Factories\PublicationFactory> */
     use HasFactory;
@@ -26,7 +26,7 @@ class Publication extends Model implements HasMedia
         'title',
         'description',
         'likes',
-        'reposts'
+        'reposts',
     ];
 
     // Relations
@@ -49,42 +49,43 @@ class Publication extends Model implements HasMedia
     {
         return $this->belongsTo(User::class, 'user_id')->withTrashed();
     }
+//    public function nickname():BelongsTo
+//    {
+//        return $this->belongsTo(User::class, 'user_id')->nickname;
+//    }
 
+    public static function findById ($publicationId)
+    {
+        try {
+            $publication = self::where('id', $publicationId)->first();
+            if (!$publication) {
+                throw new \Exception('Publication not found');
+            }
+            return $publication;
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
 
-    // Users Methods
-
-    /**
-     * method for getting list of publications
-     *
-     * @param $parameter
-     * @param $filter
-     * @param $search
-     *
-     */
     public static function getPublicationsList($parameter, $filter, $search)
     {
 
-        $publications = Publication::sortPublication($parameter, $filter, $search);
+        $publications = self::sortPublication($parameter, $filter, $search);
 
         $user_id = auth()->user()->id;
-//        $user_id = 1;
-
 
         foreach ($publications as $publication) {
             if ($publication->user) {
-                $publication->nickname = $publication->user->nickname;
+//                $publication->nickname = 'kkk';
                 $publication->is_liked = $publication->likes()->where('user_id', $user_id)->where('publication_id', $publication->id)->exists();
                 $publication->is_reposted = $publication->reposts()->where('user_id', $user_id)->where('publication_id', $publication->id)->exists();
                 $publication->commentsCount = $publication->comments->count();
 
                 foreach ($publication->comments as $comment) {
-                    $comment->nickname = $comment->user->nickname;
+//                    $comment->nickname = $comment->user->nickname;
                     $comment->is_liked = $comment->likes()->where('user_id', auth()->user()->id)->exists();
                 }
-            } else {
-                continue;
             }
-
         }
         return $publications;
     }

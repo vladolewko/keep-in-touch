@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('publications', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignId('community_id')->nullable()->constrained('communities')->onUpdate('cascade')->onDelete('cascade');
             $table->string('title')->nullable();
             $table->text('description')->nullable();
             $table->integer('likes')->default(0);

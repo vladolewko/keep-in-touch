@@ -9,8 +9,6 @@ class UserNotification extends Model
 {
     use SoftDeletes;
     protected $table = 'user_notifications';
-
-    protected $primaryKey = 'id';
     protected $fillable = [
         'user_id',
         'sended_to_id',

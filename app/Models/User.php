@@ -39,7 +39,7 @@ class User extends Authenticatable implements HasMedia
         'address',
         'is_private',
         'role',
-        'password'
+        'password',
     ];
 
     /**
@@ -86,9 +86,13 @@ class User extends Authenticatable implements HasMedia
         return $this->hasMany(UserPublicationRepost::class);
     }
 
-    public function comments(): HasMany
+    public function comments(): HasMany|null
     {
         return $this->hasMany(PublicationComment::class);
+    }
+    private function getId ()
+    {
+        return $this->id;
     }
 
 
@@ -110,7 +114,7 @@ class User extends Authenticatable implements HasMedia
                 },
                 'reposts as has_reposts' => function ($query) {
                     $query->where('user_id', auth()->user()->id);
-                }
+                },
             ])
             ->get();
 
