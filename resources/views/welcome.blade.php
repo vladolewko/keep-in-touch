@@ -15,35 +15,35 @@
         <script>
           document.addEventListener('DOMContentLoaded', () => {
 
-    const themedElement = document.getElementById('themed-element');
-    const lightThemeClass = 'theme-light';
-    const darkThemeClass = 'theme-dark';
+            const themedElement = document.getElementById('themed-element');
+            const lightThemeClass = 'theme-light';
+            const darkThemeClass = 'theme-dark';
 
-    // Створюємо об'єкт для відстеження теми
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+            // Створюємо об'єкт для відстеження теми
+            const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
 
-    // Функція, яка оновлює класи
-    function updateTheme(isDarkMode) {
-        if (isDarkMode) {
-            themedElement.classList.remove(lightThemeClass);
-            themedElement.classList.add(darkThemeClass);
-            console.log('Applied dark theme class.');
-        } else {
-            themedElement.classList.remove(darkThemeClass);
-            themedElement.classList.add(lightThemeClass);
-            console.log('Applied light theme class.');
-        }
-    }
+            // Функція, яка оновлює класи
+            function updateTheme(isDarkMode) {
+                if (isDarkMode) {
+                    themedElement.classList.remove(lightThemeClass);
+                    themedElement.classList.add(darkThemeClass);
+                    console.log('Applied dark theme class.');
+                } else {
+                    themedElement.classList.remove(darkThemeClass);
+                    themedElement.classList.add(lightThemeClass);
+                    console.log('Applied light theme class.');
+                }
+            }
 
-    // 1. Застосовуємо тему при першому завантаженні сторінки
-    updateTheme(mediaQuery.matches);
+            // 1. Застосовуємо тему при першому завантаженні сторінки
+            updateTheme(mediaQuery.matches);
 
-    // 2. Додаємо слухача, який буде реагувати на зміну системної теми
-    mediaQuery.addEventListener('change', (event) => {
-        updateTheme(event.matches);
-    });
+            // 2. Додаємо слухача, який буде реагувати на зміну системної теми
+            mediaQuery.addEventListener('change', (event) => {
+                updateTheme(event.matches);
+            });
 
-});
+        });
         </script>
     </head>
     <body>

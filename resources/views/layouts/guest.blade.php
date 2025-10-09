@@ -16,15 +16,15 @@
     </head>
     <body class="font-sans text-gray-900 antialiased">
         <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-cover bg-center dark:bg-[url('../../../public/images/background-dark.jpg')] bg-[url('../../../public/images/background-light.png')]">
-            <div class="flex align-center items-center justify-center gap-3 mb-2">
-              <p class="dark:text-white">Keep</p>
+            <div class="">
               
-                <a href="/">
-                  
+              
+                <a href="/" class="flex align-center items-center justify-center gap-3 mb-2">
+                    <p class="dark:text-white text-2xl">Keep</p>
                     <x-application-logo class="w-20 h-20 fill-current text-gray-500" />
-                 
+                    <p class="dark:text-white text-2xl">Touch</p>
                 </a>
-                <p class="dark:text-white">Touch</p>
+                
                 
             </div>
 
