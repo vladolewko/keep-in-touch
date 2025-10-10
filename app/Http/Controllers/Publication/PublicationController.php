@@ -5,60 +5,89 @@ namespace App\Http\Controllers\Publication;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Publication\CreatePublicationRequest;
 use App\Models\Publication;
-use App\Models\PublicationComment;
-use App\Models\User;
-use App\Models\UserCommentLike;
 use App\Models\UserPublicationLike;
 use App\Models\UserPublicationRepost;
-use Illuminate\Foundation\Application;
+use App\Services\Interfaces\IPublicationServiceInterface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Routing\Redirector;
-use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
-use App\Http\Services\GoogleTagManagerService;
 
+/**
+ *
+ */
 class PublicationController extends Controller
 {
+    /**
+     * @param IPublicationServiceInterface $publicationService
+     */
+    public function __construct(
+        private readonly IPublicationServiceInterface $publicationService,
+    ) {}
+
+    /**
+     * @param Request $request
+     * @return View
+     */
     public function publications(Request $request): View
     {
-        $parameter = $request->get('parameter');
+        $sorting = $request->get('parameter');
         $filter = $request->get('filter');
         $search = $request->get('search');
-
-        $publications = Publication::getPublicationsList($parameter, $filter, $search);
+        $publications = $this->publicationService->all([
+            'sort' => $sorting,
+            'filter' => $filter,
+            'search' => $search,
+        ]);
 
         return view('publications/publicationsList', compact('publications'));
     }
 
+    /**
+     * @return View
+     */
     public function subscriptions(): View
     {
         return view('publications/subscriptionsPublicationsList');
     }
 
+    /**
+     * @param CreatePublicationRequest $request
+     * @return RedirectResponse
+     */
     public function create(CreatePublicationRequest $request): RedirectResponse
     {
 
-        $data = $request->validated();
-        $data['user_id'] = auth()->user()->id;
+        $validated = $request->validated();
+        $validated['user_id'] = Auth::user()->getId();
 
-        $publication = Publication::create($data);
+        $publication = $this->publicationRepository->create($validated);
 
-        if (isset($data['image'])) {
-            $publication->addMedia($data['image'])
+        if (isset($validated['image'])) {
+            $publication->addMedia($validated['image'])
                 ->toMediaCollection('publication_images');
         }
 
         return back();
     }
 
+    /**
+     * @param int $id
+     * @return View
+     */
     public function edit(int $id): View
     {
-        $publication = Publication::findById($id);
+        $publication = $this->publicationRepository->find($id);
         return view('publications/edit', compact('publication'));
     }
 
+    /**
+     * @param Request $request
+     * @return \Illuminate\Foundation\Application|RedirectResponse|\Illuminate\Routing\Redirector|object
+     * @throws \Spatie\MediaLibrary\MediaCollections\Exceptions\FileDoesNotExist
+     * @throws \Spatie\MediaLibrary\MediaCollections\Exceptions\FileIsTooBig
+     */
     public function update(Request $request)
     {
         $data = $request->validate([
@@ -86,6 +115,10 @@ class PublicationController extends Controller
         return redirect('profile/myProfile');
     }
 
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
     public function like(Request $request): JsonResponse
     {
         // Validate the request
@@ -96,6 +129,10 @@ class PublicationController extends Controller
         return UserPublicationLike::likePublication($publication_id);
     }
 
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
     public function repost(Request $request): JsonResponse
     {
         // Validate the request
@@ -107,6 +144,10 @@ class PublicationController extends Controller
         return UserPublicationRepost::repostPublication($publication_id);
     }
 
+    /**
+     * @param Request $request
+     * @return RedirectResponse
+     */
     public function hide(Request $request): RedirectResponse
     {
         $publication_id = $request->validate([
@@ -118,6 +159,10 @@ class PublicationController extends Controller
         return back();
     }
 
+    /**
+     * @param int $publication_id
+     * @return RedirectResponse
+     */
     public function destroy(int $publication_id): RedirectResponse
     {
         Publication::destroy($publication_id);
