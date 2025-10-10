@@ -22,11 +22,6 @@ class User extends Authenticatable implements HasMedia
     use InteractsWithMedia;
     use softDeletes;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
     protected $table = 'users';
     protected $primaryKey = 'id';
     protected $fillable = [
@@ -42,21 +37,11 @@ class User extends Authenticatable implements HasMedia
         'password',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
@@ -90,18 +75,11 @@ class User extends Authenticatable implements HasMedia
     {
         return $this->hasMany(PublicationComment::class);
     }
-    private function getId ()
+    protected  function getId (): int
     {
         return $this->id;
     }
 
-
-    /**
-     * method for getting reposts
-     *
-     * @param $user
-     *
-     */
     public static function getReposts($user)
     {
 
@@ -125,31 +103,16 @@ class User extends Authenticatable implements HasMedia
         return $reposts;
     }
 
-
-    /**
-     * method for getting requests to subscribe
-     *
-     *
-     */
     public static function getRequests()
     {
         $user_id = auth()->user()->id;
 
         $requests_id = UserSubscription::where('subscribed_to_id', $user_id)->where('is_accepted', 0)->pluck('user_id');
 
-        $requests = User::whereIn('id', $requests_id)->get();
+        return self::whereIn('id', $requests_id)->get();
 
-        return $requests;
     }
 
-
-    /**
-     * method for getting publications
-     *
-     * @param $user
-     *
-     * @return Collection
-     */
     public static function getPublications($user): Collection
     {
         $publications = Publication::withTrashed()
@@ -184,15 +147,13 @@ class User extends Authenticatable implements HasMedia
      */
     public static function sortUsers($parameter = null, $search = null, $filter = null): LengthAwarePaginator
     {
-        $query = User::query();
+        $query = self::query();
 
-        // Apply authentication-based filters (only once)
         if (auth()->check()) {
             $query->where('id', '!=', auth()->user()->id)
                 ->where('role', '!=', 'admin');
         }
 
-        // Apply search if provided
         if ($search) {
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
@@ -200,8 +161,6 @@ class User extends Authenticatable implements HasMedia
                     ->orWhere('nickname', 'like', "%{$search}%");
             });
         }
-
-        // Apply sorting based on parameter
         switch ($parameter) {
             case 'newest':
                 $query->orderBy('updated_at', 'desc');
@@ -234,37 +193,21 @@ class User extends Authenticatable implements HasMedia
         return $query->paginate(10);
     }
 
-
-
-    /**
-     * method for getting comments for admin
-     *
-     * @param $parameter
-     * @param $search
-     * @param $filter
-     *
-     * @return LengthAwarePaginator
-     */
     public static function adminSortUsers($parameter = null, $search = null, $filter = null): LengthAwarePaginator
     {
-        $query = User::query();
-
-        // Handle soft-deleted records based on filter and user role
-        if ($filter == 'blocked') {
-            $query = User::onlyTrashed();
-        } elseif ($filter == 'unblocked') {
-            $query = User::where('role', '!=', 'admin');
+        if ($filter === 'blocked') {
+            $query = self::onlyTrashed();
+        } elseif ($filter === 'unblocked') {
+            $query = self::where('role', '!=', 'admin');
         } else {
-            $query = User::withTrashed();
+            $query = self::withTrashed();
         }
 
-        // Apply authentication-based filters
         if (auth()->check()) {
             $query->where('id', '!=', auth()->user()->id)
                 ->where('role', '!=', 'admin');
         }
 
-        // Apply search if provided
         if ($search) {
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
@@ -273,7 +216,6 @@ class User extends Authenticatable implements HasMedia
             });
         }
 
-        // Apply sorting based on parameter
         switch ($parameter) {
             case 'newest':
                 $query->orderBy('updated_at', 'desc');
@@ -306,61 +248,31 @@ class User extends Authenticatable implements HasMedia
         return $query->paginate(10);
     }
 
-    /**
-     * method for making account private or public
-     *
-     * @param $access
-     *
-     * @return bool
-     */
     public static function changeAccess($access): bool
     {
-        if ($access == 'private') {
+        if ($access === 'private') {
             $access = 1;
         } else {
             $access = 0;
         }
 
-        return User::where('id', auth()->user()->id)->update(['is_private' => $access]);
+        return self::where('id', auth()->user()->id)->update(['is_private' => $access]);
 
     }
 
-    /**
-     * method for checking if user has access to account
-     *
-     * @param $user_id
-     *
-     * @return bool
-     */
     public static function checkIfHaveAccess($user_id): bool
     {
-        $user = User::find($user_id);
+        $user = self::find($user_id);
         $subscription = UserSubscription::checkSubscriptionStatus(auth()->user()->id, $user_id);
         if ($user->is_private == 1) {
-            if ($subscription === true) {
-                return true;
-
-            } else {
-                return false;
-            }
-
-        } else {
-            return true;
+            return $subscription === true;
         }
-
+        return true;
     }
 
-
-    /**
-     * method for blocking user by admin
-     *
-     * @param $user_id
-     *
-     * @return bool
-     */
     public static function blockUser($user_id): bool
     {
-        $user = User::find($user_id);
+        $user = self::find($user_id);
         if ($user) {
             $user->delete();
             return true;
