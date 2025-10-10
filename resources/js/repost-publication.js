@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const repostedFill = 'blue';
             const unrepostedFill = 'gray';
 
-            fetch('/keep-in-touch/public/publication/repost', {
+            fetch('/publication/repost', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

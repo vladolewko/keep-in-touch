@@ -3,24 +3,18 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
-use App\Models\Publication;
-use App\Models\PublicationComment;
 use App\Models\User;
-use App\Models\UserCommentLike;
-use App\Models\UserPublicationLike;
-use App\Models\UserPublicationRepost;
 use App\Models\UserSubscription;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
-use App\Http\Services\GoogleTagManagerService;
 
 class UserController extends Controller
 {
     public function users(Request $request): View
     {
-        $parameter = $request->get('parameter') ?? null;
-        $search = $request->get('search') ?? null;
+        $parameter = $request->get('parameter');
+        $search = $request->get('search');
 
         $users = User::sortUsers($parameter, $search);
 
@@ -34,9 +28,6 @@ class UserController extends Controller
 
     public function profile($id): View
     {
-        $profileGTM = $this->googleTagManagerService->viewProfilePage($id);
-
-        // dd($profileGTM);
         $user = User::find($id);
 
         $user->haveAccess = User::checkIfHaveAccess($user->id);
@@ -46,7 +37,7 @@ class UserController extends Controller
 
         $reposts = User::getReposts($user);
 
-        return view('users/userProfile', compact('user', 'publications', 'reposts', 'profileGTM'));
+        return view('users/userProfile', compact('user', 'publications', 'reposts'));
     }
 
     public function changeSubscription(Request $request): RedirectResponse

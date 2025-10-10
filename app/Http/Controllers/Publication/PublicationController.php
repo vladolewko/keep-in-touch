@@ -62,7 +62,7 @@ class PublicationController extends Controller
         $validated = $request->validated();
         $validated['user_id'] = Auth::user()->getId();
 
-        $publication = $this->publicationRepository->create($validated);
+        $publication = $this->publicationService->create($validated);
 
         if (isset($validated['image'])) {
             $publication->addMedia($validated['image'])
@@ -78,7 +78,7 @@ class PublicationController extends Controller
      */
     public function edit(int $id): View
     {
-        $publication = $this->publicationRepository->find($id);
+        $publication = $this->publicationService->find($id);
         return view('publications/edit', compact('publication'));
     }
 

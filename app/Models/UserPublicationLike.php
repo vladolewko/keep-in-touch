@@ -55,7 +55,7 @@ class UserPublicationLike extends Model
 
         DB::beginTransaction();
         try {
-            $existingLike = UserPublicationLike::where('user_id', $user_id)
+            $existingLike = self::where('user_id', $user_id)
                 ->where('publication_id', $publication_id)
                 ->first();
 
@@ -69,7 +69,7 @@ class UserPublicationLike extends Model
             } else {
 
                 // Like the publication
-                UserPublicationLike::create([
+                self::create([
                     'user_id' => $user_id,
                     'publication_id' => $publication_id
                 ]);
