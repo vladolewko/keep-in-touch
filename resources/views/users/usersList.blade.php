@@ -5,7 +5,7 @@
         </h2>
     </x-slot>
 
-    <div class="py-8 bg-gradient-to-br from-gray-50 via-gray-100 to-gray-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 min-h-screen">
+    <div class="py-8  min-h-screen">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             
             <!-- Sort Filters Section -->
