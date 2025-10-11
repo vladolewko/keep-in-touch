@@ -25,8 +25,9 @@ window.dataLayer = window.dataLayer || [];
      ])
     </head>
     <body class="font-sans antialiased">
-    <div class="min-h-screen bg-gray-100 dark:bg-gray-900 relative">
-        <img id="background" class="absolute inset-0 object-cover w-full h-full z-0" src="{{ asset('images/background.jpg') }}" alt="Laravel background" />
+    <div class="min-h-screen bg-gray-100 dark:bg-gray-900 relative bg-fixed bg-cover bg-center dark:bg-[url('../../../public/images/background-dark.jpg')] bg-[url('../../../public/images/background-light.png')]">
+      
+        <!-- <img id="background" class="absolute inset-0 object-cover w-full h-full z-0" src="{{ asset('images/background.jpg') }}" alt="Laravel background" /> -->
 
         <div class="relative z-10">
             @include('layouts.navigation')

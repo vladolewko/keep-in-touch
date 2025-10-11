@@ -1,0 +1,262 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    font-family: 'Figtree', sans-serif; /* Ensuring the font is applied */
+}
+
+/* Animated gradient background - BASE STYLES */
+.solid_bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    z-index: -2;
+    transition: background-color 0.5s ease, background-image 0.5s ease; /* Smooth transition for theme change */
+}
+
+/* --- THEME SPECIFIC BACKGROUNDS --- */
+
+/* Dark Theme */
+.theme-dark {
+    /* Original background color/gradient for dark theme */
+    background-color: #151922;
+    /* Assuming your uploaded dark image is in public/images/background-dark.jpg */
+   background-image: url('../images/background-dark.jpg');
+}
+
+/* Light Theme */
+.theme-light {
+    background-color: #f0f3f6;
+    /* Assuming the light image is in public/images/background-light.jpg */
+    background-image: url('../images/background-light.png');
+}
+
+
+/* Floating shapes */
+.shape {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.5;
+    animation: float 8s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-30px) rotate(5deg); }
+}
+
+/* Glass overlay */
+.glass-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+}
+
+/* Dark Theme Overlay (Your original style) */
+.theme-dark + .glass-overlay {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(2px);
+}
+
+/* Light Theme Overlay (Adjusted) */
+.theme-light + .glass-overlay {
+    background: rgba(0, 0, 0, 0.05); /* Darker overlay for light theme */
+    backdrop-filter: blur(2px);
+}
+
+/* Container */
+.container {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* Header */
+header {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 20px 0;
+    animation: slideDown 0.6s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+
+/* Navigation */
+nav {
+    display: flex;
+    gap: 15px;
+}
+
+.btn {
+    padding: 12px 30px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+/* Glass button BASE (Dark Theme defaults) */
+.btn-glass {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.btn-glass:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.btn-solid {
+    background: white;
+    color: #333;
+}
+
+.btn-solid:hover {
+    background: #f0f0f0;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+/* Main content */
+main {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    animation: fadeInUp 0.8s ease-out 0.2s backwards;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.hero {
+    max-width: 1000px;
+}
+
+/* Text BASE (Dark Theme defaults) */
+h1 {
+    font-size: 72px;
+    font-weight: 700;
+    color: white;
+    line-height: 1.1;
+    margin-bottom: 30px;
+    text-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.subtitle {
+    font-size: 22px;
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 40px;
+    font-weight: 400;
+    line-height: 1.6;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    padding: 30px 0;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 14px;
+    animation: fadeInUp 0.8s ease-out 0.8s backwards;
+}
+
+
+/* --- LIGHT THEME TEXT AND COMPONENT OVERRIDES --- */
+/* We use the adjacent sibling selector (++) to target elements based on the theme class set on .solid_bg */
+
+/* Light Theme Text Color */
+.theme-light + .glass-overlay + .container h1,
+.theme-light + .glass-overlay + .container .subtitle,
+.theme-light + .glass-overlay + .container footer {
+    color: #333; /* Darker text for light background */
+    text-shadow: none;
+}
+
+/* Light Theme Glass Button Color */
+.theme-light + .glass-overlay + .container .btn-glass {
+    background: rgba(0, 0, 0, 0.1); /* Darker glass button */
+    color: #333;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.theme-light + .glass-overlay + .container .btn-glass:hover {
+    background: rgba(0, 0, 0, 0.15);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+}
+
+
+/* Responsive */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 48px;
+    }
+
+    .subtitle {
+        font-size: 18px;
+    }
+
+    nav {
+        gap: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    h1 {
+        font-size: 36px;
+    }
+
+    .subtitle {
+        font-size: 16px;
+    }
+}
