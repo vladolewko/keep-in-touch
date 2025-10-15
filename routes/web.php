@@ -19,7 +19,6 @@ Route::get('/', function () {
 
 Route::middleware(['auth', LanguageMiddleware::class])->group(function () {
     //auth routes
-    Route::get('/profile/settings', [ProfileController::class, 'settings'])->name('profile.settings');
     Route::get('/profile/notifications', [ProfileController::class, 'notifications'])->name('profile.notifications');
     Route::patch('/profile/notification/read{id}', [ProfileController::class, 'readNotification'])->name('profile.notification.read');
     Route::get('/profile/myProfile', [ProfileController::class, 'profile'])->name('profile');
@@ -37,7 +36,7 @@ Route::middleware(['auth', LanguageMiddleware::class])->group(function () {
     Route::put('/publications/create', [PublicationController::class, 'create'])->name('publications.create');
     Route::post('/publication/like', [PublicationController::class, 'like'])->name('publication.like');
     Route::post('/publication/repost', [PublicationController::class, 'repost'])->name('publication.repost');
-    Route::patch('/publication/hide', [PublicationController::class, 'hide'])->name('publication.hide');
+    Route::patch('/publication/hide', [PublicationController::class, 'toggleStatus'])->name('publication.hide');
     Route::get('/publication/edit{id}', [PublicationController::class, 'edit'])->name('publication.edit')->whereNumber('id');
     Route::patch('/publication/update', [PublicationController::class, 'update'])->name('publication.update');
     Route::delete('/publication/destroy{id}', [PublicationController::class, 'destroy'])->name('publication.destroy')->whereNumber('id');

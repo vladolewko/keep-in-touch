@@ -6,9 +6,6 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
- */
 class UserFactory extends Factory
 {
     /**
@@ -24,18 +21,23 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => fake()->name(),
+            'name' => fake()->firstName(),
             'surname' => fake()->lastName(),
-            'nickname' => fake()->userName(),
-            'phone' => fake()->phoneNumber(),
-            'bio' => fake()->text(100),
+            // Створюємо унікальний та більш реалістичний нікнейм
+            'nickname' => fake()->unique()->userName(),
+            'phone' => fake()->unique()->e164PhoneNumber(),
+            // Генеруємо більш осмислений опис профілю
+            'bio' => fake()->realText(150),
             'address' => fake()->address(),
-            'is_private' => 0,
-            'role' => fake()->randomElement(['user', 'admin']),
+            // Додаємо випадковість для приватних акаунтів
+            'is_private' => fake()->boolean(25), // 25% шанс, що акаунт буде приватним
+            'role' => 'user', // За замовчуванням всі користувачі - 'user'
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
+            // Додаємо випадкову дату реєстрації для реалістичності
+            'created_at' => fake()->dateTimeBetween('-2 years', 'now'),
         ];
     }
 
@@ -46,6 +48,18 @@ class UserFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'email_verified_at' => null,
+        ]);
+    }
+
+    /**
+     * Стан для створення адміністратора.
+     * Це дозволяє легко створювати адмінів у сідері: User::factory()->admin()->create();
+     */
+    public function admin(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => 'admin',
+            'is_private' => false, // Адміни не можуть бути приватними
         ]);
     }
 }

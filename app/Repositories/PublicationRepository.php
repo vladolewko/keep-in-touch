@@ -3,32 +3,18 @@
 namespace App\Repositories;
 
 use App\Models\Publication;
+use App\Models\UserPublicationLike;
 use App\Repositories\Interfaces\IPublicationRepositoryInterface;
 use Exception;
-use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
-use LaravelIdea\Helper\App\Models\_IH_Publication_QB;
 
-/**
- *
- */
 class PublicationRepository implements IPublicationRepositoryInterface
 {
-    /**
-     * @param bool $withTrashed
-     * @return Collection
-     */
     public function all(bool $withTrashed = false): Collection
     {
         return $withTrashed ? Publication::withTrashed()->get() : Publication::all();
     }
 
-    /**
-     * @param int  $id
-     * @param bool $withTrashed
-     * @return Publication
-     */
     public function find(int $id, bool $withTrashed = false): ?Publication
     {
         try {
@@ -38,11 +24,6 @@ class PublicationRepository implements IPublicationRepositoryInterface
         }
     }
 
-    /**
-     * @param array $validated
-     * @return Publication
-     * @throws Exception
-     */
     public function create(array $validated): Publication
     {
         try {
@@ -53,36 +34,24 @@ class PublicationRepository implements IPublicationRepositoryInterface
         return $publication;
     }
 
-    /**
-     * @param int   $publicationId
-     * @param array $validated
-     * @return null|bool
-     * @throws Exception
-     */
-    public function update(int $publicationId, array $validated) : bool
+    public function update(int $publicationId, array $validated): bool
     {
         try {
-            return $this->find($publicationId, true)?->update($validated);
+            return $this->find($publicationId, true)?->update($validated) ?? false;
         } catch (Exception $e) {
             throw new Exception('Error updating publication: ' . $e->getMessage());
         }
     }
 
-    /**
-     * @param int  $publicationId
-     * @param bool $isForce
-     * @return bool
-     * @throws Exception
-     */
     public function delete(int $publicationId, bool $isForce = false): bool
     {
         try {
-            /** @var Publication $publication */
             $publication = $this->find($publicationId, true);
 
             if (!$publication) {
                 return false;
             }
+
             if ($isForce) {
                 $publication->media()->delete();
                 $publication->forceDelete();
@@ -96,12 +65,56 @@ class PublicationRepository implements IPublicationRepositoryInterface
         }
     }
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Builder|_IH_Publication_QB
-     */
-    public function query(): \Illuminate\Database\Eloquent\Builder | _IH_Publication_QB
+    public function restore(int $publicationId): bool
+    {
+        try {
+            return $this->find($publicationId, true)?->restore() ?? false;
+        } catch (Exception $e) {
+            throw new Exception('Error restoring publication: ' . $e->getMessage());
+        }
+    }
+
+    public function query(): \Illuminate\Database\Eloquent\Builder
     {
         return Publication::query();
     }
 
+    public function incrementLikes(int $publicationId): void
+    {
+        $publication = $this->find($publicationId, true);
+        $publication?->increment('likes');
+    }
+
+    public function decrementLikes(int $publicationId): void
+    {
+        $publication = $this->find($publicationId, true);
+        $publication?->decrement('likes');
+    }
+
+    public function getLikesCount(int $publicationId): int
+    {
+        return $this->find($publicationId, true)?->likes ?? 0;
+    }
+
+    public function hasUserLiked(int $publicationId, int $userId): bool
+    {
+        return UserPublicationLike::where('publication_id', $publicationId)
+            ->where('user_id', $userId)
+            ->exists();
+    }
+
+    public function createLike(int $publicationId, int $userId): UserPublicationLike
+    {
+        return UserPublicationLike::create([
+            'user_id' => $userId,
+            'publication_id' => $publicationId
+        ]);
+    }
+
+    public function deleteLike(int $publicationId, int $userId): bool
+    {
+        return UserPublicationLike::where('publication_id', $publicationId)
+                ->where('user_id', $userId)
+                ->delete() > 0;
+    }
 }

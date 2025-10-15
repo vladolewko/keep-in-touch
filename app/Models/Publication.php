@@ -49,56 +49,9 @@ class    Publication extends Model implements HasMedia
     {
         return $this->belongsTo(User::class, 'user_id')->withTrashed();
     }
-//    public function nickname():BelongsTo
-//    {
-//        return $this->belongsTo(User::class, 'user_id')->nickname;
-//    }
-
-    public static function findById ($publicationId)
+    public function author():BelongsTo
     {
-        try {
-            $publication = self::where('id', $publicationId)->first();
-            if (!$publication) {
-                throw new \Exception('Publication not found');
-            }
-            return $publication;
-        } catch (\Exception $e) {
-            return null;
-        }
-    }
-
-    /**
-     * method for toggle publication status
-     *
-     * @param $publication_id
-     *
-     * @return void
-     */
-    public static function togglePublication($publication_id): void
-    {
-        $publication = Publication::withTrashed()->find($publication_id);
-
-        if ($publication->trashed()) {
-
-            $publication->restore();
-
-        } else {
-            $publication->delete();
-        }
-    }
-
-    /**
-     * method for delete publication
-     *
-     * @param $publication_id
-     *
-     * @return void
-     */
-    public static function destroy($publication_id): void
-    {
-        $publication = Publication::withTrashed()->findOrFail($publication_id);
-        $publication->clearMediaCollection();
-        $publication->forceDelete();
+        return $this->belongsTo(User::class, 'user_id')->nickname;
     }
 
 }
