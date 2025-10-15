@@ -3,6 +3,7 @@
 namespace App\Repositories\Interfaces;
 
 use App\Models\Publication;
+use App\Models\UserPublicationLike;
 use Exception;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -49,8 +50,14 @@ interface IPublicationRepositoryInterface
      * @throws Exception
      */
     public function delete(int $publicationId, bool $isForce = false): null|bool;
-
+    public function restore(int $publicationId): bool;
 
     /** @return  \Illuminate\Database\Eloquent\Builder | _IH_Publication_QB*/
     public function query(): \Illuminate\Database\Eloquent\Builder | _IH_Publication_QB;
+    public function createLike(int $publicationId, int $userId): UserPublicationLike;
+    public function deleteLike(int $publicationId, int $userId): bool;
+    public function getLikesCount(int $publicationId): int;
+    public function decrementLikes(int $publicationId): void;
+    public function incrementLikes(int $publicationId): void;
+
 }

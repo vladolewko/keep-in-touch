@@ -2,13 +2,17 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class PublicationComment extends Model
 {
+    use HasFactory;
+
     protected $table = 'publication_comments';
     protected $primaryKey = 'id';
     protected $fillable = [
@@ -19,7 +23,7 @@ class PublicationComment extends Model
     ];
 
     // Relations
-    public function user(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }

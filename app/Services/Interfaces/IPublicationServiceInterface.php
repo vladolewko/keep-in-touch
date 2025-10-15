@@ -18,4 +18,8 @@ interface IPublicationServiceInterface
     public function create(array $validated): Publication;
     public function update(int $publicationId, array $validated) : null|bool;
     public function delete(int $publicationId, bool $isForce = false): null|bool;
+    public function restore(int $publicationId): bool;
+    public function toggleStatus(Publication $publication): void;
+    public function toggleLike(int $publicationId, int $userId): array;
+//    public function toggleRepost(int $publicationId, int $userId): bool;
 }

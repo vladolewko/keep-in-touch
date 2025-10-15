@@ -4,12 +4,7 @@ namespace Database\Factories;
 
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Str;
 
-
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Publication>
- */
 class PublicationFactory extends Factory
 {
     /**
@@ -20,11 +15,15 @@ class PublicationFactory extends Factory
     public function definition(): array
     {
         return [
+            // Замість створення нового юзера, ми будемо прив'язувати публікацію
+            // до вже існуючого юзера в сідері. Це значно ефективніше.
             'user_id' => User::factory(),
-            'title' => fake()->sentence(),
-            'description' => fake()->paragraph(),
-            'likes' => rand(0, 100),
-            'reposts' => rand(0, 100),
+            'title' => ucfirst(fake()->words(fake()->numberBetween(3, 8), true)), // Більш реалістичні заголовки
+            'description' => fake()->realText(fake()->numberBetween(200, 800)), // І більш реалістичний опис
+            // Поля 'likes' та 'reposts' - це лічильники. Їх не потрібно заповнювати через фабрику.
+            // Вони мають оновлюватися логікою вашого додатку (наприклад, через відносини або тригери).
+            // Тому я їх видалив звідси.
+            'created_at' => fake()->dateTimeBetween('-1 year', 'now'),
         ];
     }
 }

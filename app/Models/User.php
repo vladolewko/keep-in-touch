@@ -75,10 +75,6 @@ class User extends Authenticatable implements HasMedia
     {
         return $this->hasMany(PublicationComment::class);
     }
-    protected  function getId (): int
-    {
-        return $this->id;
-    }
 
     public static function getReposts($user)
     {

@@ -3,35 +3,26 @@
 namespace App\Services;
 
 use App\Models\Publication;
-use App\Models\UserSubscription;
 use App\Repositories\Interfaces\IPublicationRepositoryInterface;
 use App\Services\Interfaces\IPublicationServiceInterface;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\DB;
 
-/** Class PublicationService */
 class PublicationService implements IPublicationServiceInterface
 {
-    /**
-     * @param IPublicationRepositoryInterface $publicationRepository
-     */
     public function __construct(
         protected IPublicationRepositoryInterface $publicationRepository,
     ) {}
 
-    /**
-     * @param array $parameters
-     * @param bool  $withTrashed
-     * @return LengthAwarePaginator
-     */
     public function all(array $parameters = [], bool $withTrashed = false): LengthAwarePaginator
     {
         $search  = $parameters['search'] ?? null;
         $filter  = $parameters['filter'] ?? null;
         $sort    = $parameters['sort'] ?? 'newest';
-        $perPage = min((int)($parameters['per_page'] ?? 10), 100); // Limit max per page
+        $perPage = min((int)($parameters['per_page'] ?? 10), 100);
 
         $query = $this->publicationRepository->query();
 
@@ -47,54 +38,91 @@ class PublicationService implements IPublicationServiceInterface
         return $query->paginate($perPage);
     }
 
-    /**
-     * @param int  $id
-     * @param bool $withTrashed
-     * @return null|Model
-     */
-    public function find(int $id, bool $withTrashed = false): null | Model
+    public function find(int $id, bool $withTrashed = false): ?Model
     {
         return $this->publicationRepository->find($id, $withTrashed);
     }
 
-    /**
-     * @param array $validated
-     * @return Publication
-     * @throws Exception
-     */
     public function create(array $validated): Publication
     {
         return $this->publicationRepository->create($validated);
     }
 
-    /**
-     * @param int   $publicationId
-     * @param array $validated
-     * @return bool
-     * @throws Exception
-     */
     public function update(int $publicationId, array $validated): bool
     {
         return $this->publicationRepository->update($publicationId, $validated);
     }
 
-    /**
-     * @param int  $publicationId
-     * @param bool $isForce
-     * @return null|bool
-     * @throws Exception
-     */
-    public function delete(int $publicationId, bool $isForce = false): null | bool
+    public function delete(int $publicationId, bool $isForce = false): ?bool
     {
         return $this->publicationRepository->delete($publicationId, $isForce);
     }
 
+    public function toggleStatus(Publication $publication): void
+    {
+        if ($publication->trashed()) {
+            $publication->restore();
+        } else {
+            $publication->delete();
+        }
+    }
+
+    public function restore(int $publicationId): bool
+    {
+        return $this->publicationRepository->restore($publicationId);
+    }
+
     /**
-     * Apply sorting to the query based on parameter
-     * @param Builder $query
-     * @param string  $parameter
-     * @return Builder
+     * Toggle like for a publication
+     *
+     * @param int $publicationId
+     * @param int $userId
+     * @return array
+     * @throws Exception
      */
+    public function toggleLike(int $publicationId, int $userId): array
+    {
+        DB::beginTransaction();
+        try {
+            $publication = $this->publicationRepository->find($publicationId);
+
+            if (!$publication) {
+                throw new Exception('Publication not found');
+            }
+
+            $hasLiked = $this->publicationRepository->hasUserLiked($publicationId, $userId);
+
+            if ($hasLiked) {
+                $this->publicationRepository->deleteLike($publicationId, $userId);
+                $this->publicationRepository->decrementLikes($publicationId);
+                $isLiked = false;
+            } else {
+                $this->publicationRepository->createLike($publicationId, $userId);
+                $this->publicationRepository->incrementLikes($publicationId);
+                $isLiked = true;
+            }
+
+            DB::commit();
+
+            return [
+                'success' => true,
+                'liked' => $isLiked,
+                'likes_count' => $this->publicationRepository->getLikesCount($publicationId)
+            ];
+        } catch (Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+    }
+
+    /**
+     * Check if user has liked a publication
+     */
+    public function hasUserLiked(int $publicationId, int $userId): bool
+    {
+        return $this->publicationRepository->hasUserLiked($publicationId, $userId);
+    }
+
     private function applySorting(Builder $query, string $parameter): Builder
     {
         $sortMapping = [
@@ -113,11 +141,6 @@ class PublicationService implements IPublicationServiceInterface
         return $query->orderBy($column, $direction);
     }
 
-    /**
-     * Filter out current user's publications
-     * @param Builder $query
-     * @return Builder
-     */
     private function applyUserFilter(Builder $query): Builder
     {
         if (auth()->check()) {
@@ -127,12 +150,6 @@ class PublicationService implements IPublicationServiceInterface
         return $query;
     }
 
-    /**
-     * Apply search filter to title and description
-     * @param Builder     $query
-     * @param null|string $search
-     * @return Builder
-     */
     private function applySearch(Builder $query, ?string $search): Builder
     {
         if ($search && trim($search) !== '') {
@@ -147,16 +164,9 @@ class PublicationService implements IPublicationServiceInterface
         return $query;
     }
 
-    /**
-     * Filter publications by user subscriptions using optimized query
-     * @param Builder     $query
-     * @param null|string $filter
-     * @return Builder
-     */
     private function applySubscriptionFilter(Builder $query, ?string $filter): Builder
     {
         if ($filter === 'subscriptions' && auth()->check()) {
-            // Optimized: Use whereIn with subquery instead of pluck
             $query->whereIn('user_id', function ($subQuery) {
                 $subQuery->select('subscribed_to_id')
                     ->from('user_subscriptions')

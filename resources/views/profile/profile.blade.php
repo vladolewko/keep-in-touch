@@ -108,17 +108,6 @@
 
         </div>
     </div>
-
-    {{-- GTM Script --}}
-    @if(session('createPublicationGTM'))
-        <script>
-            window.dataLayer = window.dataLayer || [];
-            window.dataLayer.push(@json(session('createPublicationGTM')));
-            console.log(dataLayer);
-        </script>
-    @endif
-
-    {{-- Optional: Add this script to show the selected file name --}}
     <script>
         const fileInput = document.getElementById('image');
         const fileNameDisplay = document.getElementById('file-name-display');
