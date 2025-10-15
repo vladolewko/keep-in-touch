@@ -8,14 +8,9 @@ use Illuminate\Support\Str;
 
 class UserFactory extends Factory
 {
-    /**
-     * The current password being used by the factory.
-     */
     protected static ?string $password;
 
     /**
-     * Define the model's default state.
-     *
      * @return array<string, mixed>
      */
     public function definition(): array
@@ -23,20 +18,16 @@ class UserFactory extends Factory
         return [
             'name' => fake()->firstName(),
             'surname' => fake()->lastName(),
-            // Створюємо унікальний та більш реалістичний нікнейм
             'nickname' => fake()->unique()->userName(),
             'phone' => fake()->unique()->e164PhoneNumber(),
-            // Генеруємо більш осмислений опис профілю
             'bio' => fake()->realText(150),
             'address' => fake()->address(),
-            // Додаємо випадковість для приватних акаунтів
-            'is_private' => fake()->boolean(25), // 25% шанс, що акаунт буде приватним
-            'role' => 'user', // За замовчуванням всі користувачі - 'user'
+            'is_private' => fake()->boolean(25),
+            'role' => 'user',
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
-            // Додаємо випадкову дату реєстрації для реалістичності
             'created_at' => fake()->dateTimeBetween('-2 years', 'now'),
         ];
     }

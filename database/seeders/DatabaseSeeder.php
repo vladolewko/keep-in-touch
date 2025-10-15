@@ -14,23 +14,17 @@ use Illuminate\Support\Facades\DB;
 
 class DatabaseSeeder extends Seeder
 {
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
-        // Очищуємо таблиці перед заповненням, щоб уникнути дублікатів
-        // УВАГА: Це видалить всі дані з цих таблиць!
         DB::statement('SET FOREIGN_KEY_CHECKS=0');
         User::truncate();
         Publication::truncate();
         UserSubscription::truncate();
         UserPublicationLike::truncate();
         UserNotification::truncate();
-        PublicationComment::truncate(); // Додано очищення таблиці коментарів
+        PublicationComment::truncate();
         DB::statement('SET FOREIGN_KEY_CHECKS=1');
 
-        // --- 1. СТВОРЕННЯ КОРИСТУВАЧІВ ---
         $this->command->info('Створення користувачів...');
         $admin = User::factory()->admin()->create([
             'name' => 'Admin',
@@ -41,8 +35,6 @@ class DatabaseSeeder extends Seeder
         $users = User::factory(50)->create();
         $this->command->info('Користувачів створено.');
 
-
-        // --- 2. СТВОРЕННЯ ПУБЛІКАЦІЙ ---
         $this->command->info('Створення публікацій...');
         $this->command->getOutput()->progressStart($users->count());
         foreach ($users as $user) {
@@ -52,7 +44,6 @@ class DatabaseSeeder extends Seeder
         $this->command->getOutput()->progressFinish();
         $publications = Publication::all();
 
-        // --- 3. СТВОРЕННЯ ПІДПИСОК ---
         $this->command->info('Створення підписок...');
         $this->command->getOutput()->progressStart($users->count());
         foreach ($users as $user) {
@@ -70,7 +61,6 @@ class DatabaseSeeder extends Seeder
         }
         $this->command->getOutput()->progressFinish();
 
-        // --- 4. СТВОРЕННЯ ЛАЙКІВ ---
         if ($publications->isNotEmpty()) {
             $this->command->info('Створення лайків...');
             $this->command->getOutput()->progressStart($users->count());
@@ -89,13 +79,10 @@ class DatabaseSeeder extends Seeder
             $this->command->getOutput()->progressFinish();
         }
 
-        // --- 5. СТВОРЕННЯ КОМЕНТАРІВ (НОВИЙ БЛОК) ---
         if ($publications->isNotEmpty() && $users->count() > 1) {
             $this->command->info('Створення коментарів...');
             $this->command->getOutput()->progressStart($publications->count());
             foreach ($publications as $publication) {
-                // Випадкова кількість користувачів (від 0 до 10) залишить коментар
-                // Переконуємось, що автор не коментує свій пост
                 $commentingUsers = $users->where('id', '!=', $publication->user_id)->random(min(rand(0, 10), $users->count() - 1));
 
                 foreach ($commentingUsers as $commentingUser) {
@@ -109,8 +96,6 @@ class DatabaseSeeder extends Seeder
             $this->command->getOutput()->progressFinish();
         }
 
-
-        // --- 6. СТВОРЕННЯ ПОВІДОМЛЕНЬ ВІД АДМІНА ---
         $this->command->info('Створення повідомлень від адміністратора...');
         if ($users->count() >= 5) {
             $usersForNotification = $users->random(5);
