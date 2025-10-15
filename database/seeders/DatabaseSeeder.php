@@ -102,7 +102,7 @@ class DatabaseSeeder extends Seeder
             foreach ($usersForNotification as $user) {
                 UserNotification::factory()->create([
                     'user_id' => $admin->id,
-                    'sended_to_id' => $user->id,
+                    'sent_to_id' => $user->id,
                     'topic' => 'warning',
                     'message' => 'Це тестове попередження. Будь ласка, дотримуйтесь правил спільноти.'
                 ]);

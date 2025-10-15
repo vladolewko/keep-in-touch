@@ -4,14 +4,9 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProfileUpdateRequest;
-use App\Models\Publication;
-use App\Models\PublicationComment;
-use App\Models\User;
-use App\Models\UserCommentLike;
-use App\Models\UserNotification;
-use App\Models\UserPublicationLike;
-use App\Models\UserPublicationRepost;
-use App\Models\UserSubscription;
+use App\Services\Interfaces\INotificationServiceInterface;
+use App\Services\Interfaces\ISubscriptionServiceInterface;
+use App\Services\Interfaces\IUserServiceInterface;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -20,63 +15,51 @@ use Illuminate\View\View;
 
 class ProfileController extends Controller
 {
+    public function __construct(
+        private readonly IUserServiceInterface $userService,
+        private readonly ISubscriptionServiceInterface $subscriptionService,
+        private readonly INotificationServiceInterface $notificationService
+    ) {}
+
     public function profile(): View
     {
         $user = auth()->user();
-
-        $publications = User::getPublications($user);
-
-        $reposts = User::getReposts($user);
+        $publications = $this->userService->getUserPublications($user);
+        $reposts = $this->userService->getUserReposts($user);
 
         return view('profile/profile', compact('user', 'publications', 'reposts'));
     }
-
     public function followers(): View
     {
-
-        $requests = User::getRequests();
-
-        $followersIds = UserSubscription::where('subscribed_to_id', auth()->user()->id)->where('is_accepted', 1)->pluck('user_id');
-        $followers = User::whereIn('id', $followersIds)->get();
-        return view('profile/followers', compact('requests', 'followers'));
+        $data = $this->subscriptionService->getFollowersData(Auth::id());
+        return view('profile/followers', $data);
     }
 
-    public function manageSubscribitors(Request $request)
+    public function manageSubscribitors(Request $request): RedirectResponse
     {
-        $subscriber_id = $request->input('subscriber_id');
-        $action = $request->input('action');
-        UserSubscription::manageSubscribitors($subscriber_id, $action);
+        $this->subscriptionService->manageFollowerRequest(
+            $request->input('subscriber_id'),
+            $request->input('action')
+        );
 
         return back();
     }
 
     public function subscriptions(): View
     {
-        $subscriptionsIds = UserSubscription::where('user_id', auth()->user()->id)->pluck('subscribed_to_id');
-        $subscriptions = User::whereIn('id', $subscriptionsIds)->get();
-
-        foreach ($subscriptions as $user) {
-            $user->subscription_status = UserSubscription::checkSubscriptionStatus(auth()->user()->id, $user->id);
-        }
-
+        $subscriptions = $this->subscriptionService->getSubscriptionsData(Auth::id());
         return view('profile/subscriptions', compact('subscriptions'));
-    }
-
-    public function settings(): View
-    {
-        return view('profile/profileSettings');
     }
 
     public function notifications(): View
     {
-        $notifications = UserNotification::where('sended_to_id', auth()->user()->id)->get();
-
+        $notifications = $this->notificationService->get(Auth::id());
         return view('profile/notifications', compact('notifications'));
     }
 
     public function readNotification($id): RedirectResponse
     {
-        UserNotification::where('id', $id)->update(['is_read' => 1]);
+        $this->notificationService->markAsRead($id);
         return back();
     }
 
@@ -89,28 +72,13 @@ class ProfileController extends Controller
 
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        if ($request->has('remove_image')) {
-            auth()->user()->clearMediaCollection('profile_images');
-        } else {
-            $request->user()->fill($request->validated());
-
-            if ($request->user()->isDirty('email')) {
-                $request->user()->email_verified_at = null;
-            }
-
-            $request->user()->addMedia($request->validated('profile_image'))
-                ->toMediaCollection('profile_images');
-
-            $request->user()->save();
-        }
-
+        $this->userService->updateProfile($request->user(), $request->validated());
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }
 
     public function changeAccess(Request $request): RedirectResponse
     {
-        User::where('id', auth()->user()->id)->update(['is_private' => $request->input('access')]);
-
+        $this->userService->changeProfileAccess($request->input('access'));
         return back();
     }
 
@@ -119,13 +87,9 @@ class ProfileController extends Controller
         $request->validateWithBag('userDeletion', [
             'password' => ['required', 'current_password'],
         ]);
-
         $user = $request->user();
-
         Auth::logout();
-
         $user->delete();
-
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 

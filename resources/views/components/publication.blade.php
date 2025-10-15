@@ -38,7 +38,7 @@
                     </div>
                 </div>
 
-                @if($publication->user_id == auth()->user()->id)
+                @if($publication->user_id === auth()->user()->id)
                     <div class="hidden sm:flex sm:items-center">
                         <x-dropdown align="right"
                             width="48">

@@ -14,7 +14,7 @@ class UserNotificationFactory extends Factory
     {
         return [
             'user_id' => User::factory(),
-            'sended_to_id' => User::factory(),
+            'sent_to_id' => User::factory(),
             'topic' => fake()->randomElement(['warning', 'block', 'message', 'notification']),
             'message' => fake()->sentence(),
             'is_read' => fake()->boolean(30),

@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Publication;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Publication\CreatePublicationRequest;
-use App\Http\Requests\Publication\UpdatePublicationRequest;
 use App\Models\Publication;
 use App\Services\Interfaces\IPublicationServiceInterface;
 use App\Services\Interfaces\IUserPublicationLikeServiceInterface;
@@ -226,22 +225,19 @@ class PublicationController extends Controller
     /**
      * Repost publication (placeholder - implement similar to likes)
      */
-    public function repost(Request $request): JsonResponse
+    public function toggleRepost(Request $request): JsonResponse
     {
+        $data = $request->validate(['publication_id' => 'required|exists:publications,id']);
+
         try {
-            $validated = $request->validate([
-                'publication_id' => 'required|exists:publications,id'
-            ]);
+            $result = $this->publicationService->toggleRepost($data['publication_id'], Auth::id());
 
-            // TODO: Implement repost service similar to likes
-            // For now, keeping old implementation
-            return \App\Models\UserPublicationRepost::repostPublication($validated['publication_id']);
+            return response()->json(['success' => true] + $result);
+
         } catch (\Exception $e) {
-            Log::error('Repost Error: ' . $e->getMessage());
-
             return response()->json([
                 'success' => false,
-                'message' => 'An error occurred while processing your request.'
+                'message' => 'An error occurred.'
             ], 500);
         }
     }

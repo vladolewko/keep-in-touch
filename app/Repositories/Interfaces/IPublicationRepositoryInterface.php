@@ -5,19 +5,16 @@ namespace App\Repositories\Interfaces;
 use App\Models\Publication;
 use App\Models\UserPublicationLike;
 use Exception;
-use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use LaravelIdea\Helper\App\Models\_IH_Publication_QB;
 
-/**
- *
- */
+/** Interface IPublicationRepositoryInterface */
 interface IPublicationRepositoryInterface
 {
     /**
      * @param bool $withTrashed
-     * @return Collection
+     * @return null|Collection
      */
     public function all(bool $withTrashed = false): Collection | null;
 
@@ -50,14 +47,46 @@ interface IPublicationRepositoryInterface
      * @throws Exception
      */
     public function delete(int $publicationId, bool $isForce = false): null|bool;
+
+    /**
+     * @param int $publicationId
+     * @return bool
+     */
     public function restore(int $publicationId): bool;
 
     /** @return  \Illuminate\Database\Eloquent\Builder | _IH_Publication_QB*/
     public function query(): \Illuminate\Database\Eloquent\Builder | _IH_Publication_QB;
+
+    /**
+     * @param int $publicationId
+     * @param int $userId
+     * @return UserPublicationLike
+     */
     public function createLike(int $publicationId, int $userId): UserPublicationLike;
+
+    /**
+     * @param int $publicationId
+     * @param int $userId
+     * @return bool
+     */
     public function deleteLike(int $publicationId, int $userId): bool;
+
+    /**
+     * @param int $publicationId
+     * @return int
+     */
     public function getLikesCount(int $publicationId): int;
+
+    /**
+     * @param int $publicationId
+     * @return void
+     */
     public function decrementLikes(int $publicationId): void;
+
+    /**
+     * @param int $publicationId
+     * @return void
+     */
     public function incrementLikes(int $publicationId): void;
 
 }

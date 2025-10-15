@@ -7,13 +7,23 @@ use App\Models\UserPublicationLike;
 use App\Repositories\Interfaces\IUserPublicationLikeRepositoryInterface;
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
+use \Illuminate\Database\Eloquent\Builder;
 
+/** Class UserPublicationLikeRepository */
 class UserPublicationLikeRepository implements IUserPublicationLikeRepositoryInterface
 {
+    /**
+     * @return Collection
+     */
     public function all(): Collection
     {
         return UserPublicationLike::all();
     }
+
+    /**
+     * @param int $id
+     * @return null|UserPublicationLike
+     */
     public function find(int $id): ?UserPublicationLike
     {
         try {
@@ -22,6 +32,12 @@ class UserPublicationLikeRepository implements IUserPublicationLikeRepositoryInt
             return null;
         }
     }
+
+    /**
+     * @param int $publicationId
+     * @param int $userId
+     * @return bool
+     */
     public function exists(int $publicationId, int $userId): bool
     {
         return UserPublicationLike::where('publication_id', $publicationId)
@@ -29,18 +45,30 @@ class UserPublicationLikeRepository implements IUserPublicationLikeRepositoryInt
             ->exists();
     }
 
+    /**
+     * @param int $publicationId
+     * @param int $userId
+     * @return UserPublicationLike
+     * @throws Exception
+     */
     public function create(int $publicationId, int $userId): UserPublicationLike
     {
         try {
             return UserPublicationLike::create([
                 'publication_id' => $publicationId,
-                'user_id' => $userId
+                'user_id'        => $userId,
             ]);
         } catch (Exception $e) {
             throw new Exception('Error creating like: ' . $e->getMessage());
         }
     }
 
+    /**
+     * @param int $publicationId
+     * @param int $userId
+     * @return bool
+     * @throws Exception
+     */
     public function delete(int $publicationId, int $userId): bool
     {
         try {
@@ -52,6 +80,11 @@ class UserPublicationLikeRepository implements IUserPublicationLikeRepositoryInt
         }
     }
 
+    /**
+     * @param int $id
+     * @return bool
+     * @throws Exception
+     */
     public function deleteById(int $id): bool
     {
         try {
@@ -62,6 +95,10 @@ class UserPublicationLikeRepository implements IUserPublicationLikeRepositoryInt
         }
     }
 
+    /**
+     * @param int $publicationId
+     * @return Collection
+     */
     public function getByPublication(int $publicationId): Collection
     {
         return UserPublicationLike::where('publication_id', $publicationId)
@@ -69,6 +106,10 @@ class UserPublicationLikeRepository implements IUserPublicationLikeRepositoryInt
             ->get();
     }
 
+    /**
+     * @param int $userId
+     * @return Collection
+     */
     public function getByUser(int $userId): Collection
     {
         return UserPublicationLike::where('user_id', $userId)
@@ -76,6 +117,10 @@ class UserPublicationLikeRepository implements IUserPublicationLikeRepositoryInt
             ->get();
     }
 
+    /**
+     * @param int $publicationId
+     * @return array
+     */
     public function getUsersByPublication(int $publicationId): array
     {
         return UserPublicationLike::where('publication_id', $publicationId)
@@ -87,6 +132,10 @@ class UserPublicationLikeRepository implements IUserPublicationLikeRepositoryInt
             ->toArray();
     }
 
+    /**
+     * @param int $userId
+     * @return array
+     */
     public function getPublicationsByUser(int $userId): array
     {
         return UserPublicationLike::where('user_id', $userId)
@@ -98,6 +147,10 @@ class UserPublicationLikeRepository implements IUserPublicationLikeRepositoryInt
             ->toArray();
     }
 
+    /**
+     * @param int $userId
+     * @return array
+     */
     public function getPublicationIdsByUser(int $userId): array
     {
         return UserPublicationLike::where('user_id', $userId)
@@ -105,6 +158,10 @@ class UserPublicationLikeRepository implements IUserPublicationLikeRepositoryInt
             ->toArray();
     }
 
+    /**
+     * @param int $publicationId
+     * @return array
+     */
     public function getUserIdsByPublication(int $publicationId): array
     {
         return UserPublicationLike::where('publication_id', $publicationId)
@@ -112,6 +169,11 @@ class UserPublicationLikeRepository implements IUserPublicationLikeRepositoryInt
             ->toArray();
     }
 
+    /**
+     * @param int $publicationId
+     * @return void
+     * @throws Exception
+     */
     public function incrementPublicationLikes(int $publicationId): void
     {
         try {
@@ -121,6 +183,11 @@ class UserPublicationLikeRepository implements IUserPublicationLikeRepositoryInt
         }
     }
 
+    /**
+     * @param int $publicationId
+     * @return void
+     * @throws Exception
+     */
     public function decrementPublicationLikes(int $publicationId): void
     {
         try {
@@ -132,11 +199,20 @@ class UserPublicationLikeRepository implements IUserPublicationLikeRepositoryInt
         }
     }
 
+    /**
+     * @param int $publicationId
+     * @return int
+     */
     public function getPublicationLikesCount(int $publicationId): int
     {
         return Publication::where('id', $publicationId)->value('likes') ?? 0;
     }
 
+    /**
+     * @param int $publicationId
+     * @return bool
+     * @throws Exception
+     */
     public function syncPublicationLikesCount(int $publicationId): bool
     {
         try {
@@ -148,6 +224,11 @@ class UserPublicationLikeRepository implements IUserPublicationLikeRepositoryInt
         }
     }
 
+    /**
+     * @param int $publicationId
+     * @return bool
+     * @throws Exception
+     */
     public function deleteByPublication(int $publicationId): bool
     {
         try {
@@ -157,6 +238,11 @@ class UserPublicationLikeRepository implements IUserPublicationLikeRepositoryInt
         }
     }
 
+    /**
+     * @param int $userId
+     * @return bool
+     * @throws Exception
+     */
     public function deleteByUser(int $userId): bool
     {
         try {
@@ -166,16 +252,29 @@ class UserPublicationLikeRepository implements IUserPublicationLikeRepositoryInt
         }
     }
 
+    /**
+     * @param int $userId
+     * @return int
+     */
     public function countByUser(int $userId): int
     {
         return UserPublicationLike::where('user_id', $userId)->count();
     }
 
+    /**
+     * @param int $publicationId
+     * @return int
+     */
     public function countByPublication(int $publicationId): int
     {
         return UserPublicationLike::where('publication_id', $publicationId)->count();
     }
 
+    /**
+     * @param int   $publicationId
+     * @param array $userIds
+     * @return array
+     */
     public function checkMultipleUsersLiked(int $publicationId, array $userIds): array
     {
         $likes = UserPublicationLike::where('publication_id', $publicationId)
@@ -186,6 +285,11 @@ class UserPublicationLikeRepository implements IUserPublicationLikeRepositoryInt
         return array_map(fn($userId) => in_array($userId, $likes), $userIds);
     }
 
+    /**
+     * @param int $publicationId
+     * @param int $limit
+     * @return Collection
+     */
     public function getRecentByPublication(int $publicationId, int $limit = 10): Collection
     {
         return UserPublicationLike::where('publication_id', $publicationId)
@@ -195,6 +299,11 @@ class UserPublicationLikeRepository implements IUserPublicationLikeRepositoryInt
             ->get();
     }
 
+    /**
+     * @param int      $limit
+     * @param null|int $daysBack
+     * @return Collection
+     */
     public function getPopularPublications(int $limit = 10, ?int $daysBack = null): Collection
     {
         $query = UserPublicationLike::with('publication')
@@ -205,13 +314,17 @@ class UserPublicationLikeRepository implements IUserPublicationLikeRepositoryInt
             $query->where('created_at', '>=', now()->subDays($daysBack));
         }
 
-        return $query->groupBy('publication_id')
+        return $query
+            ->groupBy('publication_id')
             ->orderBy('likes_count', 'desc')
             ->limit($limit)
             ->get();
     }
 
-    public function query(): \Illuminate\Database\Eloquent\Builder
+    /**
+     * @return Builder
+     */
+    public function query(): Builder
     {
         return UserPublicationLike::query();
     }

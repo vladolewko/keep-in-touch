@@ -3,52 +3,43 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
-use App\Models\UserSubscription;
+use App\Services\Interfaces\ISubscriptionServiceInterface;
+use App\Services\Interfaces\IUserServiceInterface;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class UserController extends Controller
 {
+    public function __construct(
+        private readonly IUserServiceInterface $userService,
+         private readonly ISubscriptionServiceInterface $subscriptionService
+    ) {}
+
     public function users(Request $request): View
     {
-        $parameter = $request->get('parameter');
-        $search = $request->get('search');
-
-        $users = User::sortUsers($parameter, $search);
-
-        foreach ($users as $user) {
-            $user->subscription_status = UserSubscription::checkSubscriptionStatus(auth()->user()->id, $user->id);
-
-        }
+        $users = $this->userService->getSortedUsers($request->all());
 
         return view('users/usersList', compact('users'));
     }
 
     public function profile($id): View
     {
-        $user = User::find($id);
+        $user = $this->userService->findUserById($id);
+        abort_if(!$user, 404);
+        $haveAccess = $this->userService->hasAccessToProfile($id);
+        $subscriptionStatus = $this->subscriptionService->checkSubscriptionStatus(auth()->id(), $id);
+        $publications = $this->userService->getUserPublications($user);
+        $reposts = $this->userService->getUserReposts($user);
 
-        $user->haveAccess = User::checkIfHaveAccess($user->id);
-        $user->subscription_status = UserSubscription::checkSubscriptionStatus(auth()->user()->id, $user->id);
-
-        $publications = User::getPublications($user);
-
-        $reposts = User::getReposts($user);
-
-        return view('users/userProfile', compact('user', 'publications', 'reposts'));
+        return view('users/userProfile', compact('user', 'publications', 'reposts', 'haveAccess', 'subscriptionStatus'));
     }
 
     public function changeSubscription(Request $request): RedirectResponse
     {
-        $user_id = $request->validate([
-            'user_id' => 'required|integer|exists:users,id',
-        ])['user_id'];
-
-        UserSubscription::changeSubscription($user_id);
+        $data = $request->validate(['user_id' => 'required|integer|exists:users,id']);
+        $this->subscriptionService->toggleSubscription($data['user_id']);
 
         return back();
     }
-
 }

@@ -2,24 +2,24 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
-class    Publication extends Model implements HasMedia
+/** Class Publication */
+class Publication extends Model implements HasMedia
 {
-    /** @use HasFactory<\Database\Factories\PublicationFactory> */
     use HasFactory;
     use SoftDeletes;
     use InteractsWithMedia;
 
+    /** @var string */
     protected $table = 'publications';
-    protected $primaryKey = 'id';
+    /** @var string[] */
     protected $fillable = [
         'user_id',
         'community_id',
@@ -29,27 +29,32 @@ class    Publication extends Model implements HasMedia
         'reposts',
     ];
 
-    // Relations
-    public function likes()
+    /** @return HasMany */
+    public function likes(): HasMany
     {
         return $this->hasMany(UserPublicationLike::class);
     }
 
-    public function reposts()
+    /** @return HasMany */
+    public function reposts(): HasMany
     {
         return $this->hasMany(UserPublicationRepost::class);
     }
 
-    public function comments()
+    /** @return HasMany */
+    public function comments(): HasMany
     {
         return $this->hasMany(PublicationComment::class);
     }
 
+    /** @return BelongsTo */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id')->withTrashed();
     }
-    public function author():BelongsTo
+
+    /** @return BelongsTo */
+    public function author(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id')->nickname;
     }

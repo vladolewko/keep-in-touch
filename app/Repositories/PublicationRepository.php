@@ -6,15 +6,28 @@ use App\Models\Publication;
 use App\Models\UserPublicationLike;
 use App\Repositories\Interfaces\IPublicationRepositoryInterface;
 use Exception;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 
+/**
+ *
+ */
 class PublicationRepository implements IPublicationRepositoryInterface
 {
+    /**
+     * @param bool $withTrashed
+     * @return Collection
+     */
     public function all(bool $withTrashed = false): Collection
     {
         return $withTrashed ? Publication::withTrashed()->get() : Publication::all();
     }
 
+    /**
+     * @param int  $id
+     * @param bool $withTrashed
+     * @return null|Publication
+     */
     public function find(int $id, bool $withTrashed = false): ?Publication
     {
         try {
@@ -24,6 +37,11 @@ class PublicationRepository implements IPublicationRepositoryInterface
         }
     }
 
+    /**
+     * @param array $validated
+     * @return Publication
+     * @throws Exception
+     */
     public function create(array $validated): Publication
     {
         try {
@@ -34,6 +52,12 @@ class PublicationRepository implements IPublicationRepositoryInterface
         return $publication;
     }
 
+    /**
+     * @param int   $publicationId
+     * @param array $validated
+     * @return bool
+     * @throws Exception
+     */
     public function update(int $publicationId, array $validated): bool
     {
         try {
@@ -43,6 +67,12 @@ class PublicationRepository implements IPublicationRepositoryInterface
         }
     }
 
+    /**
+     * @param int  $publicationId
+     * @param bool $isForce
+     * @return bool
+     * @throws Exception
+     */
     public function delete(int $publicationId, bool $isForce = false): bool
     {
         try {
@@ -65,6 +95,11 @@ class PublicationRepository implements IPublicationRepositoryInterface
         }
     }
 
+    /**
+     * @param int $publicationId
+     * @return bool
+     * @throws Exception
+     */
     public function restore(int $publicationId): bool
     {
         try {
@@ -74,28 +109,48 @@ class PublicationRepository implements IPublicationRepositoryInterface
         }
     }
 
-    public function query(): \Illuminate\Database\Eloquent\Builder
+    /**
+     * @return Builder
+     */
+    public function query(): Builder
     {
         return Publication::query();
     }
 
+    /**
+     * @param int $publicationId
+     * @return void
+     */
     public function incrementLikes(int $publicationId): void
     {
         $publication = $this->find($publicationId, true);
         $publication?->increment('likes');
     }
 
+    /**
+     * @param int $publicationId
+     * @return void
+     */
     public function decrementLikes(int $publicationId): void
     {
         $publication = $this->find($publicationId, true);
         $publication?->decrement('likes');
     }
 
+    /**
+     * @param int $publicationId
+     * @return int
+     */
     public function getLikesCount(int $publicationId): int
     {
         return $this->find($publicationId, true)?->likes ?? 0;
     }
 
+    /**
+     * @param int $publicationId
+     * @param int $userId
+     * @return bool
+     */
     public function hasUserLiked(int $publicationId, int $userId): bool
     {
         return UserPublicationLike::where('publication_id', $publicationId)
@@ -103,14 +158,24 @@ class PublicationRepository implements IPublicationRepositoryInterface
             ->exists();
     }
 
+    /**
+     * @param int $publicationId
+     * @param int $userId
+     * @return UserPublicationLike
+     */
     public function createLike(int $publicationId, int $userId): UserPublicationLike
     {
         return UserPublicationLike::create([
-            'user_id' => $userId,
-            'publication_id' => $publicationId
+            'user_id'        => $userId,
+            'publication_id' => $publicationId,
         ]);
     }
 
+    /**
+     * @param int $publicationId
+     * @param int $userId
+     * @return bool
+     */
     public function deleteLike(int $publicationId, int $userId): bool
     {
         return UserPublicationLike::where('publication_id', $publicationId)
