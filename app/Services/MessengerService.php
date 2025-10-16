@@ -3,20 +3,18 @@
 namespace App\Services;
 
 use App\Events\MessageSent;
+use App\Events\MessagesRead;
 use App\Models\Conversation;
 use App\Models\Message;
 use App\Models\User;
 use App\Repositories\ConversationRepository;
+use App\Services\Interfaces\IMessengerServiceInterface;
 
 /** Class MessengerService */
-class MessengerService
+class MessengerService implements IMessengerServiceInterface
 {
-    protected ConversationRepository $conversationRepository;
-
-    public function __construct(ConversationRepository $conversationRepository)
-    {
-        $this->conversationRepository = $conversationRepository;
-    }
+    /** @param ConversationRepository $conversationRepository */
+    public function __construct(protected ConversationRepository $conversationRepository) {}
 
     /**
      * @param Conversation $conversation
@@ -31,6 +29,13 @@ class MessengerService
             'body'    => $data['body'],
         ]);
         $message->load('user');
+
+        $recipient = $conversation->participants()->where('user_id', '!=', $user->id)->first();
+        if ($recipient) {
+            $conversation->participants()->updateExistingPivot($recipient->id, [
+                'deleted_at' => null,
+            ]);
+        }
 
         broadcast(new MessageSent($message))->toOthers();
 
@@ -52,5 +57,42 @@ class MessengerService
         }
 
         return $conversation;
+    }
+
+    /**
+     * @param Conversation $conversation
+     * @param User         $user
+     * @param bool         $forBoth
+     * @return void
+     */
+    public function deleteConversation(Conversation $conversation, User $user, bool $forBoth = false): void
+    {
+        if ($forBoth) {
+            $conversation->delete();
+        } else {
+            $timestamp = now();
+            $conversation->participants()->updateExistingPivot($user->id, [
+                'deleted_at'           => $timestamp,
+                'history_hidden_until' => $timestamp,
+            ]);
+        }
+    }
+
+    /**
+     * @param Conversation $conversation
+     * @param User         $user
+     * @return int
+     */
+    public function markAsRead(Conversation $conversation, User $user): int
+    {
+        $conversation
+            ->messages()
+            ->where('user_id', '!=', $user->id)
+            ->whereNull('read_at')
+            ->update(['read_at' => now()]);
+
+        broadcast(new MessagesRead($conversation->id))->toOthers();
+
+        return $this->conversationRepository->getTotalUnreadCount($user);
     }
 }

@@ -10,13 +10,20 @@ use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\LanguageMiddleware;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', static function () {return view('welcome');});
+Route::get('/', static function () {
+    return view('welcome');
+});
 
 Route::middleware(['auth', LanguageMiddleware::class])->group(function () {
-    Route::post('/chat/start/{user}', [MessengerController::class, 'startOrGetConversation'])->name('chat.start');
-    Route::get('/chat/{conversation}', [MessengerController::class, 'showConversation'])->name('chat.show');
-    Route::post('/chat/send/{conversation}', [MessengerController::class, 'sendMessage'])->name('chat.send');
     Route::get('/chats', [MessengerController::class, 'index'])->name('chats.index');
+
+    Route::prefix('chat')->group(function () {
+        Route::post('/start/{user}', [MessengerController::class, 'startOrGetConversation'])->name('chat.start');
+        Route::get('/{conversation}', [MessengerController::class, 'showConversation'])->name('chat.show');
+        Route::post('/send/{conversation}', [MessengerController::class, 'sendMessage'])->name('chat.send');
+        Route::delete('/destroy/{conversation}', [MessengerController::class, 'destroy'])->name('chat.destroy');
+        Route::patch('/{conversation}/read', [MessengerController::class, 'markAsRead'])->name('chat.read');
+    });
 
     Route::prefix('profile')->group(function () {
         Route::get('/notifications', [ProfileController::class, 'notifications'])->name('profile.notifications');

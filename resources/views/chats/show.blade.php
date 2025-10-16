@@ -4,39 +4,56 @@
             {{ __('navigation.settings') }}
         </h2>
     </x-slot>
-<div class="chat-container max-w-2xl mx-auto mt-10 p-4 border rounded-lg shadow-lg flex flex-col h-[70vh]">
-    <div class="participants border-b pb-2 mb-4">
-        <p class="font-bold">Зараз в чаті:</p>
-        <ul id="online-users" class="flex space-x-2 text-sm text-gray-600">
-        </ul>
-    </div>
+    <div class="chat-container max-w-2xl mx-auto mt-10 p-4 border rounded-lg shadow-lg flex flex-col h-[70vh]">
+        <div class="participants border-b pb-2 mb-4">
+            <p class="font-bold">Зараз в чаті:</p>
+            <ul id="online-users"
+                class="flex space-x-2 text-sm text-gray-600">
+            </ul>
+        </div>
 
-    <div id="messages-container" class="flex-grow overflow-y-auto space-y-4 pr-4">
-        @foreach($messages as $message)
-            <div class="flex {{$message->user_id === auth()->id() ? 'justify-end' : 'justify-start'}}">
-                <div class="max-w-xs lg:max-w-md px-4 py-2 rounded-xl {{$message->user_id === auth()->id() ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-800'}}">
-                    <p class="text-sm">{{ $message->body }}</p>
-                    <p class="text-xs text-right opacity-70 mt-1">{{ $message->created_at->format('H:i') }}</p>
+        <div id="messages-container"
+            class="flex-grow overflow-y-auto space-y-4 pr-4">
+            @foreach($messages as $message)
+                <div class="flex {{ $message->user_id === auth()->id() ? 'justify-end' : 'justify-start' }}"
+                    data-message-id="{{ $message->id }}">
+                    <div class="max-w-xs lg:max-w-md px-4 py-2 rounded-xl {{ $message->user_id === auth()->id() ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-800' }}">
+                        <p class="text-sm">{{ $message->body }}</p>
+                        <div class="flex items-center justify-end mt-1 space-x-1">
+                            <p class="text-xs opacity-70">{{ $message->created_at->format('H:i') }}</p>
+                            @if ($message->user_id === auth()->id())
+                                <span class="read-status">
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                            height="16px"
+                            viewBox="0 -960 960 960"
+                            width="16px"
+                            fill="{{ $message->read_at ? '#34D399' : '#9CA3AF' }}">
+                            <path d="M382-240 154-468l57-57 171 171 367-367 57 57-424 424Z"/>
+                        </svg>
+                    </span>
+                            @endif
+                        </div>
+                    </div>
                 </div>
-            </div>
-        @endforeach
-    </div>
+            @endforeach
+        </div>
 
-    <div class="mt-4 pt-4 border-t">
-        <form id="message-form" class="flex space-x-3">
-            <input type="text"
-                id="message-input"
-                placeholder="Type your message..."
-                autocomplete="off"
-                class="flex-grow border rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required>
-            <button type="submit" class="bg-blue-500 text-white rounded-full px-5 py-2 hover:bg-blue-600">
-                Send
-            </button>
-        </form>
+        <div class="mt-4 pt-4 border-t">
+            <form id="message-form"
+                class="flex space-x-3">
+                <input type="text"
+                    id="message-input"
+                    placeholder="Type your message..."
+                    autocomplete="off"
+                    class="flex-grow border rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    required>
+                <button type="submit"
+                    class="bg-blue-500 text-white rounded-full px-5 py-2 hover:bg-blue-600">
+                    Send
+                </button>
+            </form>
+        </div>
     </div>
-</div>
-
     <script>
         document.addEventListener('DOMContentLoaded', function () {
 
@@ -57,15 +74,56 @@
                 onlineUsersList.innerHTML = html;
             }
 
+            function markMessagesAsRead() {
+                fetch(`/chat/{{ $conversation->id }}/read`, {
+                    method  : 'PATCH',
+                    headers : {
+                        'Content-Type' : 'application/json',
+                        'X-CSRF-TOKEN' : document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'X-Socket-ID'  : window.Echo.socketId()
+                    }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        const badge = document.getElementById('total-unread-badge');
+                        if (badge) {
+                            if (data.total_unread > 0) {
+                                badge.innerText = data.total_unread;
+                                badge.style.display = 'flex';
+                            }
+                            else {
+                                badge.style.display = 'none';
+                            }
+                        }
+                    })
+                    .catch(error => console.error('Error marking messages as read:', error));
+            }
+
+            markMessagesAsRead();
+
             function appendMessage(message) {
                 const isMyMessage = message.user_id === currentUserId;
+                const readStatusHtml = isMyMessage ? `
+                <span class="read-status">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="16px" fill="#9CA3AF">
+                        <path d="M382-240 154-468l57-57 171 171 367-367 57 57-424 424Z"/>
+                    </svg>
+                </span>
+            ` : '';
+
                 const messageHtml = `
-                <div class="flex ${isMyMessage ? 'justify-end' : 'justify-start'}">
-                    <div class="max-w-xs lg:max-w-md px-4 py-2 rounded-xl ${isMyMessage ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-800'}">
-                        <p class="text-sm">${message.body}</p>
-                        <p class="text-xs text-right opacity-70 mt-1">${new Date(message.created_at).toLocaleTimeString('uk-UA', { hour: '2-digit', minute: '2-digit' })}</p>
+            <div class="flex ${isMyMessage ? 'justify-end' : 'justify-start'}" data-message-id="${message.id}">
+                <div class="max-w-xs lg:max-w-md px-4 py-2 rounded-xl ${isMyMessage ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-800'}">
+                    <p class="text-sm">${message.body}</p>
+                    <div class="flex items-center justify-end mt-1 space-x-1">
+                        <p class="text-xs opacity-70">${new Date(message.created_at).toLocaleTimeString('uk-UA', {
+                    hour   : '2-digit',
+                    minute : '2-digit'
+                })}</p>
+                        ${readStatusHtml}
                     </div>
                 </div>
+            </div>
             `;
                 messagesContainer.innerHTML += messageHtml;
                 messagesContainer.scrollTop = messagesContainer.scrollHeight;
@@ -76,16 +134,18 @@
             messageForm.addEventListener('submit', function (e) {
                 e.preventDefault();
                 const messageText = messageInput.value;
-                if (!messageText) return;
+                if (!messageText) {
+                    return;
+                }
 
                 fetch(`/chat/send/{{ $conversation->id }}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                        'X-Socket-ID': window.Echo.socketId()
+                    method  : 'POST',
+                    headers : {
+                        'Content-Type' : 'application/json',
+                        'X-CSRF-TOKEN' : document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'X-Socket-ID'  : window.Echo.socketId()
                     },
-                    body: JSON.stringify({ body: messageText })
+                    body    : JSON.stringify({body : messageText})
                 })
                     .then(response => response.json())
                     .then(message => {
@@ -110,10 +170,19 @@
                   })
                   .leaving((user) => {
                       const userElement = document.getElementById(`user-${user.id}`);
-                      if (userElement) userElement.remove();
+                      if (userElement) {
+                          userElement.remove();
+                      }
                   })
                   .listen('.new-message', (e) => {
                       appendMessage(e.message);
+                      markMessagesAsRead();
+                  })
+                  .listen('.messages-read', (e) => {
+                      const unreadStatuses = document.querySelectorAll('.read-status svg[fill="#9CA3AF"]');
+                      unreadStatuses.forEach(svg => {
+                          svg.setAttribute('fill', '#34D399');
+                      });
                   })
                   .error((error) => {
                       console.error('Connection Error:', error);
