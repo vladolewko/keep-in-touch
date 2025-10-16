@@ -18,8 +18,8 @@
                     </div>
                     <div>
                         <p class="text-gray-900 dark:text-white font-semibold text-sm hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-                            <a href="{{ route('users.profile', ['id' => $publication->user->id]) }}">
-                                {{ $publication->user->nickname }}
+                            <a href="{{ route('users.profile', ['id' => $publication->user_id]) }}">
+                                {{ $publication->nickname }}
                             </a>
                         </p>
                         <p class="text-gray-500 dark:text-gray-400 text-xs flex items-center">

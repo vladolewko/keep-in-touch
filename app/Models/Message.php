@@ -2,24 +2,21 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-/** Class Message */
 class Message extends Model
 {
-    /** @var array */
-    protected $guarded = [];
-    /** @var string[] */
-    protected $touches = ['conversation'];
+    use HasFactory;
 
-    /** @return BelongsTo */
+    protected $guarded = [];
+
     public function conversation(): BelongsTo
     {
         return $this->belongsTo(Conversation::class);
     }
 
-    /** @return BelongsTo */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

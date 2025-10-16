@@ -13,8 +13,8 @@
 
     <div id="messages-container" class="flex-grow overflow-y-auto space-y-4 pr-4">
         @foreach($messages as $message)
-            <div class="flex {{$message->user_id === auth()->id() ? 'justify-end' : 'justify-start'}}">
-                <div class="max-w-xs lg:max-w-md px-4 py-2 rounded-xl {{$message->user_id === auth()->id() ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-800'}}">
+            <div class="flex @if($message->user_id == auth()->id()) justify-end @else justify-start @endif">
+                <div class="max-w-xs lg:max-w-md px-4 py-2 rounded-xl @if($message->user_id == auth()->id()) bg-blue-500 text-white @else bg-gray-200 text-gray-800 @endif">
                     <p class="text-sm">{{ $message->body }}</p>
                     <p class="text-xs text-right opacity-70 mt-1">{{ $message->created_at->format('H:i') }}</p>
                 </div>
@@ -26,12 +26,12 @@
         <form id="message-form" class="flex space-x-3">
             <input type="text"
                 id="message-input"
-                placeholder="Type your message..."
+                placeholder="Напишіть повідомлення..."
                 autocomplete="off"
                 class="flex-grow border rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required>
             <button type="submit" class="bg-blue-500 text-white rounded-full px-5 py-2 hover:bg-blue-600">
-                Send
+                Надіслати
             </button>
         </form>
     </div>
@@ -47,18 +47,20 @@
             const messageForm = document.getElementById('message-form');
             const messageInput = document.getElementById('message-input');
 
+            // --- ОНОВЛЕНА ФУНКЦІЯ ---
             function updateOnlineList(users) {
                 let html = '';
                 const otherUsers = users.filter(user => user.id !== currentUserId);
 
                 otherUsers.forEach(user => {
+                    // Тепер user.name буде містити nickname з бекенду
                     html += `<li id="user-${user.id}" class="px-2 py-1 bg-green-100 text-green-800 rounded-full">${user.name}</li>`;
                 });
                 onlineUsersList.innerHTML = html;
             }
 
             function appendMessage(message) {
-                const isMyMessage = message.user_id === currentUserId;
+                const isMyMessage = message.user_id == currentUserId;
                 const messageHtml = `
                 <div class="flex ${isMyMessage ? 'justify-end' : 'justify-start'}">
                     <div class="max-w-xs lg:max-w-md px-4 py-2 rounded-xl ${isMyMessage ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-800'}">
@@ -103,7 +105,7 @@
                           const li = document.createElement('li');
                           li.id = `user-${user.id}`;
                           li.className = 'px-2 py-1 bg-green-100 text-green-800 rounded-full';
-                          li.innerText = user.name;
+                          li.innerText = user.name; // Тепер тут буде nickname
                           onlineUsersList.appendChild(li);
                       }
                   })
@@ -115,7 +117,7 @@
                       appendMessage(e.message);
                   })
                   .error((error) => {
-                      console.error('Connection Error:', error);
+                      console.error('Помилка підключення до каналу:', error);
                   });
         });
     </script>
