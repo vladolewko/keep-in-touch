@@ -14,52 +14,52 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 
-/** Class PublicationController */
 class PublicationController extends Controller
 {
-    /**
-     * @param IPublicationServiceInterface         $publicationService
-     * @param IUserPublicationLikeServiceInterface $likeService
-     */
     public function __construct(
-        private readonly IPublicationServiceInterface         $publicationService,
+        private readonly IPublicationServiceInterface $publicationService,
         private readonly IUserPublicationLikeServiceInterface $likeService,
     ) {}
 
     /**
-     * @param Request $request
-     * @return View
+     * Display list of publications
      */
     public function publications(Request $request): View
     {
         $sorting = $request->get('parameter');
-        $filter  = $request->get('filter');
-        $search  = $request->get('search');
+        $filter = $request->get('filter');
+        $search = $request->get('search');
 
         $publications = $this->publicationService->all([
-            'sort'   => $sorting,
+            'sort' => $sorting,
             'filter' => $filter,
             'search' => $search,
         ]);
 
-        return view('publications.index', compact('publications'));
+        return view('publications/publicationsList', compact('publications'));
     }
 
     /**
-     * @param CreatePublicationRequest $request
-     * @return RedirectResponse
+     * Display subscriptions publications
+     */
+    public function subscriptions(): View
+    {
+        return view('publications/subscriptionsPublicationsList');
+    }
+
+    /**
+     * Create new publication
      */
     public function create(CreatePublicationRequest $request): RedirectResponse
     {
         try {
-            $validated            = $request->validated();
+            $validated = $request->validated();
             $validated['user_id'] = Auth::id();
 
             $publication = $this->publicationService->create($validated);
 
             if (isset($validated['image'])) {
-                $publication
-                    ->addMedia($validated['image'])
+                $publication->addMedia($validated['image'])
                     ->toMediaCollection('publication_images');
             }
 
@@ -71,8 +71,7 @@ class PublicationController extends Controller
     }
 
     /**
-     * @param int $id
-     * @return View
+     * Show edit form
      */
     public function edit(int $id): View
     {
@@ -82,6 +81,7 @@ class PublicationController extends Controller
             abort(404, 'Publication not found');
         }
 
+        // Check if user owns the publication
         if ($publication->user_id !== Auth::id()) {
             abort(403, 'Unauthorized action');
         }
@@ -90,44 +90,45 @@ class PublicationController extends Controller
     }
 
     /**
-     * @param Request $request
-     * @return RedirectResponse
+     * Update publication
      */
     public function update(Request $request): RedirectResponse
     {
         try {
             $validated = $request->validate([
                 'publication_id' => 'required|exists:publications,id',
-                'title'          => 'required|string|max:255',
-                'description'    => 'nullable|string|max:1000',
-                'image'          => 'nullable|file|image|max:10240',
-                'remove_image'   => 'nullable|boolean',
+                'title' => 'required|string|max:255',
+                'description' => 'nullable|string|max:1000',
+                'image' => 'nullable|file|image|max:10240', // 10MB max
+                'remove_image' => 'nullable|boolean'
             ]);
 
             $publication = Publication::findOrFail($validated['publication_id']);
 
+            // Check ownership
             if ($publication->user_id !== Auth::id()) {
                 return back()->with('error', 'Unauthorized action');
             }
 
+            // Handle image removal
             if ($request->has('remove_image') && $request->boolean('remove_image')) {
                 $publication->clearMediaCollection('publication_images');
             }
 
+            // Update publication data
             $this->publicationService->update($validated['publication_id'], [
-                'title'       => $validated['title'],
+                'title' => $validated['title'],
                 'description' => $validated['description'] ?? $publication->description,
             ]);
 
+            // Add new image if provided
             if ($request->hasFile('image')) {
                 $publication->clearMediaCollection('publication_images');
-                $publication
-                    ->addMedia($request->file('image'))
+                $publication->addMedia($request->file('image'))
                     ->toMediaCollection('publication_images');
             }
 
-            return redirect()
-                ->route('profile')
+            return redirect()->route('profile.myProfile')
                 ->with('success', 'Publication updated successfully');
         } catch (\Exception $e) {
             Log::error('Update Publication Error: ' . $e->getMessage());
@@ -136,26 +137,25 @@ class PublicationController extends Controller
     }
 
     /**
-     * @param Request $request
-     * @return JsonResponse
+     * Toggle like on publication
      */
     public function like(Request $request): JsonResponse
     {
         try {
             $validated = $request->validate([
-                'publication_id' => 'required|exists:publications,id',
+                'publication_id' => 'required|exists:publications,id'
             ]);
 
             if (!auth()->check()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'You must be logged in to like a publication.',
+                    'message' => 'You must be logged in to like a publication.'
                 ], 401);
             }
 
             $result = $this->likeService->toggleLike(
                 $validated['publication_id'],
-                Auth::id(),
+                Auth::id()
             );
 
             return response()->json($result);
@@ -164,14 +164,13 @@ class PublicationController extends Controller
 
             return response()->json([
                 'success' => false,
-                'message' => 'An error occurred while processing your request.',
+                'message' => 'An error occurred while processing your request.'
             ], 500);
         }
     }
 
     /**
-     * @param int $publicationId
-     * @return JsonResponse
+     * Check if user liked publication
      */
     public function checkLikeStatus(int $publicationId): JsonResponse
     {
@@ -179,30 +178,29 @@ class PublicationController extends Controller
             if (!auth()->check()) {
                 return response()->json([
                     'success' => true,
-                    'liked'   => false,
+                    'liked' => false
                 ]);
             }
 
             $liked = $this->likeService->hasUserLiked($publicationId, Auth::id());
 
             return response()->json([
-                'success'     => true,
-                'liked'       => $liked,
-                'likes_count' => $this->likeService->getLikesCount($publicationId),
+                'success' => true,
+                'liked' => $liked,
+                'likes_count' => $this->likeService->getLikesCount($publicationId)
             ]);
         } catch (\Exception $e) {
             Log::error('Check Like Status Error: ' . $e->getMessage());
 
             return response()->json([
                 'success' => false,
-                'message' => 'An error occurred.',
+                'message' => 'An error occurred.'
             ], 500);
         }
     }
 
     /**
-     * @param int $publicationId
-     * @return JsonResponse
+     * Get users who liked publication
      */
     public function getLikedUsers(int $publicationId): JsonResponse
     {
@@ -211,49 +209,52 @@ class PublicationController extends Controller
 
             return response()->json([
                 'success' => true,
-                'users'   => $users,
-                'count'   => count($users),
+                'users' => $users,
+                'count' => count($users)
             ]);
         } catch (\Exception $e) {
             Log::error('Get Liked Users Error: ' . $e->getMessage());
 
             return response()->json([
                 'success' => false,
-                'message' => 'An error occurred.',
+                'message' => 'An error occurred.'
             ], 500);
         }
     }
 
     /**
-     * @param Request $request
-     * @return JsonResponse
+     * Repost publication (placeholder - implement similar to likes)
      */
     public function toggleRepost(Request $request): JsonResponse
     {
+        $data = $request->validate(['publication_id' => 'required|exists:publications,id']);
+
         try {
-            $data   = $request->validate(['publication_id' => 'required|exists:publications,id']);
             $result = $this->publicationService->toggleRepost($data['publication_id'], Auth::id());
 
             return response()->json(['success' => true] + $result);
+
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'An error occurred.',
+                'message' => 'An error occurred.'
             ], 500);
         }
     }
 
     /**
-     * @param Request $request
-     * @return RedirectResponse
+     * Toggle publication status (soft delete/restore)
      */
     public function toggleStatus(Request $request): RedirectResponse
     {
         try {
-            $validated = $request->validate(['publication_id' => 'required|exists:publications,id']);
+            $validated = $request->validate([
+                'publication_id' => 'required|exists:publications,id'
+            ]);
 
             $publication = $this->publicationService->find($validated['publication_id'], true);
 
+            // Check ownership
             if ($publication && $publication->user_id !== Auth::id()) {
                 return back()->with('error', 'Unauthorized action');
             }
@@ -268,14 +269,14 @@ class PublicationController extends Controller
     }
 
     /**
-     * @param int $publicationId
-     * @return RedirectResponse
+     * Delete publication permanently
      */
     public function destroy(int $publicationId): RedirectResponse
     {
         try {
             $publication = $this->publicationService->find($publicationId, true);
 
+            // Check ownership
             if ($publication && $publication->user_id !== Auth::id()) {
                 return back()->with('error', 'Unauthorized action');
             }

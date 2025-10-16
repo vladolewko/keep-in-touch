@@ -114,7 +114,7 @@ class PublicationRepository implements IPublicationRepositoryInterface
      */
     public function query(): Builder
     {
-        return Publication::query()->with('comments');
+        return Publication::query();
     }
 
     /**

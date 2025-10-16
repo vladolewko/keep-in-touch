@@ -9,49 +9,32 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
-/** Class UserController */
 class UserController extends Controller
 {
-    /**
-     * @param IUserServiceInterface         $userService
-     * @param ISubscriptionServiceInterface $subscriptionService
-     */
     public function __construct(
-        private readonly IUserServiceInterface         $userService,
-        private readonly ISubscriptionServiceInterface $subscriptionService,
+        private readonly IUserServiceInterface $userService,
+         private readonly ISubscriptionServiceInterface $subscriptionService
     ) {}
 
-    /**
-     * @param Request $request
-     * @return View
-     */
     public function users(Request $request): View
     {
         $users = $this->userService->getSortedUsers($request->all());
 
-        return view('users/index', compact('users'));
+        return view('users/usersList', compact('users'));
     }
 
-    /**
-     * @param int $id
-     * @return View
-     */
-    public function profile(int $id): View
+    public function profile($id): View
     {
         $user = $this->userService->findUserById($id);
         abort_if(!$user, 404);
-        $haveAccess         = $this->userService->hasAccessToProfile($id);
+        $haveAccess = $this->userService->hasAccessToProfile($id);
         $subscriptionStatus = $this->subscriptionService->checkSubscriptionStatus(auth()->id(), $id);
-        $publications       = $this->userService->getUserPublications($user);
-        $reposts            = $this->userService->getUserReposts($user);
+        $publications = $this->userService->getUserPublications($user);
+        $reposts = $this->userService->getUserReposts($user);
 
-        return view('users.user', compact('user', 'publications', 'reposts', 'haveAccess', 'subscriptionStatus'));
+        return view('users/userProfile', compact('user', 'publications', 'reposts', 'haveAccess', 'subscriptionStatus'));
     }
 
-    /**
-     * @param Request $request
-     * @return RedirectResponse
-     */
     public function changeSubscription(Request $request): RedirectResponse
     {
         $data = $request->validate(['user_id' => 'required|integer|exists:users,id']);

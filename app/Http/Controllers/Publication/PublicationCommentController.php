@@ -9,16 +9,10 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
-/** Class PublicationCommentController */
 class PublicationCommentController extends Controller
 {
-    /** @param ICommentServiceInterface $commentService */
     public function __construct(private readonly ICommentServiceInterface $commentService) {}
 
-    /**
-     * @param Request $request
-     * @return JsonResponse
-     */
     public function toggleLike(Request $request): JsonResponse
     {
         $data = $request->validate(['comment_id' => 'required|exists:publication_comments,id']);
@@ -35,10 +29,6 @@ class PublicationCommentController extends Controller
         }
     }
 
-    /**
-     * @param Request $request
-     * @return RedirectResponse
-     */
     public function storeComment(Request $request): RedirectResponse
     {
         $data = $request->validate([

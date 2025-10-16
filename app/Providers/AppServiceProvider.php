@@ -3,9 +3,7 @@
 namespace App\Providers;
 
 use App\Repositories\CommentRepository;
-use App\Repositories\ConversationRepository;
 use App\Repositories\Interfaces\ICommentRepositoryInterface;
-use App\Repositories\Interfaces\IConversationRepositoryInterface;
 use App\Repositories\Interfaces\IPublicationRepositoryInterface;
 use App\Repositories\Interfaces\IRepostRepositoryInterface;
 use App\Repositories\Interfaces\ISubscriptionRepositoryInterface;
@@ -18,13 +16,11 @@ use App\Repositories\UserPublicationLikeRepository;
 use App\Repositories\UserRepository;
 use App\Services\CommentService;
 use App\Services\Interfaces\ICommentServiceInterface;
-use App\Services\Interfaces\IMessengerServiceInterface;
 use App\Services\Interfaces\INotificationServiceInterface;
 use App\Services\Interfaces\IPublicationServiceInterface;
 use App\Services\Interfaces\ISubscriptionServiceInterface;
 use App\Services\Interfaces\IUserPublicationLikeServiceInterface;
 use App\Services\Interfaces\IUserServiceInterface;
-use App\Services\MessengerService;
 use App\Services\NotificationService;
 use App\Services\PublicationService;
 use App\Services\SubscriptionService;
@@ -42,7 +38,6 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(ICommentRepositoryInterface::class, CommentRepository::class);
         $this->app->bind(ISubscriptionRepositoryInterface::class, SubscriptionRepository::class);
         $this->app->bind(IRepostRepositoryInterface::class, RepostRepository::class);
-        $this->app->bind(IConversationRepositoryInterface::class, ConversationRepository::class);
 
         $this->app->bind(IUserPublicationLikeServiceInterface::class, UserPublicationLikeService::class);
         $this->app->bind(IUserServiceInterface::class, UserService::class);
@@ -50,7 +45,6 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(IPublicationServiceInterface::class, PublicationService::class);
         $this->app->bind(INotificationServiceInterface::class, NotificationService::class);
         $this->app->bind(ICommentServiceInterface::class, CommentService::class);
-        $this->app->bind(IMessengerServiceInterface::class, MessengerService::class);
     }
 
     public function boot(): void

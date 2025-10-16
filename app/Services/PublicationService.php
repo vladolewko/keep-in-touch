@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Models\Publication;
-use App\Repositories\Interfaces\ICommentRepositoryInterface;
 use App\Repositories\Interfaces\IPublicationRepositoryInterface;
 use App\Repositories\Interfaces\IRepostRepositoryInterface;
 use App\Services\Interfaces\IPublicationServiceInterface;
@@ -21,12 +20,10 @@ class PublicationService implements IPublicationServiceInterface
     /**
      * @param IPublicationRepositoryInterface $publicationRepository
      * @param IRepostRepositoryInterface      $repostRepository
-     * @param ICommentRepositoryInterface     $commentRepository
      */
     public function __construct(
         private readonly IPublicationRepositoryInterface $publicationRepository,
         private readonly IRepostRepositoryInterface      $repostRepository,
-        private readonly ICommentRepositoryInterface     $commentRepository,
     ) {}
 
     /**
@@ -44,8 +41,9 @@ class PublicationService implements IPublicationServiceInterface
         $query = $this->publicationRepository->query();
 
         if ($withTrashed) {
-            $query->withTrashed();
+            $query::withTrashed();
         }
+
         $query = $this->applyUserFilter($query);
         $query = $this->applySearch($query, $search);
         $query = $this->applySubscriptionFilter($query, $filter);

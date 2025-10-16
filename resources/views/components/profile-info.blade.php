@@ -107,48 +107,34 @@
                 </div>
             </div>
 
-            @if (auth()->user()->id !== $user->id)
             <!-- Subscription button -->
-            <div class="flex justify-between items-center border-t border-gray-200 dark:border-gray-700 pt-6">
+            <div class="border-t border-gray-200 dark:border-gray-700 pt-6">
                 <form action="{{ route('user.changeSubscription', ['user_id' => $user->id]) }}" method="post">
                     @csrf
-                    @if($subscriptionStatus === 'requested')
+                    @if($user->subscription_status === 'requested')
                         <button type="submit" class="inline-flex items-center px-6 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                             </svg>
                             Requested
                         </button>
-                    @elseif($subscriptionStatus === true)
+                    @elseif($user->subscription_status === true)
                         <button type="submit" class="inline-flex items-center px-6 py-2.5 border border-red-300 dark:border-red-700 rounded-lg text-sm font-medium text-red-700 dark:text-red-400 bg-white dark:bg-gray-800 hover:bg-red-50 dark:hover:bg-red-900/20 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7a4 4 0 11-8 0 4 4 0 018 0zM9 14a6 6 0 00-6 6v1h12v-1a6 6 0 00-6-6zM21 12h-6"/>
                             </svg>
                             Unsubscribe
                         </button>
-                    @elseif($subscriptionStatus === false)
+                    @elseif($user->subscription_status === false)
                         <button type="submit" class="inline-flex items-center px-6 py-2.5 border border-transparent rounded-lg text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
                             </svg>
-                            @if($user->is_private)
-                                Send Request
-                            @else
                             Subscribe
-                            @endif
                         </button>
                     @endif
                 </form>
-                @if($haveAccess === true)
-                <form method="POST" action="{{ route('chat.start', ['user' => $user]) }}">
-                    @csrf
-                    <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
-                        Написати повідомлення
-                    </button>
-                </form>
-                @endif
             </div>
-            @endif
         </div>
     </div>
 </div>
