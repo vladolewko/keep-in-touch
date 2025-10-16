@@ -32,18 +32,6 @@ class DatabaseSeeder extends Seeder
             'nickname' => 'superadmin',
             'password' => bcrypt('admin'),
         ]);
-        User::factory()->admin()->create([
-            'name' => 'user1',
-            'email' => 'user1@gmail.com',
-            'nickname' => 'user1',
-            'password' => bcrypt('user1'),
-        ]);
-        User::factory()->admin()->create([
-            'name' => 'user2',
-            'email' => 'user2@gmail.com',
-            'nickname' => 'user2',
-            'password' => bcrypt('user2'),
-        ]);
         $users = User::factory(50)->create();
         $this->command->info('Користувачів створено.');
 

@@ -34,9 +34,6 @@ Installation
 For Running Project
 ----------------
 - `npm run dev`
-- `php artisan serv`
-- `soketi start`
-- `php artisan queue:work`
 
 
 

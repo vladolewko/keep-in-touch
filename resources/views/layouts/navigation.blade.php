@@ -46,7 +46,7 @@
             <!-- Right Side: Language Selector & User Menu -->
             <div class="hidden sm:flex sm:items-center sm:gap-3">
                 <!-- Language Selector -->
-                <form action="{{ route(\Illuminate\Support\Facades\Route::currentRouteName(), request()->route()->parameters()) }}"
+                <form action="{{ route(\Illuminate\Support\Facades\Route::currentRouteName(), ['id' => request()->route()->parameter('id')]) }}"
                     method="get"
                     class="flex items-center gap-2">
                     <select class="px-3 py-1.5 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
