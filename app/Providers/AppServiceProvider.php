@@ -45,7 +45,6 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(IPublicationServiceInterface::class, PublicationService::class);
         $this->app->bind(INotificationServiceInterface::class, NotificationService::class);
         $this->app->bind(ICommentServiceInterface::class, CommentService::class);
-
     }
 
     public function boot(): void

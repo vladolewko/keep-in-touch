@@ -26,7 +26,7 @@
                         </div>
                     @endif
 
-                    <form action="{{ route('publications.create') }}" method="post" enctype="multipart/form-data" class="space-y-6">
+                    <form action="{{ route('publication.create') }}" method="post" enctype="multipart/form-data" class="space-y-6">
                         @method('put')
                         @csrf
 

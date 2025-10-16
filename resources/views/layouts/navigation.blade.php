@@ -40,6 +40,12 @@
                         class="px-4 py-2 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200">
                         {{ __('navigation.notifications') }}
                     </x-nav-link>
+
+                    <x-nav-link :href="route('chats.index')"
+                        :active="request()->routeIs('chats.index')"
+                        class="px-4 py-2 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200">
+                        Chats
+                    </x-nav-link>
                 </div>
             </div>
 
