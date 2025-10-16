@@ -29,4 +29,20 @@ interface IMessengerServiceInterface
      * @return Conversation
      */
     public function startOrGetConversation(User $currentUser, User $otherUser): Conversation;
+
+    /**
+     * @param Conversation $conversation
+     * @param User         $user
+     * @param bool         $forBoth
+     * @return void
+     */
+    public function deleteConversation(Conversation $conversation, User $user, bool $forBoth = false): void;
+
+    /**
+     * @param Conversation $conversation
+     * @param User         $user
+     * @return int
+     */
+    public function markAsRead(Conversation $conversation, User $user): int;
+
 }
