@@ -21,19 +21,12 @@ interface IConversationRepositoryInterface
      * @param User $otherUser
      * @return Model|null
      */
-    public function findForUsers(User $currentUser, User $otherUser): Model | null;
+    public function findForUsers(User $currentUser, User $otherUser): Model|null;
 
     /**
      * @param Conversation $conversation
-     * @param User         $user
      * @param int          $limit
      * @return Collection
      */
-    public function getMessages(Conversation $conversation, User $user, int $limit = 50): Collection;
-
-    /**
-     * @param User $user
-     * @return int
-     */
-    public function getTotalUnreadCount(User $user): int;
+    public function getMessages(Conversation $conversation, int $limit = 50): Collection;
 }

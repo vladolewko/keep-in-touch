@@ -43,14 +43,8 @@
 
                     <x-nav-link :href="route('chats.index')"
                         :active="request()->routeIs('chats.index')"
-                        class="flex items-center space-x-2">
-                        <span>{{ __('Чати') }}</span>
-                        @if (isset($totalUnreadCount) && $totalUnreadCount > 0)
-                            <span id="total-unread-badge"
-                                class="bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
-                             {{ $totalUnreadCount }}
-                             </span>
-                        @endif
+                        class="px-4 py-2 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200">
+                        Chats
                     </x-nav-link>
                 </div>
             </div>
@@ -255,6 +249,7 @@
                     }
 
                 </style>
+
 
                 <!-- Authentication -->
                 <form method="POST"
