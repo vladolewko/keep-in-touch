@@ -5,10 +5,12 @@ namespace App\Providers;
 use App\Repositories\CommentRepository;
 use App\Repositories\Interfaces\ICommentRepositoryInterface;
 use App\Repositories\Interfaces\IPublicationRepositoryInterface;
+use App\Repositories\Interfaces\IRepostRepositoryInterface;
 use App\Repositories\Interfaces\ISubscriptionRepositoryInterface;
 use App\Repositories\Interfaces\IUserPublicationLikeRepositoryInterface;
 use App\Repositories\Interfaces\IUserRepositoryInterface;
 use App\Repositories\PublicationRepository;
+use App\Repositories\RepostRepository;
 use App\Repositories\SubscriptionRepository;
 use App\Repositories\UserPublicationLikeRepository;
 use App\Repositories\UserRepository;
@@ -35,6 +37,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(IUserRepositoryInterface::class, UserRepository::class);
         $this->app->bind(ICommentRepositoryInterface::class, CommentRepository::class);
         $this->app->bind(ISubscriptionRepositoryInterface::class, SubscriptionRepository::class);
+        $this->app->bind(IRepostRepositoryInterface::class, RepostRepository::class);
 
         $this->app->bind(IUserPublicationLikeServiceInterface::class, UserPublicationLikeService::class);
         $this->app->bind(IUserServiceInterface::class, UserService::class);
