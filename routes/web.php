@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\MessengerController;
 use App\Http\Controllers\Publication\PublicationCommentController;
 use App\Http\Controllers\Publication\PublicationController;
 use App\Http\Controllers\User\ProfileController;
@@ -14,6 +15,12 @@ Route::get('/', function () {
 });
 
 Route::middleware(['auth', LanguageMiddleware::class])->group(function () {
+
+    Route::post('/chat/start/{user}', [MessengerController::class, 'startOrGetConversation'])->name('chat.start');
+    Route::get('/chat/{conversation}', [MessengerController::class, 'showConversation'])->name('chat.show');
+    Route::post('/chat/send/{conversation}', [MessengerController::class, 'sendMessage'])->name('chat.send');
+
+
     //auth routes
     Route::get('/profile/notifications', [ProfileController::class, 'notifications'])->name('profile.notifications');
     Route::patch('/profile/notification/read{id}', [ProfileController::class, 'readNotification'])->name(
