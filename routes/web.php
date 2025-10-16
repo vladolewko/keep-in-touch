@@ -33,7 +33,6 @@ Route::middleware(['auth', LanguageMiddleware::class])->group(function () {
     Route::prefix('publications')->group(function () {
         Route::get('/all', [PublicationController::class, 'publications'])->name('publications');
         Route::get('/sort', [PublicationController::class, 'publications'])->name('publications.sort');
-        Route::get('/subscriptions', [PublicationController::class, 'subscriptions'])->name('publications.subscriptions');
     });
 
     Route::prefix('publication')->group(function () {
@@ -52,13 +51,13 @@ Route::middleware(['auth', LanguageMiddleware::class])->group(function () {
     });
 
     Route::prefix('user')->group(function () {
-        Route::post('/user/changeSubscription', [UserController::class, 'changeSubscription'])->name('user.changeSubscription');
+        Route::post('/changeSubscription', [UserController::class, 'changeSubscription'])->name('user.changeSubscription');
     });
 
     Route::prefix('users')->group(function () {
         Route::get('/all', [UserController::class, 'users'])->name('users');
         Route::get('/sort', [UserController::class, 'users'])->name('users.sort');
-        Route::get('/profile{id}', [UserController::class, 'profile'])->name('users.profile')->whereNumber('id');
+        Route::get('/profile{id}', [UserController::class, 'profile'])->name('users.profile');
         Route::patch('/manageSubscribitors', [ProfileController::class, 'manageSubscribitors'])->name('user.manageSubscribitors');
     });
 });

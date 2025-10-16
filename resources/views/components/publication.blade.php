@@ -18,9 +18,13 @@
                     </div>
                     <div>
                         <p class="text-gray-900 dark:text-white font-semibold text-sm hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                        @if (auth()->user()->id !== $publication->user_id)
                             <a href="{{ route('users.profile', ['id' => $publication->user->id]) }}">
                                 {{ $publication->user->nickname }}
                             </a>
+                        @else
+                            Own
+                        @endif
                         </p>
                         <p class="text-gray-500 dark:text-gray-400 text-xs flex items-center">
                             <svg xmlns="http://www.w3.org/2000/svg"

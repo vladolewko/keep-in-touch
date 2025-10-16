@@ -18,8 +18,8 @@
                 </h3>
                 <div class="flex flex-wrap gap-3">
                     <a href="{{ route('users.sort', ['parameter' => 'name ASC', 'search' => request()->get('search')]) }}"
-                       class="group px-5 py-2.5 {{ request()->get('parameter') == 'name ASC' ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg shadow-blue-500/30' : 'bg-gray-100 hover:bg-gray-200 dark:bg-gray-700/70 dark:hover:bg-gray-600/70 text-gray-700 dark:text-gray-300' }} rounded-xl text-sm font-medium transition-all duration-200 flex items-center hover:scale-105 hover:shadow-lg border border-gray-200 dark:border-gray-600/50">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 {{ request()->get('parameter') == 'name ASC' ? 'text-white' : 'text-blue-500 dark:text-blue-400 group-hover:text-blue-600 dark:group-hover:text-blue-300' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                       class="group px-5 py-2.5 {{ request()->get('parameter') === 'name ASC' ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg shadow-blue-500/30' : 'bg-gray-100 hover:bg-gray-200 dark:bg-gray-700/70 dark:hover:bg-gray-600/70 text-gray-700 dark:text-gray-300' }} rounded-xl text-sm font-medium transition-all duration-200 flex items-center hover:scale-105 hover:shadow-lg border border-gray-200 dark:border-gray-600/50">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 {{ request()->get('parameter') === 'name ASC' ? 'text-white' : 'text-blue-500 dark:text-blue-400 group-hover:text-blue-600 dark:group-hover:text-blue-300' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h9m5-4v12m0 0l-4-4m4 4l4-4" />
                         </svg>
                         {{ __('filters.nameA-Z') }}
@@ -34,8 +34,8 @@
                     </a>
 
                     <a href="{{ route('users.sort', ['parameter' => 'nickname ASC', 'search' => request()->get('search')]) }}"
-                       class="group px-5 py-2.5 {{ request()->get('parameter') == 'nickname ASC' ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg shadow-blue-500/30' : 'bg-gray-100 hover:bg-gray-200 dark:bg-gray-700/70 dark:hover:bg-gray-600/70 text-gray-700 dark:text-gray-300' }} rounded-xl text-sm font-medium transition-all duration-200 flex items-center hover:scale-105 hover:shadow-lg border border-gray-200 dark:border-gray-600/50">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 {{ request()->get('parameter') == 'nickname ASC' ? 'text-white' : 'text-blue-500 dark:text-blue-400 group-hover:text-blue-600 dark:group-hover:text-blue-300' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                       class="group px-5 py-2.5 {{ request()->get('parameter') === 'nickname ASC' ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg shadow-blue-500/30' : 'bg-gray-100 hover:bg-gray-200 dark:bg-gray-700/70 dark:hover:bg-gray-600/70 text-gray-700 dark:text-gray-300' }} rounded-xl text-sm font-medium transition-all duration-200 flex items-center hover:scale-105 hover:shadow-lg border border-gray-200 dark:border-gray-600/50">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 {{ request()->get('parameter') === 'nickname ASC' ? 'text-white' : 'text-blue-500 dark:text-blue-400 group-hover:text-blue-600 dark:group-hover:text-blue-300' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                         </svg>
                         {{ __('filters.nicknameA-Z') }}
@@ -50,8 +50,8 @@
                     </a>
 
                     <a href="{{ route('users.sort', ['parameter' => 'newest', 'search' => request()->get('search')]) }}"
-                       class="group px-5 py-2.5 {{ !request()->get('parameter') || request()->get('parameter') == 'newest' ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg shadow-blue-500/30' : 'bg-gray-100 hover:bg-gray-200 dark:bg-gray-700/70 dark:hover:bg-gray-600/70 text-gray-700 dark:text-gray-300' }} rounded-xl text-sm font-medium transition-all duration-200 flex items-center hover:scale-105 hover:shadow-lg border border-gray-200 dark:border-gray-600/50">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 {{ !request()->get('parameter') || request()->get('parameter') == 'newest' ? 'text-white' : 'text-blue-500 dark:text-blue-400 group-hover:text-blue-600 dark:group-hover:text-blue-300' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                       class="group px-5 py-2.5 {{ !request()->get('parameter') || request()->get('parameter') === 'newest' ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg shadow-blue-500/30' : 'bg-gray-100 hover:bg-gray-200 dark:bg-gray-700/70 dark:hover:bg-gray-600/70 text-gray-700 dark:text-gray-300' }} rounded-xl text-sm font-medium transition-all duration-200 flex items-center hover:scale-105 hover:shadow-lg border border-gray-200 dark:border-gray-600/50">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 {{ !request()->get('parameter') || request()->get('parameter') === 'newest' ? 'text-white' : 'text-blue-500 dark:text-blue-400 group-hover:text-blue-600 dark:group-hover:text-blue-300' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                         {{ __('filters.newest') }}

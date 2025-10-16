@@ -11,9 +11,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
-/**
- *
- */
+/** Class AdminController */
 class AdminController extends Controller
 {
     /**
@@ -23,16 +21,16 @@ class AdminController extends Controller
      * @param INotificationServiceInterface $notificationService
      */
     public function __construct(
-        private readonly IPublicationServiceInterface $publicationService,
-        private readonly IUserServiceInterface $userService,
-       private readonly ICommentServiceInterface $commentService,
-        private readonly INotificationServiceInterface $notificationService
+        private readonly IPublicationServiceInterface  $publicationService,
+        private readonly IUserServiceInterface         $userService,
+        private readonly ICommentServiceInterface      $commentService,
+        private readonly INotificationServiceInterface $notificationService,
     ) {}
 
     /** @return View */
     public function index(): View
     {
-        return view('admin.dashboard');
+        return view('admin.index');
     }
 
     /**
@@ -63,7 +61,7 @@ class AdminController extends Controller
     public function sendMessage(Request $request, $sent_to_id): RedirectResponse
     {
         $data = $request->validate([
-            'topic' => 'required|string|max:255',
+            'topic'   => 'required|string|max:255',
             'message' => 'required|string|max:255',
         ]);
 
@@ -80,7 +78,7 @@ class AdminController extends Controller
     {
         $comments = $this->commentService->getAdminComments(
             $request->get('parameter'),
-            $request->get('search')
+            $request->get('search'),
         );
 
         return view('admin.comments', compact('comments'));
