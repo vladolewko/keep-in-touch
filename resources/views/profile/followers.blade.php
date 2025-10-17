@@ -102,7 +102,7 @@
 
                                     <!-- Action Buttons -->
                                     <div class="p-6 bg-gray-50 dark:bg-gray-900/30 border-t border-yellow-200 dark:border-yellow-800/50">
-                                        <form action="{{ route('user.manageSubscribitors', ['subscriber_id' => $user->id]) }}" method="post" class="flex gap-3">
+                                        <form action="{{ route('user.manageSubscriptions', ['subscriber_id' => $user->id]) }}" method="post" class="flex gap-3">
                                             @csrf
                                             @method('patch')
 
@@ -222,7 +222,7 @@
 
                                     <!-- Remove Button -->
                                     <div class="p-6 bg-gray-50 dark:bg-gray-900/30 border-t border-gray-200 dark:border-gray-700/50">
-                                        <form action="{{ route('user.manageSubscribitors', ['subscriber_id' => $user->id]) }}" method="post">
+                                        <form action="{{ route('user.manageSubscriptions', ['subscriber_id' => $user->id]) }}" method="post">
                                             @csrf
                                             @method('patch')
                                             <button type="submit" name="action" value="decline" class="w-full px-6 py-3 bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 text-white font-semibold rounded-xl shadow-lg shadow-red-500/30 hover:shadow-xl hover:shadow-red-500/40 transition-all duration-200 flex items-center justify-center hover:scale-105">

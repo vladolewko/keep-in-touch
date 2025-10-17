@@ -2,6 +2,9 @@
 
 namespace App\Services;
 
+use App\Enums\NotificationTopicEnum;
+use App\Models\User;
+use App\Notifications\DatabaseNotification;
 use App\Repositories\Interfaces\IUserPublicationLikeRepositoryInterface;
 use App\Services\Interfaces\IUserPublicationLikeServiceInterface;
 use DB;
@@ -27,7 +30,9 @@ class UserPublicationLikeService implements IUserPublicationLikeServiceInterface
     {
         DB::beginTransaction();
         try {
-            $hasLiked = $this->likeRepository->exists($publicationId, $userId);
+            $liker     = auth()->user();
+            $postOwner = User::find($userId);
+            $hasLiked  = $this->likeRepository->exists($publicationId, $userId);
 
             if ($hasLiked) {
                 $this->likeRepository->delete($publicationId, $userId);
@@ -39,6 +44,16 @@ class UserPublicationLikeService implements IUserPublicationLikeServiceInterface
                 $this->likeRepository->incrementPublicationLikes($publicationId);
                 $isLiked = true;
                 $message = 'Publication liked successfully';
+                $postOwner->notify(
+                    new DatabaseNotification(
+                        topic      : NotificationTopicEnum::LIKE,
+                        sender     : $liker,
+                        contextData: [
+                            'post_title' => $liker->nickname . 'liked your post',
+                            'post_id'    => $publicationId,
+                        ],
+                    ),
+                );
             }
 
             DB::commit();
@@ -203,4 +218,5 @@ class UserPublicationLikeService implements IUserPublicationLikeServiceInterface
         }
         return $result;
     }
+
 }

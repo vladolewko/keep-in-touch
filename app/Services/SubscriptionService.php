@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Enums\NotificationTopicEnum;
+use App\Notifications\DatabaseNotification;
 use App\Repositories\Interfaces\ISubscriptionRepositoryInterface;
 use App\Repositories\Interfaces\IUserRepositoryInterface;
 use App\Services\Interfaces\ISubscriptionServiceInterface;
@@ -43,20 +45,31 @@ class SubscriptionService implements ISubscriptionServiceInterface
     public function toggleSubscription(int $subscribedToId): void
     {
         $currentUserId = Auth::id();
+        $follower      = Auth::user();
+        $followed      = $this->userRepository->findById($subscribedToId);
+
         $subscription  = $this->subscriptionRepository->findByUserIds($currentUserId, $subscribedToId);
 
         if ($subscription) {
             $this->subscriptionRepository->delete($subscription);
         } else {
-            $targetUser = $this->userRepository->findById($subscribedToId);
-
-            $isAccepted = $targetUser && $targetUser->is_private ? 0 : 1;
+            $isAccepted = $followed && $followed->is_private ? 0 : 1;
 
             $this->subscriptionRepository->create([
                 'user_id'          => $currentUserId,
                 'subscribed_to_id' => $subscribedToId,
                 'is_accepted'      => $isAccepted,
             ]);
+
+            if ($isAccepted === 1) {
+                $followed->notify(
+                    new DatabaseNotification(
+                        topic      : NotificationTopicEnum::FOLLOW,
+                        sender     : $follower,
+                        contextData: [],
+                    ),
+                );
+            }
         }
     }
 
@@ -99,6 +112,18 @@ class SubscriptionService implements ISubscriptionServiceInterface
         if ($subscription) {
             if ($action === 'accept') {
                 $this->subscriptionRepository->accept($subscription);
+
+                $follower = $this->userRepository->findById($followerId);
+                $manager  = Auth::user();
+
+                $follower?->notify(
+                    new DatabaseNotification(
+                        topic      : NotificationTopicEnum::FOLLOW_ACCEPTED,
+                        sender     : $manager,
+                        contextData: [],
+                    ),
+                );
+
             } elseif ($action === 'decline') {
                 $this->subscriptionRepository->delete($subscription);
             }
