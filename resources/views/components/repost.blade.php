@@ -1,5 +1,4 @@
-<div class="space-y-6">
-    @foreach($reposts as $repost)
+
         <div class="bg-gray-800 rounded-lg overflow-hidden border border-gray-700">
             <!-- Post header -->
             <div class="flex items-center justify-between p-3">
@@ -94,5 +93,3 @@
                 </div>
             </div>
         </div>
-    @endforeach
-</div>

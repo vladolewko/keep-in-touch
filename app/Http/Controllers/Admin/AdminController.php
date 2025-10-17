@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\NotificationTopicEnum;
 use App\Http\Controllers\Controller;
+use App\Models\User;
+use App\Notifications\DatabaseNotification;
 use App\Services\Interfaces\ICommentServiceInterface;
 use App\Services\Interfaces\INotificationServiceInterface;
 use App\Services\Interfaces\IPublicationServiceInterface;
@@ -58,14 +61,26 @@ class AdminController extends Controller
      * @param         $sent_to_id
      * @return RedirectResponse
      */
-    public function sendMessage(Request $request, $sent_to_id): RedirectResponse
+    public function sendMessage(Request $request, int $sent_to_id): RedirectResponse
     {
-        $data = $request->validate([
-            'topic'   => 'required|string|max:255',
+        $validated = $request->validate([
+            'topic'   => 'required|string',
             'message' => 'required|string|max:255',
         ]);
 
-        $this->notificationService->sendMessage($data, auth()->id(), $sent_to_id);
+        $recipient = User::findOrFail($sent_to_id);
+
+        $topicEnum = NotificationTopicEnum::tryFrom($validated['topic']);
+
+        if (!$topicEnum || $topicEnum->isSystemGenerated()) {
+            return back()->withErrors(['topic' => 'Invalid or system-reserved topic selected.']);
+        }
+
+        $recipient->notify(new DatabaseNotification(
+            topic: $topicEnum,
+            message: $validated['message'],
+            sender: auth()->user()
+        ));
 
         return back()->with('message', 'Message sent successfully.');
     }

@@ -7,11 +7,17 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                @include('components.profile-info')
+            @include('components.profile-info')
             @if($haveAccess)
-                @include('components.publication')
+                <div class="space-y-6">
+                    @foreach($publications as $publication)
+                        @include('components.publication')
+                    @endforeach
 
-                @include('components.repost')
+                    @foreach($reposts as $repost)
+                        @include('components.repost')
+                    @endforeach
+                </div>
             @endif
         </div>
     </div>

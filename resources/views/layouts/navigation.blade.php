@@ -37,8 +37,17 @@
 
                     <x-nav-link :href="route('profile.notifications')"
                         :active="request()->routeIs('profile.notifications')"
-                        class="px-4 py-2 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200">
-                        {{ __('navigation.notifications') }}
+                        class="flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200">
+
+                        <span>{{ __('navigation.notifications') }}</span>
+
+                        @if (isset($unreadNotificationsCount) && $unreadNotificationsCount > 0)
+                            <span id="unread-notifications-badge"
+                                class="bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                                {{ $unreadNotificationsCount }}
+                             </span>
+                        @endif
+
                     </x-nav-link>
 
                     <x-nav-link :href="route('chats.index')"

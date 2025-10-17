@@ -2,6 +2,7 @@
 
 namespace App\Services\Interfaces;
 
+use App\Models\Notification;
 use App\Models\UserNotification;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -24,7 +25,10 @@ interface INotificationServiceInterface
      * @param array $data
      * @param int   $senderId
      * @param int   $recipientId
-     * @return UserNotification
+     * @return Notification
      */
-    public function sendMessage(array $data, int $senderId, int $recipientId): UserNotification;
+    public function sendMessage(array $data, int $senderId, int $recipientId): Notification;
+
+    public function getUnreadCount(int $recipientId): int;
+
 }

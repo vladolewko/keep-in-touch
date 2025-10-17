@@ -28,7 +28,7 @@ class ProfileController extends Controller
     ) {}
 
     /** @return View */
-    public function profile(): View
+    public function index(): View
     {
         $user         = auth()->user();
         $publications = $this->userService->getUserPublications($user);
@@ -48,7 +48,7 @@ class ProfileController extends Controller
      * @param Request $request
      * @return RedirectResponse
      */
-    public function manageSubscribitors(Request $request): RedirectResponse
+    public function manageSubscriptions(Request $request): RedirectResponse
     {
         $this->subscriptionService->manageFollowerRequest(
             $request->input('subscriber_id'),
@@ -58,18 +58,14 @@ class ProfileController extends Controller
         return back();
     }
 
-    /**
-     * @return View
-     */
+    /** @return View */
     public function subscriptions(): View
     {
         $subscriptions = $this->subscriptionService->getSubscriptionsData(Auth::id());
         return view('profile/subscriptions', compact('subscriptions'));
     }
 
-    /**
-     * @return View
-     */
+    /** @return View */
     public function notifications(): View
     {
         $notifications = $this->notificationService->get(Auth::id());

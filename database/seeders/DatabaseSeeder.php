@@ -21,7 +21,7 @@ class DatabaseSeeder extends Seeder
         Publication::truncate();
         UserSubscription::truncate();
         UserPublicationLike::truncate();
-        UserNotification::truncate();
+//        UserNotification::truncate();
         PublicationComment::truncate();
         DB::statement('SET FOREIGN_KEY_CHECKS=1');
 
@@ -32,13 +32,13 @@ class DatabaseSeeder extends Seeder
             'nickname' => 'superadmin',
             'password' => bcrypt('admin'),
         ]);
-        User::factory()->admin()->create([
+        User::factory()->user()->create([
             'name' => 'user1',
             'email' => 'user1@gmail.com',
             'nickname' => 'user1',
             'password' => bcrypt('user1'),
         ]);
-        User::factory()->admin()->create([
+        User::factory()->user()->create([
             'name' => 'user2',
             'email' => 'user2@gmail.com',
             'nickname' => 'user2',
@@ -108,18 +108,18 @@ class DatabaseSeeder extends Seeder
             $this->command->getOutput()->progressFinish();
         }
 
-        $this->command->info('Створення повідомлень від адміністратора...');
-        if ($users->count() >= 5) {
-            $usersForNotification = $users->random(5);
-            foreach ($usersForNotification as $user) {
-                UserNotification::factory()->create([
-                    'user_id' => $admin->id,
-                    'sent_to_id' => $user->id,
-                    'topic' => 'warning',
-                    'message' => 'Це тестове попередження. Будь ласка, дотримуйтесь правил спільноти.'
-                ]);
-            }
-        }
+//        $this->command->info('Створення повідомлень від адміністратора...');
+//        if ($users->count() >= 5) {
+//            $usersForNotification = $users->random(5);
+//            foreach ($usersForNotification as $user) {
+//                UserNotification::factory()->create([
+//                    'user_id' => $admin->id,
+//                    'sent_to_id' => $user->id,
+//                    'topic' => 'warning',
+//                    'message' => 'Це тестове попередження. Будь ласка, дотримуйтесь правил спільноти.'
+//                ]);
+//            }
+//        }
         $this->command->info('Дані успішно згенеровано!');
     }
 }
