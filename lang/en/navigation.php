@@ -12,5 +12,6 @@ return [
     'settings' => 'Settings',
     'notifications' => 'Notifications',
     'logout' => 'Logout',
+    'chats' => 'Chats',
 
 ];
