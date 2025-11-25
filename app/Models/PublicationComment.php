@@ -40,4 +40,30 @@ class PublicationComment extends Model
         return $this->belongsTo(Publication::class);
     }
 
+    public function author(): string
+    {
+        return $this->user->nickname ?? $this->user->name;
+    }
+
+
+    /** @return bool */
+    public function isLiked(): bool
+    {
+        return $this->likes()->where('user_id', auth()->user()->id)->exists();
+    }
+
+    public function isOwn(): bool
+    {
+        return $this->user_id === auth()->user()->id;
+    }
+
+    public function countLikes(): int
+    {
+        return $this->likes()->count();
+    }
+
+    public function countReposts(): int
+    {
+        return $this->reposts()->count();
+    }
 }

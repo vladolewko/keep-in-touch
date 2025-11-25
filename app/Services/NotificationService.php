@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Models\UserNotification;
+use App\Models\Notification;
 use App\Services\Interfaces\INotificationServiceInterface;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -26,10 +26,13 @@ class NotificationService implements INotificationServiceInterface
      */
     public function markAsRead(int $notificationId): bool
     {
-        $notification = UserNotification::find($notificationId);
+        $notification = Notification::where('sent_to_id', auth()->id())
+            ->where('id', $notificationId)
+            ->first();
 
-        if ($notification && $notification->sent_to_id === auth()->id()) {
-            return $notification->update(['is_read' => 1]);
+        if ($notification && !$notification->is_read) {
+            $notification->is_read = true;
+            return $notification->save();
         }
 
         return false;
@@ -39,11 +42,11 @@ class NotificationService implements INotificationServiceInterface
      * @param array $data
      * @param int   $senderId
      * @param int   $recipientId
-     * @return UserNotification
+     * @return Notification
      */
-    public function sendMessage(array $data, int $senderId, int $recipientId): UserNotification
+    public function sendMessage(array $data, int $senderId, int $recipientId): Notification
     {
-        return UserNotification::create([
+        return Notification::create([
             'topic'        => $data['topic'],
             'message'      => $data['message'],
             'user_id'      => $senderId,

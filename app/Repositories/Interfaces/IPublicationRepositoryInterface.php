@@ -5,6 +5,7 @@ namespace App\Repositories\Interfaces;
 use App\Models\Publication;
 use App\Models\UserPublicationLike;
 use Exception;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use LaravelIdea\Helper\App\Models\_IH_Publication_QB;
@@ -54,8 +55,8 @@ interface IPublicationRepositoryInterface
      */
     public function restore(int $publicationId): bool;
 
-    /** @return  \Illuminate\Database\Eloquent\Builder | _IH_Publication_QB*/
-    public function query(): \Illuminate\Database\Eloquent\Builder | _IH_Publication_QB;
+    /** @return  Builder | _IH_Publication_QB*/
+    public function  query():Builder | _IH_Publication_QB;
 
     /**
      * @param int $publicationId

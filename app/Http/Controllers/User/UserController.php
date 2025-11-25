@@ -25,7 +25,7 @@ class UserController extends Controller
      * @param Request $request
      * @return View
      */
-    public function users(Request $request): View
+    public function index(Request $request): View
     {
         $users = $this->userService->getSortedUsers($request->all());
 
@@ -36,7 +36,7 @@ class UserController extends Controller
      * @param int $id
      * @return View
      */
-    public function profile(int $id): View
+    public function user(int $id): View
     {
         $user = $this->userService->findUserById($id);
         abort_if(!$user, 404);

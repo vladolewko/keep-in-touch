@@ -2,21 +2,30 @@
 
 namespace App\Services;
 
+use App\Enums\NotificationTopicEnum;
 use App\Models\PublicationComment;
+use App\Notifications\DatabaseNotification;
 use App\Repositories\Interfaces\ICommentRepositoryInterface;
+use App\Repositories\Interfaces\IPublicationRepositoryInterface;
 use App\Services\Interfaces\ICommentServiceInterface;
+use Auth;
 use Exception;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Throwable;
 
 /** Class CommentService */
 class CommentService implements ICommentServiceInterface
 {
     /**
-     * @param ICommentRepositoryInterface $commentRepository
+     * @param ICommentRepositoryInterface     $commentRepository
+     * @param IPublicationRepositoryInterface $publicationRepository
      */
-    public function __construct(private readonly ICommentRepositoryInterface $commentRepository) {}
+    public function __construct(
+        private readonly ICommentRepositoryInterface $commentRepository,
+        private readonly IPublicationRepositoryInterface $publicationRepository,
+        ) {}
 
     /**
      * @param string|null $parameter
@@ -41,21 +50,47 @@ class CommentService implements ICommentServiceInterface
      * @param array $data
      * @param int   $userId
      * @return PublicationComment
+     * @throws Exception
      */
     public function createComment(array $data, int $userId): PublicationComment
     {
-        return $this->commentRepository->create([
+        $commenter   = Auth::user();
+        $publication = $this->publicationRepository->find($data['publication_id']);
+
+        if (!$publication) {
+            throw new Exception('Publication not found.');
+        }
+
+        $comment = $this->commentRepository->create([
             'publication_id' => $data['publication_id'],
             'comment'        => $data['comment'],
             'user_id'        => $userId,
         ]);
+
+        $postOwner = $publication->user;
+
+        if ($postOwner && $commenter && $postOwner->id !== $commenter->id) {
+            $postOwner->notify(
+                new DatabaseNotification(
+                    topic: NotificationTopicEnum::COMMENT,
+                    sender: $commenter,
+                    contextData: [
+                        'item_type'  => 'publication',
+                        'item_id'    => $data['publication_id'],
+                        'post_title' => $publication->title ?? 'публікацію',
+                        'comment_id' => $comment->id,
+                    ],
+                ),
+            );
+        }
+        return $comment;
     }
 
     /**
      * @param int $commentId
      * @param int $userId
      * @return array
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function toggleLike(int $commentId, int $userId): array
     {
@@ -66,7 +101,9 @@ class CommentService implements ICommentServiceInterface
 
         DB::beginTransaction();
         try {
-            $existingLike = $this->commentRepository->findLike($commentId, $userId);
+            $liker        = auth()->user();
+            $commentOwner = $comment->user;
+            $existingLike = $this->commentRepository->findLike($commentId, $liker->id);
 
             $isLiked = false;
 
@@ -74,9 +111,22 @@ class CommentService implements ICommentServiceInterface
                 $this->commentRepository->deleteLike($existingLike);
                 $comment->decrement('likes');
             } else {
-                $this->commentRepository->createLike($commentId, $userId);
+                $this->commentRepository->createLike($commentId, $liker->id);
                 $comment->increment('likes');
                 $isLiked = true;
+
+                if ($commentOwner->id !== $liker->id) {
+                    $commentOwner->notify(
+                        new DatabaseNotification(
+                            topic      : NotificationTopicEnum::LIKE,
+                            contextData: [
+                                'item_type'  => 'comment',
+                                'item_id'    => $commentId,
+                                'post_title' => $comment->publication->title ?? 'коментар',
+                            ],
+                        ),
+                    );
+                }
             }
 
             DB::commit();

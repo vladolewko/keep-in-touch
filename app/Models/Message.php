@@ -5,7 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-/** Class Message */
+/** Class Message
+ * @property mixed $conversation_id
+ */
 class Message extends Model
 {
     /** @var array */

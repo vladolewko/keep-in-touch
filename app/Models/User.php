@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -50,24 +51,6 @@ class User extends Authenticatable implements HasMedia
     }
 
     /** @return HasMany */
-    public function publicationLikes(): HasMany
-    {
-        return $this->hasMany(UserPublicationLike::class);
-    }
-
-    /** @return HasMany */
-    public function commentLikes(): HasMany
-    {
-        return $this->hasMany(UserCommentLike::class);
-    }
-
-    /** @return HasMany */
-    public function publicationReposts(): HasMany
-    {
-        return $this->hasMany(UserPublicationRepost::class);
-    }
-
-    /** @return HasMany */
     public function comments(): HasMany
     {
         return $this->hasMany(PublicationComment::class);
@@ -79,5 +62,19 @@ class User extends Authenticatable implements HasMedia
         return $this
             ->belongsToMany(Conversation::class)
             ->wherePivot('deleted_at', null);
+    }
+
+    /** @return string */
+    public function getProfilePicture()
+    {
+        return $this->getFirstMediaUrl('profile_images');
+    }
+
+
+    public function notifications(): MorphMany
+    {
+        return $this->morphMany(Notification::class, 'notifiable')
+            // 'sent_to_id' у вашій таблиці - це те, що Laravel називає 'notifiable_id'
+            ->where('sent_to_id', $this->id);
     }
 }

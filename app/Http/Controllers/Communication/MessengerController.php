@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Communication;
 
+use App\Http\Controllers\Controller;
 use App\Models\Conversation;
 use App\Models\User;
 use App\Repositories\ConversationRepository;
@@ -34,7 +35,6 @@ class MessengerController extends Controller
      * @param Conversation $conversation
      * @return View
      */
-    // app/Http/Controllers/MessengerController.php
     public function showConversation(Conversation $conversation): View
     {
         abort_if(!$conversation->participants->contains(auth()->id()), 403);
