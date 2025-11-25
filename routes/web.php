@@ -1,7 +1,8 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminController;
-use App\Http\Controllers\MessengerController;
+use App\Http\Controllers\Communication\MessengerController;
+use App\Http\Controllers\Communication\NotificationController;
 use App\Http\Controllers\Publication\PublicationCommentController;
 use App\Http\Controllers\Publication\PublicationController;
 use App\Http\Controllers\User\ProfileController;
@@ -26,9 +27,10 @@ Route::middleware(['auth', LanguageMiddleware::class])->group(function () {
     });
 
     Route::prefix('profile')->group(function () {
-        Route::get('/notifications', [ProfileController::class, 'notifications'])->name('profile.notifications');
-        Route::patch('/notification/read{id}', [ProfileController::class, 'readNotification'])->name('profile.notification.read');
-        Route::get('/myProfile', [ProfileController::class, 'profile'])->name('profile');
+        Route::get('/notifications', [NotificationController::class, 'notifications'])->name('profile.notifications');
+        Route::patch('/notifications/{id}/read', [NotificationController::class, 'readNotification'])->name('profile.notification.read');
+        Route::patch('/notifications/read-all', [NotificationController::class, 'readAllNotifications'])->name('profile.notification.read_all');
+        Route::get('/', [ProfileController::class, 'index'])->name('profile');
         Route::get('/edit', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::patch('/update', [ProfileController::class, 'update'])->name('profile.update');
         Route::patch('/changeAccess', [ProfileController::class, 'changeAccess'])->name('profile.changeAccess');
@@ -38,13 +40,13 @@ Route::middleware(['auth', LanguageMiddleware::class])->group(function () {
     });
 
     Route::prefix('publications')->group(function () {
-        Route::get('/all', [PublicationController::class, 'publications'])->name('publications');
-        Route::get('/sort', [PublicationController::class, 'publications'])->name('publications.sort');
+        Route::get('/all', [PublicationController::class, 'index'])->name('publications');
+        Route::get('/sort', [PublicationController::class, 'index'])->name('publications.sort');
     });
 
     Route::prefix('publication')->group(function () {
         Route::put('/create', [PublicationController::class, 'create'])->name('publication.create');
-        Route::post('/like', [PublicationController::class, 'like'])->name('publication.like');
+        Route::post('/like', [PublicationController::class, 'toggleLike'])->name('publication.like');
         Route::post('/repost', [PublicationController::class, 'toggleRepost'])->name('publication.repost');
         Route::patch('/hide', [PublicationController::class, 'toggleStatus'])->name('publication.hide');
         Route::get('/edit{id}', [PublicationController::class, 'edit'])->name('publication.edit');
@@ -62,10 +64,10 @@ Route::middleware(['auth', LanguageMiddleware::class])->group(function () {
     });
 
     Route::prefix('users')->group(function () {
-        Route::get('/all', [UserController::class, 'users'])->name('users');
-        Route::get('/sort', [UserController::class, 'users'])->name('users.sort');
-        Route::get('/profile{id}', [UserController::class, 'profile'])->name('users.profile');
-        Route::patch('/manageSubscribitors', [ProfileController::class, 'manageSubscribitors'])->name('user.manageSubscribitors');
+        Route::get('/all', [UserController::class, 'index'])->name('users');
+        Route::get('/sort', [UserController::class, 'index'])->name('users.sort');
+        Route::get('/profile{id}', [UserController::class, 'user'])->name('users.profile');
+        Route::patch('/manageSubscriptions', [ProfileController::class, 'manageSubscriptions'])->name('user.manageSubscriptions');
     });
 });
 

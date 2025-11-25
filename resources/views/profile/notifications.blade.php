@@ -25,6 +25,20 @@
                         </div>
                     </div>
                 </div>
+                @if($notifications->where('is_read', false)->count() > 0)
+                    <div class="mt-6 text-center">
+                        <form action="{{ route('profile.notification.read_all') }}" method="POST" class="inline">
+                            @csrf
+                            @method('patch')
+                            <button type="submit" class="inline-flex items-center px-5 py-2.5 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg font-semibold text-sm transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 shadow-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                Mark All as Read
+                            </button>
+                        </form>
+                    </div>
+                @endif
             </div>
 
             <!-- Notifications List -->
@@ -53,13 +67,8 @@
                                     <div class="flex-1 min-w-0">
                                         <div class="flex items-start justify-between mb-2">
                                             <h3 class="text-base font-semibold text-gray-900 dark:text-white pr-4">
-                                                {{ $notification->topic }}
+                                                {{ $notification->topic->label() }}
                                             </h3>
-                                            @if(!$notification->is_read)
-                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 flex-shrink-0">
-                                                    New
-                                                </span>
-                                            @endif
                                         </div>
                                         
                                         <p class="text-sm text-gray-600 dark:text-gray-400 mb-3 leading-relaxed">

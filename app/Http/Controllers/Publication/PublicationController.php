@@ -30,7 +30,7 @@ class PublicationController extends Controller
      * @param Request $request
      * @return View
      */
-    public function publications(Request $request): View
+    public function index(Request $request): View
     {
         $sorting = $request->get('parameter');
         $filter  = $request->get('filter');
@@ -139,7 +139,7 @@ class PublicationController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function like(Request $request): JsonResponse
+    public function toggleLike(Request $request): JsonResponse
     {
         try {
             $validated = $request->validate([

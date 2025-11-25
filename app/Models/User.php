@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -69,4 +70,11 @@ class User extends Authenticatable implements HasMedia
         return $this->getFirstMediaUrl('profile_images');
     }
 
+
+    public function notifications(): MorphMany
+    {
+        return $this->morphMany(Notification::class, 'notifiable')
+            // 'sent_to_id' у вашій таблиці - це те, що Laravel називає 'notifiable_id'
+            ->where('sent_to_id', $this->id);
+    }
 }

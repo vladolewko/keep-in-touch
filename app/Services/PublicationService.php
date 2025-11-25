@@ -2,7 +2,11 @@
 
 namespace App\Services;
 
+use App\Enums\NotificationTopicEnum;
 use App\Models\Publication;
+use App\Models\User;
+use App\Notifications\DatabaseNotification;
+use App\Repositories\Interfaces\ICommentRepositoryInterface;
 use App\Repositories\Interfaces\IPublicationRepositoryInterface;
 use App\Repositories\Interfaces\IRepostRepositoryInterface;
 use App\Services\Interfaces\IPublicationServiceInterface;
@@ -20,10 +24,12 @@ readonly class PublicationService implements IPublicationServiceInterface
     /**
      * @param IPublicationRepositoryInterface $publicationRepository
      * @param IRepostRepositoryInterface      $repostRepository
+     * @param ICommentRepositoryInterface     $commentRepository
      */
     public function __construct(
-        private IPublicationRepositoryInterface $publicationRepository,
-        private IRepostRepositoryInterface      $repostRepository,
+        private readonly IPublicationRepositoryInterface $publicationRepository,
+        private readonly IRepostRepositoryInterface      $repostRepository,
+        private readonly ICommentRepositoryInterface     $commentRepository,
     ) {}
 
     /**
@@ -41,7 +47,7 @@ readonly class PublicationService implements IPublicationServiceInterface
         $query = $this->publicationRepository->query();
 
         if ($withTrashed) {
-            $query->withTrashed();
+            $query::withTrashed();
         }
         $query = $this->applyUserFilter($query);
         $query = $this->applySearch($query, $search);
@@ -116,7 +122,6 @@ readonly class PublicationService implements IPublicationServiceInterface
     }
 
     /**
-     * Toggle like for a publication
      * @param int $publicationId
      * @param int $userId
      * @return array
@@ -132,7 +137,9 @@ readonly class PublicationService implements IPublicationServiceInterface
                 throw new Exception('Publication not found');
             }
 
-            $hasLiked = $this->publicationRepository->hasUserLiked($publicationId, $userId);
+            $liker     = User::find($userId);
+            $postOwner = $publication->user;
+            $hasLiked  = $this->publicationRepository->hasUserLiked($publicationId, $userId);
 
             if ($hasLiked) {
                 $this->publicationRepository->deleteLike($publicationId, $userId);
@@ -142,6 +149,20 @@ readonly class PublicationService implements IPublicationServiceInterface
                 $this->publicationRepository->createLike($publicationId, $userId);
                 $this->publicationRepository->incrementLikes($publicationId);
                 $isLiked = true;
+
+                if ($postOwner && $liker && $postOwner->id !== $liker->id) {
+                    $postOwner->notify(
+                        new DatabaseNotification(
+                            topic: NotificationTopicEnum::LIKE,
+                            sender: $liker,
+                            contextData: [
+                                'item_type'  => 'publication',
+                                'item_id'    => $publicationId,
+                                'post_title' => $publication->title ?? 'публікацію',
+                            ],
+                        ),
+                    );
+                }
             }
 
             DB::commit();
