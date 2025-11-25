@@ -15,7 +15,7 @@ class NotificationService implements INotificationServiceInterface
      */
     public function get(int $userId): Collection
     {
-        return UserNotification::where('sent_to_id', $userId)
+        return UserNotification::where('sended_to_id', $userId)
             ->latest()
             ->get();
     }
