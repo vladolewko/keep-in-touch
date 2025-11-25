@@ -1,3 +1,4 @@
+        <div class="bg-white dark:bg-gray-800 rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-all duration-200 {{ $publication->deleted_at ? 'opacity-60' : '' }}">
 <div class="bg-white dark:bg-gray-800 rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-all duration-200 {{ $publication->deleted_at ? 'opacity-60' : '' }}">
 
     <!-- Post header -->
@@ -5,20 +6,20 @@
         <div class="flex items-center space-x-3">
             <div class="relative">
                 <div class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center ring-2 ring-white dark:ring-gray-800 overflow-hidden">
-                    @if($publication->user->getMedia('profile_images')->isNotEmpty())
+                            @if($publication->user->getProfilePicture())
                         <img class="w-full h-full object-cover"
-                            src="{{ $publication->user->getFirstMediaUrl('profile_images') }}"
+                                    src="{{ $publication->user->getProfilePicture() }}"
                             alt="Profile Image">
                     @else
-                        <span class="text-white font-bold text-lg">{{ strtoupper(substr($publication->user->nickname, 0, 1)) }}</span>
+                                <span class="text-white font-bold text-lg">{{ strtoupper(substr($publication->author(), 0, 1)) }}</span>
                     @endif
                 </div>
             </div>
             <div>
                 <p class="text-gray-900 dark:text-white font-semibold text-sm hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-                    @if (auth()->user()->id !== $publication->user_id)
+                        @if (!$publication->isOwn())
                         <a href="{{ route('users.profile', ['id' => $publication->user->id]) }}">
-                            {{ $publication->user->nickname }}
+                                {{ $publication->author() }}
                         </a>
                     @else
                         Own
@@ -40,7 +41,7 @@
             </div>
         </div>
 
-        @if($publication->user_id === auth()->user()->id)
+                @if($publication->isOwn())
             <div class="hidden sm:flex sm:items-center">
                 <x-dropdown align="right"
                     width="48">
@@ -116,12 +117,11 @@
                     @csrf
                     <button type="submit"
                         class="group flex items-center space-x-2 transition-all duration-200 hover:scale-105 like-button">
-                        @if($publication->is_liked)
+                                @if($publication->isLiked())
                             <svg xmlns="http://www.w3.org/2000/svg"
                                 class="h-6 w-6"
-                                viewBox="0 -960 960 960"
-                                fill="#EF4444">
-                                <path d="m480-120-58-52q-101-91-167-157T150-447.5Q111-500 95.5-544T80-634q0-94 63-157t157-63q52 0 99 22t81 62q34-40 81-62t99-22q94 0 157 63t63 157q0 46-15.5 90T810-447.5Q771-395 705-329T538-172l-58 52Z"/>
+                                        viewBox="0 -960 960 960">
+                                        <path fill="#EF4444" d="m480-120-58-52q-101-91-167-157T150-447.5Q111-500 95.5-544T80-634q0-94 63-157t157-63q52 0 99 22t81 62q34-40 81-62t99-22q94 0 157 63t63 157q0 46-15.5 90T810-447.5Q771-395 705-329T538-172l-58 52Z"/>
                             </svg>
                         @else
                             <svg xmlns="http://www.w3.org/2000/svg"
@@ -131,12 +131,13 @@
                                 <path d="M440-501Zm0 381L313-234q-72-65-123.5-116t-85-96q-33.5-45-49-87T40-621q0-94 63-156.5T260-840q52 0 99 22t81 62q34-40 81-62t99-22q81 0 136 45.5T831-680h-85q-18-40-53-60t-73-20q-51 0-88 27.5T463-660h-46q-31-45-70.5-72.5T260-760q-57 0-98.5 39.5T120-621q0 33 14 67t50 78.5q36 44.5 98 104T440-228q26-23 61-53t56-50l9 9 19.5 19.5L605-283l9 9q-22 20-56 49.5T498-172l-58 52Zm280-160v-120H600v-80h120v-120h80v120h120v80H800v120h-80Z"/>
                             </svg>
                         @endif
-                        <span class="likes-count text-sm font-semibold text-gray-700 dark:text-gray-300">{{ $publication->likes ?? 0 }}</span>
+                                <span class="likes-count text-sm font-semibold text-gray-700 dark:text-gray-300">{{ $publication->countLikes() }}</span>
                     </button>
                 </form>
 
                 <!-- Comment button -->
-                <button class="comments-trigger group flex items-center space-x-2 transition-all duration-200 hover:scale-105 focus:outline-none">
+                        <button class="comments-trigger group flex items-center space-x-2 transition-all duration-200 hover:scale-105 focus:outline-none"
+                            data-publication-id="{{ $publication->id }}">
                     <svg xmlns="http://www.w3.org/2000/svg"
                         class="h-6 w-6 text-gray-400 dark:text-gray-500 group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-colors"
                         fill="none"
@@ -147,32 +148,18 @@
                             stroke-width="2"
                             d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
                     </svg>
-                    <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">{{ $publication->commentsCount }}</span>
-                </button>
-
-                <!-- Share button -->
-                <button class="group flex items-center space-x-2 transition-all duration-200 hover:scale-105 focus:outline-none">
-                    <svg xmlns="http://www.w3.org/2000/svg"
-                        class="h-6 w-6 text-gray-400 dark:text-gray-500 group-hover:text-green-500 dark:group-hover:text-green-400 transition-colors"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor">
-                        <path stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
-                    </svg>
+                            <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">{{ $publication->countComments() }}</span>
                 </button>
             </div>
 
             <!-- Repost button -->
-            @if($publication->user_id !== auth()->user()->id)
+                    @if(!$publication->isOwn())
                 <form class="repost-form"
                     data-publication-id="{{ $publication->id }}">
                     @csrf
                     <button type="submit"
                         class="group flex items-center space-x-2 transition-all duration-200 hover:scale-105 like-button">
-                        @if($publication->is_reposted)
+                                @if($publication->isReposted())
                             <svg xmlns="http://www.w3.org/2000/svg"
                                 class="h-6 w-6 text-blue-500 dark:text-blue-400"
                                 fill="currentColor"
@@ -203,13 +190,13 @@
         <!-- Comments section preview -->
         <div class="mt-2">
             <!-- Comments Modal -->
-            <div id="comments-popup"
-                class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 hidden p-4">
+                    <div id="comments-popup-{{ $publication->id }}"
+                        class="comments-popup-modal fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 hidden p-4">
                 <div class="bg-white dark:bg-gray-800 rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden shadow-2xl border border-gray-200 dark:border-gray-700 flex flex-col">
 
                     <!-- Header with tabs -->
                     <div class="flex border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50">
-                        <button id="comments-tab"
+                                <button id="comments-tab-{{ $publication->id }}"
                             class="flex items-center justify-center gap-2 py-4 px-6 flex-1 text-gray-900 dark:text-white font-semibold border-b-2 border-blue-500 transition-colors">
                             <svg xmlns="http://www.w3.org/2000/svg"
                                 class="h-5 w-5"
@@ -224,7 +211,7 @@
                             <span>{{ __('publication.allComments') }}</span>
                         </button>
 
-                        <button id="likes-tab"
+                                <button id="likes-tab-{{ $publication->id }}"
                             class="flex items-center justify-center gap-2 py-4 px-6 flex-1 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 font-medium transition-colors">
                             <svg xmlns="http://www.w3.org/2000/svg"
                                 height="18px"
@@ -237,7 +224,7 @@
                         </button>
 
                         <button id="close-popup"
-                            class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 p-4 transition-colors">
+                                    class="close-popup-btn text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 p-4 transition-colors">
                             <svg xmlns="http://www.w3.org/2000/svg"
                                 class="h-6 w-6"
                                 fill="none"
@@ -254,14 +241,21 @@
                     <!-- Content area -->
                     <div class="flex-1 overflow-y-auto p-6 max-h-96">
                         <!-- Comments content -->
-                        <div id="comments-content"
+                                <div id="comments-content-{{ $publication->id }}"
                             class="space-y-4">
                             @if(!empty($publication->comments))
                                 @foreach($publication->comments as $comment)
                                     <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
                                         <div class="flex items-start justify-between">
                                             <div class="flex-1">
-                                                <p class="font-semibold text-gray-900 dark:text-white text-sm mb-1">{{ $comment->nickname }}</p>
+                                                        @if (!$comment->isOwn())
+                                                            <a href="{{ route('users.profile', ['id' => $comment->user->id]) }}"
+                                                            class="font-semibold text-gray-900 dark:text-white text-sm mb-1">
+                                                                {{ $comment->author() }}
+                                                            </a>
+                                                        @else
+                                                            <p class="font-semibold italic text-gray-900 dark:text-white text-sm mb-1">Own</p>
+                                                        @endif
                                                 <p class="text-gray-700 dark:text-gray-300">{{ $comment->comment }}</p>
                                             </div>
 
@@ -309,10 +303,42 @@
                                 </div>
                             @endif
                         </div>
+                                <div id="likes-content-{{ $publication->id }}"
+                                @if(!empty($publication->likes()))
+                                    @foreach($publication->likes()->get() as $like)
+                                        <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
+                                            <div class="flex items-start justify-between">
+                                                <div class="flex-1">
+                                                    @if (!$like->isOwn())
+                                                        <a href="{{ route('users.profile', ['id' => $like->user->id]) }}"
+                                                            class="font-semibold text-gray-900 dark:text-white text-sm mb-1">
+                                                            {{ $like->author() }}
+                                                        </a>
+                                                    @else
+                                                        <p class="font-semibold italic text-gray-900 dark:text-white text-sm mb-1">Own</p>
+                                                    @endif
+                                                    <p class="text-gray-700 dark:text-gray-300">{{ $comment->comment }}</p>
+                                                </div>
 
-                        <!-- Likes content (hidden by default) -->
-                        <div id="likes-content"
-                            class="space-y-4 hidden">
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                @else
+                                    <div class="text-center py-8">
+                                        <svg xmlns="http://www.w3.org/2000/svg"
+                                            class="h-16 w-16 mx-auto text-gray-300 dark:text-gray-600 mb-3"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke="currentColor">
+                                            <path stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                                        </svg>
+                                        <p class="text-gray-500 dark:text-gray-400">No comments yet</p>
+                                    </div>
+                                @endif
+                                    <div class="space-y-4 hidden">
                             <div class="text-center py-8">
                                 <svg xmlns="http://www.w3.org/2000/svg"
                                     class="h-16 w-16 mx-auto text-gray-300 dark:text-gray-600 mb-3"
@@ -330,7 +356,7 @@
                     </div>
                     @if(!$publication->deleted_at)
                         <!-- Add comment section -->
-                        <div id="comment-input-section"
+                                <div id="comment-input-section-{{ $publication->id }}"
                             class="border-t border-gray-200 dark:border-gray-700 p-4 bg-gray-50 dark:bg-gray-900/50">
                             <form action="{{ route('comment.create') }}"
                                 method="post"

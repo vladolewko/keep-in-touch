@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Log;
 use Throwable;
 
 /** Class PublicationService */
-class PublicationService implements IPublicationServiceInterface
+readonly class PublicationService implements IPublicationServiceInterface
 {
     /**
      * @param IPublicationRepositoryInterface $publicationRepository
@@ -45,6 +45,7 @@ class PublicationService implements IPublicationServiceInterface
         $perPage = min((int)($parameters['per_page'] ?? 10), 100);
 
         $query = $this->publicationRepository->query();
+
         if ($withTrashed) {
             $query::withTrashed();
         }

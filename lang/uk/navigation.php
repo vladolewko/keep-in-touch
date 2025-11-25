@@ -12,5 +12,5 @@ return [
     'settings' => 'Налаштування',
     'notifications' => 'Повідомлення',
     'logout' => 'Вийти',
-
+    'chats' => 'Чати'
 ];

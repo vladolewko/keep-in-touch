@@ -51,24 +51,6 @@ class User extends Authenticatable implements HasMedia
     }
 
     /** @return HasMany */
-    public function publicationLikes(): HasMany
-    {
-        return $this->hasMany(UserPublicationLike::class);
-    }
-
-    /** @return HasMany */
-    public function commentLikes(): HasMany
-    {
-        return $this->hasMany(UserCommentLike::class);
-    }
-
-    /** @return HasMany */
-    public function publicationReposts(): HasMany
-    {
-        return $this->hasMany(UserPublicationRepost::class);
-    }
-
-    /** @return HasMany */
     public function comments(): HasMany
     {
         return $this->hasMany(PublicationComment::class);
@@ -81,6 +63,13 @@ class User extends Authenticatable implements HasMedia
             ->belongsToMany(Conversation::class)
             ->wherePivot('deleted_at', null);
     }
+
+    /** @return string */
+    public function getProfilePicture()
+    {
+        return $this->getFirstMediaUrl('profile_images');
+    }
+
 
     public function notifications(): MorphMany
     {
