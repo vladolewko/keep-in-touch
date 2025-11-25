@@ -9,9 +9,7 @@ use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 
-/**
- *
- */
+/** Class PublicationRepository */
 class PublicationRepository implements IPublicationRepositoryInterface
 {
     /**
@@ -114,7 +112,7 @@ class PublicationRepository implements IPublicationRepositoryInterface
      */
     public function query(): Builder
     {
-        return Publication::query()->with('comments');
+        return Publication::query()->with('comments')->with('likes');
     }
 
     /**

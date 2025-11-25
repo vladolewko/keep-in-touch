@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Models\Publication;
-use App\Repositories\Interfaces\ICommentRepositoryInterface;
 use App\Repositories\Interfaces\IPublicationRepositoryInterface;
 use App\Repositories\Interfaces\IRepostRepositoryInterface;
 use App\Services\Interfaces\IPublicationServiceInterface;
@@ -16,17 +15,15 @@ use Illuminate\Support\Facades\Log;
 use Throwable;
 
 /** Class PublicationService */
-class PublicationService implements IPublicationServiceInterface
+readonly class PublicationService implements IPublicationServiceInterface
 {
     /**
      * @param IPublicationRepositoryInterface $publicationRepository
      * @param IRepostRepositoryInterface      $repostRepository
-     * @param ICommentRepositoryInterface     $commentRepository
      */
     public function __construct(
-        private readonly IPublicationRepositoryInterface $publicationRepository,
-        private readonly IRepostRepositoryInterface      $repostRepository,
-        private readonly ICommentRepositoryInterface     $commentRepository,
+        private IPublicationRepositoryInterface $publicationRepository,
+        private IRepostRepositoryInterface      $repostRepository,
     ) {}
 
     /**

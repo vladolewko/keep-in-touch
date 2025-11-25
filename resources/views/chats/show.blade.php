@@ -151,7 +151,6 @@
                 })
                 .then(response => response.json())
                 .then(data => {
-                    // Оновлення загального лічильника непрочитаних (якщо він є в 'x-app-layout')
                     const badge = document.getElementById('total-unread-badge');
                     if (badge) {
                         if (data.total_unread > 0) {
@@ -245,23 +244,14 @@
                 })
                 .then(response => response.json())
                 .then(message => {
-                    // Якщо ми використовували оптимістичне додавання,
-                    // нам треба знайти 'temp_' повідомлення і замінити його ID.
-                    // Але простіше просто додати реальне повідомлення з сервера,
-                    // якщо не було оптимістичного додавання.
-
-                    // Видаляємо оптимістичне, якщо воно було
                     const tempMsg = document.querySelector(`[data-message-id="${tempId}"]`);
                     if (tempMsg) tempMsg.remove();
 
-                    // Додаємо справжнє повідомлення з сервера
                     appendMessage(message);
                 })
                 .catch(error => {
                     console.error('Error sending message:', error);
-                    // Тут можна обробити помилку, наприклад,
-                    // показати "не вдалося відправити" біля 'temp_' повідомлення.
-                    messageInput.value = messageText; // Повертаємо текст
+                    messageInput.value = messageText;
                 });
             });
 

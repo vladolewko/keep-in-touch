@@ -22,12 +22,12 @@ class UserPublicationLike extends Model
     /** @return BelongsTo */
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     /** @return BelongsTo */
     public function publication(): BelongsTo
     {
-        return $this->belongsTo(Publication::class);
+        return $this->belongsTo(Publication::class, 'publication_id');
     }
 }
