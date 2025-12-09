@@ -137,32 +137,52 @@ readonly class PublicationService implements IPublicationServiceInterface
                 throw new Exception('Publication not found');
             }
 
-            $liker     = User::find($userId);
-            $postOwner = $publication->user;
             $hasLiked  = $this->publicationRepository->hasUserLiked($publicationId, $userId);
+            $liker     = auth()->user();
+            $postOwner = $publication->user;
 
             if ($hasLiked) {
-                $this->publicationRepository->deleteLike($publicationId, $userId);
-                $this->publicationRepository->decrementLikes($publicationId);
+                // --- 1. Логіка видалення лайка (Unlike) ---
+                $this->likeRepository->delete($publicationId, $liker->id);
+
+                // ВИДАЛЯЄМО НОТИФІКАЦІЮ
+                // Шукаємо в базі нотифікацію цього юзера, з цим топіком і про цей пост
+                $postOwner->notifications()
+                    ->where('type', 'App\Notifications\DatabaseNotification') // або DatabaseNotification::class
+                    ->where('data->topic', NotificationTopicEnum::LIKE->value)
+                    ->where('data->user_id', $liker->id)
+                    ->where('data->object_id', $publicationId)
+                    ->delete();
+
                 $isLiked = false;
             } else {
-                $this->publicationRepository->createLike($publicationId, $userId);
-                $this->publicationRepository->incrementLikes($publicationId);
-                $isLiked = true;
+                // --- 2. Логіка додавання лайка (Like) ---
+                $this->likeRepository->create($publicationId, $liker->id);
 
-                if ($postOwner && $liker && $postOwner->id !== $liker->id) {
-                    $postOwner->notify(
-                        new DatabaseNotification(
-                            topic: NotificationTopicEnum::LIKE,
-                            sender: $liker,
-                            contextData: [
-                                'item_type'  => 'publication',
-                                'item_id'    => $publicationId,
-                                'post_title' => $publication->title,
-                            ],
-                        ),
-                    );
+                // СТВОРЮЄМО НОТИФІКАЦІЮ (лише якщо лайкає не сам себе)
+                if ($postOwner->id !== $liker->id) {
+                    // Спочатку перевіримо, чи раптом не існує вже такої (захист від спаму кліками)
+                    $exists = $postOwner->notifications()
+                        ->where('data->topic', NotificationTopicEnum::LIKE->value)
+                        ->where('data->user_id', $liker->id)
+                        ->where('data->object_id', $publicationId)
+                        ->exists();
+
+                    if (!$exists) {
+                        $postOwner->notify(
+                            new DatabaseNotification(
+                                topic: NotificationTopicEnum::LIKE,
+                                sender: $liker,
+                                contextData: [
+                                    // Тільки назва або нічого, ніяких "liked your post"
+                                    'post_title' => $publication->title ?? null,
+                                    'post_id'    => $publicationId,
+                                ],
+                            )
+                        );
+                    }
                 }
+                $isLiked = true;
             }
 
             DB::commit();

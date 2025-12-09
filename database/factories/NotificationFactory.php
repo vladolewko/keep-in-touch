@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\NotificationTopicEnum;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -15,7 +16,7 @@ class NotificationFactory extends Factory
         return [
             'user_id' => User::factory(),
             'sent_to_id' => User::factory(),
-            'topic' => fake()->randomElement(['warning', 'block', 'message', 'notification']),
+            'topic' => $this->faker->randomElement(NotificationTopicEnum::cases()),
             'message' => fake()->sentence(),
             'is_read' => fake()->boolean(30),
         ];

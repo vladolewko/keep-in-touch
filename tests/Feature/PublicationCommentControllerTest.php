@@ -4,13 +4,14 @@ namespace Tests\Feature;
 
 use App\Models\Publication;
 use App\Models\PublicationComment;
+use Illuminate\Support\Facades\Auth;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\Feature\Abstract\AActionTest;
 
 class PublicationCommentControllerTest extends AActionTest
 {
     #[Test]
-    public function it_can_store_a_comment()
+    public function userCanStoreComment(): void
     {
         $publication = Publication::factory()->create();
         $data = [
@@ -18,7 +19,6 @@ class PublicationCommentControllerTest extends AActionTest
             'comment' => 'This is a test comment',
         ];
 
-        // ВИПРАВЛЕНО: put() та 'comment.create'
         $response = $this->actingAs($this->user)
             ->put(route('comment.create'), $data);
 
@@ -33,9 +33,8 @@ class PublicationCommentControllerTest extends AActionTest
     }
 
     #[Test]
-    public function it_fails_validation_when_storing_comment()
+    public function commentCreationFailsWithInvalidData(): void
     {
-        // ВИПРАВЛЕНО: put() та 'comment.create'
         $response = $this->actingAs($this->user)
             ->put(route('comment.create'), []);
 
@@ -43,14 +42,13 @@ class PublicationCommentControllerTest extends AActionTest
     }
 
     #[Test]
-    public function it_cannot_comment_on_non_existent_publication()
+    public function userCannotCommentOnNonExistentPublication(): void
     {
         $data = [
-            'publication_id' => 99999,
-            'comment' => 'Valid comment',
+            'publication_id' => 999999,
+            'comment' => 'Valid comment content',
         ];
 
-        // ВИПРАВЛЕНО: put() та 'comment.create'
         $response = $this->actingAs($this->user)
             ->put(route('comment.create'), $data);
 
@@ -58,28 +56,49 @@ class PublicationCommentControllerTest extends AActionTest
     }
 
     #[Test]
-    public function it_can_toggle_like_on_comment()
-    {
-        $comment = PublicationComment::factory()->create();
-
-        // Тут залишаємо postJson, бо в роутах це POST
-        $response = $this->actingAs($this->user)
-            ->postJson(route('comment.like'), [
-                'comment_id' => $comment->id
-            ]);
-
-        $response->assertStatus(200);
-    }
-
-    #[Test]
-    public function it_fails_liking_non_existent_comment()
+    public function userCannotLikeNonExistentComment(): void
     {
         $response = $this->actingAs($this->user)
             ->postJson(route('comment.like'), [
-                'comment_id' => 99999
+                'comment_id' => 999999
             ]);
 
         $response->assertStatus(422)
             ->assertJsonValidationErrors(['comment_id']);
+    }
+
+    #[Test]
+    public function userCannotLikeWithoutCommentId(): void
+    {
+        $response = $this->actingAs($this->user)
+            ->postJson(route('comment.like'), []);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['comment_id']);
+    }
+
+    #[Test]
+    public function guestCannotStoreComment(): void
+    {
+        $publication = Publication::factory()->create();
+
+        $response = $this->put(route('comment.create'), [
+            'publication_id' => $publication->id,
+            'comment' => 'Guest comment'
+        ]);
+
+        $response->assertRedirect(route('login'));
+    }
+
+    #[Test]
+    public function guestCannotLikeComment(): void
+    {
+        $comment = PublicationComment::factory()->create();
+
+        $response = $this->postJson(route('comment.like'), [
+            'comment_id' => $comment->id
+        ]);
+
+        $response->assertStatus(401);
     }
 }

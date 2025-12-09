@@ -45,14 +45,4 @@ class NotificationController extends Controller
         return back();
     }
 
-    /**
-     * @param int $recipientId
-     * @return int
-     */
-    public function getUnreadCount(int $recipientId): int
-    {
-        return Notification::where('sent_to_id', $recipientId)
-            ->where('is_read', false)
-            ->count();
-    }
 }

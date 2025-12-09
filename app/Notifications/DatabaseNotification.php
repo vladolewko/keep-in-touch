@@ -53,6 +53,8 @@ class DatabaseNotification extends Notification
      * @param object $notifiable
      * @return array
      */
+    // app/Notifications/DatabaseNotification.php
+
     public function toDatabase(object $notifiable): array
     {
         if ($this->topic->isSystemGenerated()) {
@@ -62,25 +64,32 @@ class DatabaseNotification extends Notification
         }
 
         return [
-            'topic'      => $this->topic->value,
-            'message'    => $message,
-            'user_id'    => $this->sender->id ?? null,
-            // 'sent_to_id' - це ID отримувача, його надає Laravel через $notifiable->id
+            'topic'       => $this->topic->value,
+            'message'     => $message,
+            'user_id'     => $this->sender->id ?? null,
+            // ВАЖЛИВО: Зберігаємо ID об'єкта, щоб потім можна було знайти і видалити цей лайк
+            'object_id'   => $this->contextData['post_id'] ?? null,
+            'action_url'  => $this->contextData['url'] ?? null, // Корисно мати посилання
         ];
     }
 
-    /** @return string */
     protected function generateSystemMessage(): string
     {
         $senderName = $this->sender?->nickname ?? $this->sender?->name ?? 'Користувач';
-        $postTitle  = $this->contextData['post_title'] ?? 'невідомий пост';
-        $itemType   = $this->contextData['item_type'] ?? 'об\'єкт';
+        // Беремо ТІЛЬКИ назву, якщо вона є, інакше просто "публікація"
+        $postTitle  = $this->contextData['post_title'] ?? null;
 
         return match ($this->topic) {
-            NotificationTopicEnum::LIKE => "{$senderName} сподобалася ваша {$postTitle}.",
-            NotificationTopicEnum::COMMENT => "{$senderName} прокоментував вашу {$postTitle}.",
+            // Результат: "Ivan вподобав вашу публікацію." або "Ivan вподобав вашу публікацію: Мій відпочинок."
+            NotificationTopicEnum::LIKE => $postTitle
+                ? "{$senderName} вподобав вашу публікацію: \"{$postTitle}\"."
+                : "{$senderName} вподобав вашу публікацію.",
+
+            NotificationTopicEnum::COMMENT => $postTitle
+                ? "{$senderName} прокоментував вашу публікацію: \"{$postTitle}\"."
+                : "{$senderName} прокоментував вашу публікацію.",
+
             NotificationTopicEnum::FOLLOW => "{$senderName} тепер стежить за вами.",
-            NotificationTopicEnum::FOLLOW_ACCEPTED => "{$senderName} прийняв ваш запит на підписку.",
             default => $this->message,
         };
     }
