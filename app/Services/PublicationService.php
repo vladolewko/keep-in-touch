@@ -158,7 +158,7 @@ readonly class PublicationService implements IPublicationServiceInterface
                             contextData: [
                                 'item_type'  => 'publication',
                                 'item_id'    => $publicationId,
-                                'post_title' => $publication->title ?? 'публікацію',
+                                'post_title' => $publication->title,
                             ],
                         ),
                     );
@@ -281,7 +281,7 @@ readonly class PublicationService implements IPublicationServiceInterface
      */
     public function toggleRepost(int $publicationId, int $userId): array
     {
-        $publication = $this->publicationRepository->findById($publicationId);
+        $publication = $this->publicationRepository->find($publicationId);
         if (!$publication) {
             throw new \Exception('Publication not found.');
         }

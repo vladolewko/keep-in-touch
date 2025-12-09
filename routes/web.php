@@ -49,9 +49,9 @@ Route::middleware(['auth', LanguageMiddleware::class])->group(function () {
         Route::post('/like', [PublicationController::class, 'toggleLike'])->name('publication.like');
         Route::post('/repost', [PublicationController::class, 'toggleRepost'])->name('publication.repost');
         Route::patch('/hide', [PublicationController::class, 'toggleStatus'])->name('publication.hide');
-        Route::get('/edit{id}', [PublicationController::class, 'edit'])->name('publication.edit');
+        Route::get('/edit/{id}', [PublicationController::class, 'edit'])->name('publication.edit');
         Route::patch('/update', [PublicationController::class, 'update'])->name('publication.update');
-        Route::delete('/destroy{id}', [PublicationController::class, 'destroy'])->name('publication.destroy');
+        Route::delete('/destroy/{id}', [PublicationController::class, 'destroy'])->name('publication.destroy');
     });
 
     Route::prefix('comment')->group(function () {
@@ -66,7 +66,7 @@ Route::middleware(['auth', LanguageMiddleware::class])->group(function () {
     Route::prefix('users')->group(function () {
         Route::get('/all', [UserController::class, 'index'])->name('users');
         Route::get('/sort', [UserController::class, 'index'])->name('users.sort');
-        Route::get('/profile{id}', [UserController::class, 'user'])->name('users.profile');
+        Route::get('/profile/{id}', [UserController::class, 'user'])->name('users.profile');
         Route::patch('/manageSubscriptions', [ProfileController::class, 'manageSubscriptions'])->name('user.manageSubscriptions');
     });
 });
@@ -93,7 +93,7 @@ Route::middleware(AdminMiddleware::class)->prefix('admin')->group(function () {
     Route::prefix('publication')->group(function () {
         //    Route::get('/edit{id}', [AdminController::class, 'editPublication'])->name('admin.publication.edit');
         //    Route::patch('/update', [AdminController::class, 'updatePublication'])->name('admin.publication.update');
-        Route::delete('/destroy{id}', [AdminController::class, 'destroyPublication'])->name('admin.publication.destroy');
+        Route::delete('/destroy/{id}', [AdminController::class, 'destroyPublication'])->name('admin.publication.destroy');
     });
 
     Route::prefix('comments')->group(function () {
@@ -102,7 +102,7 @@ Route::middleware(AdminMiddleware::class)->prefix('admin')->group(function () {
     });
 
     Route::prefix('comment')->group(function () {
-        Route::delete('/comment/destroy{id}', [AdminController::class, 'destroyComment'])->name('admin.comment.destroy');
+        Route::delete('/comment/destroy/{id}', [AdminController::class, 'destroyComment'])->name('admin.comment.destroy');
     });
 });
 

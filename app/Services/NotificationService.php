@@ -39,6 +39,23 @@ class NotificationService implements INotificationServiceInterface
     }
 
     /**
+     * @param int $notificationId
+     * @return void
+     */
+    public function markAllAsRead(int $userId):void
+    {
+        $notifications = Notification::where('sent_to_id', $userId)
+            ->get();
+
+        foreach ($notifications as $notification) {
+            if ($notification && !$notification->is_read) {
+                $notification->is_read = true;
+                $notification->save();
+            }
+        }
+    }
+
+    /**
      * @param array $data
      * @param int   $senderId
      * @param int   $recipientId
@@ -47,28 +64,13 @@ class NotificationService implements INotificationServiceInterface
     public function sendMessage(array $data, int $senderId, int $recipientId): Notification
     {
         return Notification::create([
-            'topic'        => $data['topic'],
-            'message'      => $data['message'],
-            'user_id'      => $senderId,
+            'topic'      => $data['topic'],
+            'message'    => $data['message'],
+            'user_id'    => $senderId,
             'sent_to_id' => $recipientId,
         ]);
     }
 
-    /**
-     * @param int $recipientId
-     * @return int
-     */
-    public function markAllAsRead(int $recipientId): int
-    {
-        return Notification::where('sent_to_id', $recipientId)
-            ->where('is_read', false)
-            ->update(['is_read' => true]);
-    }
-
-    /**
-     * @param int $recipientId ID користувача, який отримує сповіщення (ваш sent_to_id)
-     * @return int
-     */
     public function getUnreadCount(int $recipientId): int
     {
         return Notification::where('sent_to_id', $recipientId)

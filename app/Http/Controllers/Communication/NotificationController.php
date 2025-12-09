@@ -41,17 +41,12 @@ class NotificationController extends Controller
      */
     public function readAllNotifications(): RedirectResponse
     {
-        $count = $this->notificationService->markAllAsRead(Auth::id());
-
-        if ($count > 0) {
-            return back()->with('success', "{$count} сповіщень позначено як прочитані.");
-        }
-
+        $this->notificationService->markAllAsRead(Auth::id());
         return back();
     }
 
     /**
-     * @param int $recipientId ID користувача
+     * @param int $recipientId
      * @return int
      */
     public function getUnreadCount(int $recipientId): int

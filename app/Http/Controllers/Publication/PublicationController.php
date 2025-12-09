@@ -170,61 +170,6 @@ class PublicationController extends Controller
     }
 
     /**
-     * @param int $publicationId
-     * @return JsonResponse
-     */
-    public function checkLikeStatus(int $publicationId): JsonResponse
-    {
-        try {
-            if (!auth()->check()) {
-                return response()->json([
-                    'success' => true,
-                    'liked'   => false,
-                ]);
-            }
-
-            $liked = $this->likeService->hasUserLiked($publicationId, Auth::id());
-
-            return response()->json([
-                'success'     => true,
-                'liked'       => $liked,
-                'likes_count' => $this->likeService->getLikesCount($publicationId),
-            ]);
-        } catch (\Exception $e) {
-            Log::error('Check Like Status Error: ' . $e->getMessage());
-
-            return response()->json([
-                'success' => false,
-                'message' => 'An error occurred.',
-            ], 500);
-        }
-    }
-
-    /**
-     * @param int $publicationId
-     * @return JsonResponse
-     */
-    public function getLikedUsers(int $publicationId): JsonResponse
-    {
-        try {
-            $users = $this->likeService->getUsersWhoLiked($publicationId);
-
-            return response()->json([
-                'success' => true,
-                'users'   => $users,
-                'count'   => count($users),
-            ]);
-        } catch (\Exception $e) {
-            Log::error('Get Liked Users Error: ' . $e->getMessage());
-
-            return response()->json([
-                'success' => false,
-                'message' => 'An error occurred.',
-            ], 500);
-        }
-    }
-
-    /**
      * @param Request $request
      * @return JsonResponse
      */

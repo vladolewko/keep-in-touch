@@ -4,185 +4,171 @@ namespace Tests\Feature;
 
 use App\Models\Publication;
 use App\Models\User;
+use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\Feature\Abstract\AActionTest;
 use Tests\TestCase;
 
-class PublicationControllerTest extends TestCase
+/** Class PublicationControllerTest*/
+class PublicationControllerTest extends AActionTest
 {
-    use RefreshDatabase;
-
-    private function authHeaders(): array
+    /** @return void */
+    #[Test]
+    public function it_can_display_the_index_page(): void
     {
-        return [
-            'Authorization' => 'Bearer ' . env('API_ACCESS_TOKEN', 'test-token'),
-        ];
+        Publication::factory()->count(3)->create();
+        $response = $this->actingAs($this->user)
+            ->get(route('publications'));
+
+        $response->assertStatus(200);
+        $response->assertViewIs('publications.index');
+        $response->assertViewHas('publications');
     }
 
-    public function test_it_returns_all_publications()
+    /** @return void */
+    #[Test]
+    public function it_can_create_a_publication_with_image(): void
     {
-        $user = User::factory()->create();
-        $this->actingAs($user);
+        Storage::fake('public');
+        $image = UploadedFile::fake()->image('post.jpg');
 
-        $publications = Publication::factory()->count(2)->create();
-
-        $response = $this->getJson(route('publications.index'), $this->authHeaders());
-        $response->assertStatus(200)
-            ->assertJsonFragment(['id' => $publications[0]->id])
-            ->assertJsonFragment(['id' => $publications[1]->id]);
-    }
-
-    public function test_it_returns_publications_by_user()
-    {
-        $user = User::factory()->create();
-        $this->actingAs($user);
-
-        $userAuthor = User::factory()->create();
-        $publication = Publication::factory()->create([
-            'user_id' => $userAuthor->id,
-            'title' => 'Test Publication',
-        ]);
-
-        $response = $this->getJson(route('user.publications', ['id' => $userAuthor->id]), $this->authHeaders());
-        $response->assertStatus(200)
-            ->assertJsonFragment([
-                'id' => $publication->id,
-                'title' => $publication->title,
-                'user' => [
-                    'id' => $userAuthor->id,
-                    'nickname' => $userAuthor->nickname,
-                ],
-            ]);
-    }
-
-    public function test_it_creates_publication_for_user()
-    {
-        $user = User::factory()->create();
-        $this->actingAs($user);
-
-        $payload = [
+        $data = [
             'title' => 'New Publication',
-            'description' => 'Some description',
+            'description' => 'Description content',
+            'image' => $image,
         ];
 
-        $response = $this->postJson(route('publications.store', ['id' => $user->id]), $payload, $this->authHeaders());
+        $response = $this->actingAs($this->user)
+            ->put(route('publication.create'), $data);
 
-        $response->assertStatus(201)
-            ->assertJsonFragment([
-                'title' => 'New Publication',
-                'description' => 'Some description',
-                'user' => [
-                    'id' => $user->id,
-                    'nickname' => $user->nickname,
-                ],
-            ]);
+        $response->assertRedirect();
+        $response->assertSessionHas('success');
+
         $this->assertDatabaseHas('publications', [
             'title' => 'New Publication',
-            'user_id' => $user->id,
+            'user_id' => $this->user->id,
         ]);
     }
 
-    public function test_it_validates_publication_creation()
+    /** @return void */
+    #[Test]
+    public function it_displays_edit_page_for_owner(): void
     {
-        $user = User::factory()->create();
-        $this->actingAs($user);
+        $publication = Publication::factory()->create(['user_id' => $this->user->id]);
+        $response = $this->actingAs($this->user)
+            ->get(route('publication.edit', $publication->id));
 
-        $response = $this->postJson(route('publications.store', ['id' => $user->id]), [], $this->authHeaders());
-        $response->assertStatus(422);
+        $response->assertStatus(200);
+        $response->assertViewIs('publications.edit');
     }
 
-    public function test_it_shows_publication_by_id()
+    /** @return void */
+    #[Test]
+    public function it_can_update_a_publication(): void
     {
-        $user = User::factory()->create();
-        $this->actingAs($user);
-
-        $publication = Publication::factory()->create();
-
-        $response = $this->getJson(route('publications.show', ['id' => $publication->id]), $this->authHeaders());
-        $response->assertStatus(200)
-            ->assertJsonFragment([
-                'id' => $publication->id,
-                'title' => $publication->title,
-            ]);
-    }
-
-    public function test_it_returns_404_if_publication_not_found()
-    {
-        $user = User::factory()->create();
-        $this->actingAs($user);
-
-        $response = $this->getJson(route('publications.show', ['id' => 9999]), $this->authHeaders());
-        $response->assertStatus(404);
-    }
-
-    public function test_it_updates_publication()
-    {
-        $user = User::factory()->create();
-        $this->actingAs($user);
-
-        $publication = Publication::factory()->create();
-
-        $payload = [
+        $publication = Publication::factory()->create(['user_id' => $this->user->id]);
+        $data = [
+            'publication_id' => $publication->id,
             'title' => 'Updated Title',
             'description' => 'Updated Description',
         ];
 
-        $response = $this->putJson(route('publications.update', ['publicationId' => $publication->id]), $payload, $this->authHeaders());
+        $response = $this->actingAs($this->user)
+            ->patch(route('publication.update'), $data);
 
-        $response->assertStatus(200)
-            ->assertJsonFragment([
-                'title' => 'Updated Title',
-                'description' => 'Updated Description',
-            ]);
+        $response->assertRedirect(route('profile'));
+        $response->assertSessionHas('success');
+
         $this->assertDatabaseHas('publications', [
             'id' => $publication->id,
             'title' => 'Updated Title',
         ]);
     }
 
-    public function test_it_returns_404_on_update_if_not_found()
+    /** @return void */
+    #[Test]
+    public function it_cannot_update_others_publication(): void
     {
-        $user = User::factory()->create();
-        $this->actingAs($user);
+        $otherUser = User::factory()->create();
+        $publication = Publication::factory()->create(['user_id' => $otherUser->id]);
 
-        $payload = [
-            'title' => 'Updated Title',
-            'description' => 'Updated Description',
+        $data = [
+            'publication_id' => $publication->id,
+            'title' => 'Hacked Title',
         ];
 
-        $response = $this->putJson(route('publications.update', ['publicationId' => 9999]), $payload, $this->authHeaders());
-        $response->assertStatus(404);
+        $response = $this->actingAs($this->user)
+            ->patch(route('publication.update'), $data);
+
+        $response->assertRedirect();
+        $response->assertSessionHas('error', 'Unauthorized action');
+
+        $this->assertDatabaseMissing('publications', [
+            'id' => $publication->id,
+            'title' => 'Hacked Title',
+        ]);
     }
 
-    public function test_it_validates_publication_update()
+    /** @return void */
+    #[Test]
+    public function it_can_toggle_like(): void
     {
-        $user = User::factory()->create();
-        $this->actingAs($user);
-
         $publication = Publication::factory()->create();
 
-        $response = $this->putJson(route('publications.update', ['publicationId' => $publication->id]), [], $this->authHeaders());
-        $response->assertStatus(422);
+        $response = $this->actingAs($this->user)
+            ->postJson(route('publication.like'), [
+                'publication_id' => $publication->id
+            ]);
+
+        $response->assertStatus(200);
     }
 
-    public function test_it_deletes_publication()
+    /** @return void */
+    #[Test]
+    public function it_can_toggle_repost(): void
     {
-        $user = User::factory()->create();
-        $this->actingAs($user);
-
         $publication = Publication::factory()->create();
 
-        $response = $this->deleteJson(route('publications.destroy', ['id' => $publication->id]), [], $this->authHeaders());
+        $response = $this->actingAs($this->user)
+            ->postJson(route('publication.repost'), [
+                'publication_id' => $publication->id
+            ]);
+
         $response->assertStatus(200)
-            ->assertJson(['message' => 'Publication deleted successfully']);
-        $this->assertDatabaseMissing('publications', ['id' => $publication->id]);
+            ->assertJson(['success' => true]);
     }
 
-    public function test_it_returns_404_on_delete_if_not_found()
+    /** @return void */
+    #[Test]
+    public function it_can_toggle_status_hide(): void
     {
-        $user = User::factory()->create();
-        $this->actingAs($user);
+        $publication = Publication::factory()->create(['user_id' => $this->user->id]);
 
-        $response = $this->deleteJson(route('publications.destroy', ['id' => 9999]), [], $this->authHeaders());
-        $response->assertStatus(404);
+        $response = $this->actingAs($this->user)
+            ->patch(route('publication.hide'), [
+                'publication_id' => $publication->id
+            ]);
+
+        $response->assertRedirect();
+        $response->assertSessionHas('success');
+    }
+
+    /** @return void */
+    #[Test]
+    public function it_can_destroy_publication(): void
+    {
+        $publication = Publication::factory()->create(['user_id' => $this->user->id]);
+
+        $response = $this->actingAs($this->user)
+            ->delete(route('publication.destroy', $publication->id));
+
+        $response->assertRedirect();
+        $response->assertSessionHas('success');
+
+        $this->assertDatabaseMissing('publications', ['id' => $publication->id]);
     }
 }

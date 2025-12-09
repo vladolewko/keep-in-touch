@@ -26,7 +26,10 @@ class PublicationCommentController extends Controller
         try {
             $result = $this->commentService->toggleLike($data['comment_id'], Auth::id());
 
-            return response()->json(['success' => true] + $result);
+            return response()->json([
+                'success' => true,
+                'data' => $result
+            ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,

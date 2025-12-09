@@ -30,4 +30,9 @@ class UserPublicationLike extends Model
     {
         return $this->belongsTo(Publication::class, 'publication_id');
     }
+
+    public function author()
+    {
+        return $this->user->nickname;
+    }
 }
