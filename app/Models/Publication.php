@@ -54,10 +54,11 @@ class Publication extends Model implements HasMedia
     }
 
     /** @return string|null */
-    public function author(): ?string
+        public function author(): string
     {
-        return $this->user->nickname ?? $this->user->name;
+        return $this->user()->withTrashed()->first()?->nickname ?? 'Deleted User';
     }
+
 
     /** @return bool */
     public function isLiked(): bool

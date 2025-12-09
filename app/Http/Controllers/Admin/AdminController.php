@@ -27,7 +27,6 @@ class AdminController extends Controller
         private readonly IPublicationServiceInterface  $publicationService,
         private readonly IUserServiceInterface         $userService,
         private readonly ICommentServiceInterface      $commentService,
-        private readonly INotificationServiceInterface $notificationService,
     ) {}
 
     /** @return View */
@@ -58,17 +57,17 @@ class AdminController extends Controller
 
     /**
      * @param Request $request
-     * @param         $sent_to_id
+     * @param int         $sent_to_id
      * @return RedirectResponse
      */
-    public function sendMessage(Request $request, int $sent_to_id): RedirectResponse
+    public function sendMessage(Request $request, int $send_to_id): RedirectResponse
     {
         $validated = $request->validate([
             'topic'   => 'required|string',
             'message' => 'required|string|max:255',
         ]);
 
-        $recipient = User::findOrFail($sent_to_id);
+        $recipient = User::findOrFail($send_to_id);
 
         $topicEnum = NotificationTopicEnum::tryFrom($validated['topic']);
 
@@ -111,22 +110,22 @@ class AdminController extends Controller
 
     /**
      * @param $id
-     * @return RedirectResponse
+     * @return \Illuminate\Http\JsonResponse|RedirectResponse
      */
-    public function destroyPublication($id): RedirectResponse
-    {
-        $this->publicationService->destroy($id);
-        return redirect()->back()->with('success', 'Publication deleted successfully.');
-    }
-
-    /**
-     * @param $id
-     * @return RedirectResponse
-     */
-    public function blockUser($id): RedirectResponse
+    public function blockUser($id)
     {
         $this->userService->toggleUserBlock($id);
 
+        if (request()->wantsJson()) {
+            $user = User::withTrashed()->find($id);
+            $isBlocked = $user->deleted_at !== null;
+
+            return response()->json([
+                'success' => true,
+                'is_blocked' => $isBlocked,
+                'message' => $isBlocked ? 'User blocked successfully.' : 'User restored successfully.',
+            ]);
+        }
         return redirect()->back()->with('success', 'User status updated successfully.');
     }
 

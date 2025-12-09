@@ -126,6 +126,7 @@ class PublicationControllerTest extends AActionTest
                 'publication_id' => $publication->id,
             ]);
 
+
         $response->assertStatus(200);
     }
 

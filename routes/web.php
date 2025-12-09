@@ -81,8 +81,8 @@ Route::middleware(AdminMiddleware::class)->prefix('admin')->group(function () {
 
     Route::prefix('user')->group(function () {
         Route::delete('/block{id}', [AdminController::class, 'blockUser'])->name('admin.user.block');
-        Route::get('/message{userId?}', [AdminController::class, 'writeMessage'])->name('admin.user.message');
-        Route::put('/send{sent_to_id}', [AdminController::class, 'sendMessage'])->name('admin.send');
+        Route::get('/message{userId}', [AdminController::class, 'writeMessage'])->name('admin.user.message');
+        Route::put('/send{send_to_id}', [AdminController::class, 'sendMessage'])->name('admin.send');
     });
 
     Route::prefix('publications')->group(function () {

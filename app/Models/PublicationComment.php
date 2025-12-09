@@ -25,7 +25,7 @@ class PublicationComment extends Model
     /** @return BelongsTo */
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
     /** @return HasMany|PublicationComment */
@@ -42,7 +42,7 @@ class PublicationComment extends Model
 
     public function author(): string
     {
-        return $this->user->nickname ?? $this->user->name;
+        return $this->user()->withTrashed()->first()?->nickname ?? 'Deleted User';
     }
 
 

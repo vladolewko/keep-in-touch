@@ -205,7 +205,7 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="text-sm text-gray-900 dark:text-white">
-                                        {{ $comment->nickname }}
+                                        {{ $comment->author() }}
                                     </div>
                                 </td>
                                 <td class="px-6 py-4">
@@ -218,8 +218,10 @@
                                         {{ $comment->likes }}
                                     </div>
                                 </td>
-                                <td class="px-1 py-4 whitespace-nowrap text-sm font-medium">
+                                <td class="px-1 py-4 text-center whitespace-nowrap text-sm font-medium">
+                                        <a href="{{ route('admin.users.sort', ['search' => $comment->author()]) }}">знайти</a>
                                     <div class="flex space-x-1">
+
                                         <form action="{{ route('admin.comment.destroy', ['id' => $comment->id]) }}"
                                             method="post"
                                             class="inline">
